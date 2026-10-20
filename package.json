@@ -12,7 +12,7 @@
   "scripts": {
     "build": "npm run build --workspaces --if-present",
     "test": "vitest run",
-    "typecheck": "tsc -p packages/core"
+    "typecheck": "tsc -p packages/core && tsc -p packages/mcp"
   },
   "devDependencies": {
     "@types/node": "^26.6.5",

@@ -1,0 +1,30 @@
+{
+  "name": "langcoach",
+  "version": "0.1.0",
+  "description": "Language-learning coach MCP server: Claude writes the lessons, LangCoach keeps your plan, streak and spaced-repetition reviews.",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "langcoach": "dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsup"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.1",
+    "ts-fsrs": "^5.4.2",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@langcoach/core": "*",
+    "tsup": "^9.0.0"
+  }
+}
