@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'vitest';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js';
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { Coach, JsonFileStore, MemoryStore, type Store } from '@langcoach/core';
@@ -131,5 +131,18 @@ describe('langcoach MCP server', () => {
     } finally {
       rmSync(dir, { recursive: true, force: true });
     }
+  });
+
+  test('reports the package.json version as serverInfo.version', async () => {
+    const { client } = await setup();
+    const pkg = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
+    expect(client.getServerVersion()).toMatchObject({ name: 'langcoach', version: pkg.version });
+  });
+
+  test('set_profile description explains which tools work without a profile and when changes apply', async () => {
+    const { client } = await setup();
+    const tool = (await client.listTools()).tools.find((t) => t.name === 'set_profile')!;
+    for (const name of ['export_data', 'import_data', 'get_progress']) expect(tool.description).toContain(name);
+    expect(tool.description).toMatch(/next week/i);
   });
 });

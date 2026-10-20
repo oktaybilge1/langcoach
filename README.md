@@ -1,10 +1,10 @@
 # LangCoach
 
-**English** | [Türkçe](README.tr.md)
+**English** | [Türkçe](https://github.com/oktaybilge1/langcoach/blob/main/README.tr.md)
 
 [![CI](https://github.com/oktaybilge1/langcoach/actions/workflows/ci.yml/badge.svg)](https://github.com/oktaybilge1/langcoach/actions/workflows/ci.yml)
 [![npm](https://img.shields.io/npm/v/langcoach)](https://www.npmjs.com/package/langcoach)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/oktaybilge1/langcoach/blob/main/LICENSE)
 
 **Your language coach inside Claude Code: weekly plan, daily tasks, spaced-repetition reviews, streak and XP, for any language pair.**
 
@@ -22,6 +22,12 @@ AI language lessons are great, but most forget you the moment the chat ends. Lan
 claude mcp add langcoach -- npx -y langcoach
 ```
 
+Windows (native, not WSL): Claude Code needs `npx` wrapped in `cmd /c`:
+
+```bash
+claude mcp add langcoach -- cmd /c npx -y langcoach
+```
+
 Requires Node 20+. (The `langcoach` package is not on npm yet; until it is published, use "Run from source" below.)
 
 ### Run from source
@@ -32,6 +38,12 @@ cd langcoach
 npm install
 npm run build
 claude mcp add langcoach -- node <absolute-path>/packages/mcp/dist/index.js
+```
+
+On Windows, use the full path with forward slashes, for example:
+
+```bash
+claude mcp add langcoach -- node C:/Users/you/langcoach/packages/mcp/dist/index.js
 ```
 
 ## Use it
@@ -62,6 +74,7 @@ Everything lives in one JSON file: `~/.langcoach/data.json`. Set the `LANGCOACH_
 
 - **Export / import:** ask Claude to run `export_data` for a backup or to move to another machine, and `import_data` to restore it.
 - Writes are atomic, so a crash cannot leave a half-written file.
+- Parallel tool calls and several Claude Code sessions take turns through a short-lived `data.json.lock` file, so no update is lost.
 - If the data file is corrupt, it is preserved as `data.corrupt-<timestamp>.json` and you get a clear error.
 - Before an import replaces your data, the current file is saved as `data.backup-<timestamp>.json`.
 
@@ -75,7 +88,7 @@ Planned, not built yet:
 
 ## Contributing
 
-Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md).
+Contributions are welcome. See [CONTRIBUTING.md](https://github.com/oktaybilge1/langcoach/blob/main/CONTRIBUTING.md).
 
 ## Credits and disclaimer
 
@@ -85,4 +98,4 @@ LangCoach is an independent project and is not affiliated with, endorsed by, or 
 
 ## License
 
-[MIT](LICENSE) (c) 2026 Oktay Bilge
+[MIT](https://github.com/oktaybilge1/langcoach/blob/main/LICENSE) (c) 2026 Oktay Bilge

@@ -1,6 +1,7 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 import type { Coach } from '@langcoach/core';
+import pkg from '../package.json' with { type: 'json' };
 import { TUTOR_PROMPT } from './prompt.js';
 
 type ToolResult = { content: { type: 'text'; text: string }[]; isError?: boolean };
@@ -27,13 +28,13 @@ async function run(fn: () => Promise<unknown>): Promise<ToolResult> {
 const nonEmpty = z.string().trim().min(1);
 
 export function createServer(coach: Coach): McpServer {
-  const server = new McpServer({ name: 'langcoach', version: '0.1.0' });
+  const server = new McpServer({ name: 'langcoach', version: pkg.version });
 
   server.registerTool(
     'set_profile',
     {
       description:
-        'Save or update the learner profile. Call this once at the very start (after interviewing the learner), or when their level, goal or schedule changes. Required before any other tool except get_progress.',
+        "Save or update the learner profile. Call this once at the very start (after interviewing the learner), or when their level, goal or schedule changes. Required before the other tools, except export_data, import_data and get_progress, which work without a profile. A changed schedule (minutes per day, days per week) applies from next week's plan; this week's existing plan is kept.",
       inputSchema: {
         nativeLanguage: nonEmpty,
         targetLanguage: nonEmpty,

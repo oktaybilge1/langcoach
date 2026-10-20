@@ -1,7 +1,28 @@
 {
   "name": "langcoach",
   "version": "0.1.0",
-  "description": "Language-learning coach MCP server: Claude writes the lessons, LangCoach keeps your plan, streak and spaced-repetition reviews.",
+  "description": "Language-learning coach MCP server for Claude Code: Claude writes the lessons, LangCoach keeps your weekly plan, streak, XP and spaced-repetition (FSRS) reviews on your machine.",
+  "keywords": [
+    "language-learning",
+    "spaced-repetition",
+    "fsrs",
+    "mcp",
+    "mcp-server",
+    "claude",
+    "claude-code",
+    "tutor",
+    "flashcards",
+    "vocabulary"
+  ],
+  "homepage": "https://github.com/oktaybilge1/langcoach#readme",
+  "bugs": {
+    "url": "https://github.com/oktaybilge1/langcoach/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oktaybilge1/langcoach.git",
+    "directory": "packages/mcp"
+  },
   "license": "MIT",
   "type": "module",
   "bin": {

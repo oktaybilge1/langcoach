@@ -33,6 +33,16 @@ To try your build in Claude Code:
 claude mcp add langcoach -- node /absolute/path/to/langcoach/packages/mcp/dist/index.js
 ```
 
+On native Windows (not WSL), use forward slashes in the path, for example `node C:/Users/you/langcoach/packages/mcp/dist/index.js`. For the published package, Claude Code on native Windows needs `npx` wrapped: `claude mcp add langcoach -- cmd /c npx -y langcoach`.
+
+To check what `npm pack` would ship, run the same smoke test as CI:
+
+```bash
+npm pack -w langcoach            # builds first (prepack), writes langcoach-<version>.tgz
+# in a fresh empty folder: npm init -y && npm i /path/to/langcoach-<version>.tgz
+node scripts/smoke-stdio.mjs /path/to/that/folder
+```
+
 Use a throwaway data folder while developing by setting `LANGCOACH_HOME`.
 
 ## Branch and PR flow

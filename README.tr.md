@@ -1,10 +1,10 @@
 # LangCoach
 
-[English](README.md) | **Türkçe**
+[English](https://github.com/oktaybilge1/langcoach/blob/main/README.md) | **Türkçe**
 
 [![CI](https://github.com/oktaybilge1/langcoach/actions/workflows/ci.yml/badge.svg)](https://github.com/oktaybilge1/langcoach/actions/workflows/ci.yml)
 [![npm](https://img.shields.io/npm/v/langcoach)](https://www.npmjs.com/package/langcoach)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/oktaybilge1/langcoach/blob/main/LICENSE)
 
 **Claude Code içindeki dil koçun: haftalık plan, günlük görevler, aralıklı tekrar, seri ve XP. Her dil çifti için.**
 
@@ -22,6 +22,12 @@ Yapay zekâ ile dil dersleri harika, ama çoğu sohbet kapanınca seni unutuyor.
 claude mcp add langcoach -- npx -y langcoach
 ```
 
+Windows (yerel, WSL değil): Claude Code'da `npx` komutunu `cmd /c` ile sarmalaman gerekir:
+
+```bash
+claude mcp add langcoach -- cmd /c npx -y langcoach
+```
+
 Node 20+ gerekir. (`langcoach` paketi henüz npm'de yayınlanmadı; yayınlanana kadar aşağıdaki "Kaynaktan çalıştırma" yöntemini kullan.)
 
 ### Kaynaktan çalıştırma
@@ -32,6 +38,12 @@ cd langcoach
 npm install
 npm run build
 claude mcp add langcoach -- node <mutlak-yol>/packages/mcp/dist/index.js
+```
+
+Windows'ta tam yolu ileri eğik çizgilerle yaz, örneğin:
+
+```bash
+claude mcp add langcoach -- node C:/Users/sen/langcoach/packages/mcp/dist/index.js
 ```
 
 ## Kullanım
@@ -62,6 +74,7 @@ Her şey tek bir JSON dosyasında durur: `~/.langcoach/data.json`. Farklı bir k
 
 - **Dışa / içe aktarma:** yedek almak ya da başka bir makineye taşınmak için Claude'dan `export_data`, geri yüklemek için `import_data` çalıştırmasını iste.
 - Yazma işlemleri atomiktir; bir çökme yarım yazılmış dosya bırakmaz.
+- Paralel araç çağrıları ve birden fazla Claude Code oturumu, kısa ömürlü bir `data.json.lock` dosyasıyla sırayla yazar; hiçbir güncelleme kaybolmaz.
 - Veri dosyası bozuksa `data.corrupt-<zaman-damgası>.json` olarak saklanır ve net bir hata alırsın.
 - İçe aktarma verini değiştirmeden önce mevcut dosya `data.backup-<zaman-damgası>.json` olarak yedeklenir.
 
@@ -75,7 +88,7 @@ Planlanıyor, henüz yapılmadı:
 
 ## Katkı
 
-Katkılara açığız. [CONTRIBUTING.md](CONTRIBUTING.md) dosyasına bak.
+Katkılara açığız. [CONTRIBUTING.md](https://github.com/oktaybilge1/langcoach/blob/main/CONTRIBUTING.md) dosyasına bak.
 
 ## Kaynaklar ve sorumluluk reddi
 
@@ -85,4 +98,4 @@ LangCoach is an independent project and is not affiliated with, endorsed by, or 
 
 ## Lisans
 
-[MIT](LICENSE) (c) 2026 Oktay Bilge
+[MIT](https://github.com/oktaybilge1/langcoach/blob/main/LICENSE) (c) 2026 Oktay Bilge
