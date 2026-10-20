@@ -43,33 +43,34 @@ export class Coach {
     if (!intIn(input.daysPerWeek, 1, 7)) {
       throw new InvalidDataError('daysPerWeek must be an integer from 1 to 7');
     }
-    const s = await this.store.load();
-    const profile: Profile = {
-      nativeLanguage: input.nativeLanguage,
-      targetLanguage: input.targetLanguage,
-      level: input.level,
-      goal: input.goal,
-      minutesPerDay: input.minutesPerDay,
-      daysPerWeek: input.daysPerWeek,
-      createdAt: s.profile?.createdAt ?? this.clock().toISOString(),
-    };
-    s.profile = profile;
-    await this.store.save(s);
-    return profile;
+    return this.store.transaction((s) => {
+      const profile: Profile = {
+        nativeLanguage: input.nativeLanguage,
+        targetLanguage: input.targetLanguage,
+        level: input.level,
+        goal: input.goal,
+        minutesPerDay: input.minutesPerDay,
+        daysPerWeek: input.daysPerWeek,
+        createdAt: s.profile?.createdAt ?? this.clock().toISOString(),
+      };
+      s.profile = profile;
+      return { state: s, result: profile };
+    });
   }
 
   async weekPlan(theme?: string): Promise<WeekPlan> {
     if (theme !== undefined && typeof theme !== 'string') throw new InvalidDataError('theme must be a string');
-    const s = await this.store.load();
-    const profile = requireProfile(s);
-    const week = isoWeek(this.clock());
-    const existing = s.plans[week];
-    if (existing) return existing;
-    if (theme === undefined || theme.trim() === '') throw new ThemeRequiredError();
-    const plan = buildWeekPlan(profile, week, theme, this.newId);
-    s.plans[week] = plan;
-    await this.store.save(s);
-    return plan;
+    return this.store.transaction((s) => {
+      const profile = requireProfile(s);
+      const now = this.clock();
+      const week = isoWeek(now);
+      const existing = s.plans[week];
+      if (existing) return { result: existing };
+      if (theme === undefined || theme.trim() === '') throw new ThemeRequiredError();
+      const plan = buildWeekPlan(profile, week, theme, this.newId);
+      s.plans[week] = plan;
+      return { state: s, result: plan };
+    });
   }
 
   async today(): Promise<{ date: string; tasks: PlanTask[]; planExists: boolean }> {
@@ -101,43 +102,43 @@ export class Coach {
       }
     });
 
-    const s = await this.store.load();
-    requireProfile(s);
-    const now = this.clock();
-    const lesson: Lesson = {
-      id: this.newId(),
-      kind: input.kind,
-      situation: input.situation,
-      items: input.items.map((it) => {
-        const item: LessonItem = { term: it.term, translation: it.translation, example: it.example };
-        if (it.note !== undefined) item.note = it.note;
-        return item;
-      }),
-      createdAt: now.toISOString(),
-    };
-    const seen = new Set(s.cards.map((c) => dupKey(c.term)));
-    const duplicates: string[] = [];
-    let newCards = 0;
-    for (const it of lesson.items) {
-      const key = dupKey(it.term);
-      if (seen.has(key)) {
-        duplicates.push(it.term);
-        continue;
-      }
-      seen.add(key);
-      s.cards.push({
+    return this.store.transaction((s) => {
+      requireProfile(s);
+      const now = this.clock();
+      const lesson: Lesson = {
         id: this.newId(),
-        lessonId: lesson.id,
-        term: it.term,
-        translation: it.translation,
-        example: it.example,
-        srs: newSrs(now),
-      });
-      newCards++;
-    }
-    s.lessons.push(lesson);
-    await this.store.save(s);
-    return { lesson, newCards, duplicates };
+        kind: input.kind,
+        situation: input.situation,
+        items: input.items.map((it) => {
+          const item: LessonItem = { term: it.term, translation: it.translation, example: it.example };
+          if (it.note !== undefined) item.note = it.note;
+          return item;
+        }),
+        createdAt: now.toISOString(),
+      };
+      const seen = new Set(s.cards.map((c) => dupKey(c.term)));
+      const duplicates: string[] = [];
+      let newCards = 0;
+      for (const it of lesson.items) {
+        const key = dupKey(it.term);
+        if (seen.has(key)) {
+          duplicates.push(it.term);
+          continue;
+        }
+        seen.add(key);
+        s.cards.push({
+          id: this.newId(),
+          lessonId: lesson.id,
+          term: it.term,
+          translation: it.translation,
+          example: it.example,
+          srs: newSrs(now),
+        });
+        newCards++;
+      }
+      s.lessons.push(lesson);
+      return { state: s, result: { lesson, newCards, duplicates } };
+    });
   }
 
   async completeTask(
@@ -151,24 +152,24 @@ export class Coach {
     if (opts.lessonId !== undefined && typeof opts.lessonId !== 'string') {
       throw new InvalidDataError('lessonId must be a string');
     }
-    const s = await this.store.load();
-    requireProfile(s);
-    let task: PlanTask | undefined;
-    for (const plan of Object.values(s.plans)) {
-      task = plan.tasks.find((t) => t.id === taskId);
-      if (task) break;
-    }
-    if (!task) throw new NotFoundError('Task', taskId);
-    if (task.status === 'done') return { task, xpAwarded: 0, alreadyDone: true };
+    return this.store.transaction<{ task: PlanTask; xpAwarded: number; alreadyDone: boolean }>((s) => {
+      requireProfile(s);
+      let task: PlanTask | undefined;
+      for (const plan of Object.values(s.plans)) {
+        task = plan.tasks.find((t) => t.id === taskId);
+        if (task) break;
+      }
+      if (!task) throw new NotFoundError('Task', taskId);
+      if (task.status === 'done') return { result: { task, xpAwarded: 0, alreadyDone: true } };
 
-    const now = this.clock();
-    const xp = xpFor(task.type, cardsReviewed);
-    task.status = 'done';
-    task.completedAt = now.toISOString();
-    if (opts.lessonId !== undefined) task.lessonId = opts.lessonId;
-    s.log.push({ at: now.toISOString(), date: toLocalDate(now), taskId, type: task.type, xp });
-    await this.store.save(s);
-    return { task, xpAwarded: xp, alreadyDone: false };
+      const now = this.clock();
+      const xp = xpFor(task.type, cardsReviewed);
+      task.status = 'done';
+      task.completedAt = now.toISOString();
+      if (opts.lessonId !== undefined) task.lessonId = opts.lessonId;
+      s.log.push({ at: now.toISOString(), date: toLocalDate(now), taskId, type: task.type, xp });
+      return { state: s, result: { task, xpAwarded: xp, alreadyDone: false } };
+    });
   }
 
   async dueReviews(limit = 20): Promise<ReviewCard[]> {
@@ -183,13 +184,13 @@ export class Coach {
   }
 
   async submitReview(cardId: string, rating: Rating): Promise<ReviewCard> {
-    const s = await this.store.load();
-    requireProfile(s);
-    const card = s.cards.find((c) => c.id === cardId);
-    if (!card) throw new NotFoundError('Card', cardId);
-    card.srs = reviewSrs(card.srs, rating, this.clock());
-    await this.store.save(s);
-    return card;
+    return this.store.transaction((s) => {
+      requireProfile(s);
+      const card = s.cards.find((c) => c.id === cardId);
+      if (!card) throw new NotFoundError('Card', cardId);
+      card.srs = reviewSrs(card.srs, rating, this.clock());
+      return { state: s, result: card };
+    });
   }
 
   async progress(): Promise<{
@@ -216,8 +217,9 @@ export class Coach {
 
   async importData(raw: unknown): Promise<{ lessons: number; cards: number }> {
     const parsed = parseState(raw);
-    await this.store.backup();
-    await this.store.save(parsed);
-    return { lessons: parsed.lessons.length, cards: parsed.cards.length };
+    return this.store.transaction(async () => {
+      await this.store.backup();
+      return { state: parsed, result: { lessons: parsed.lessons.length, cards: parsed.cards.length } };
+    });
   }
 }
