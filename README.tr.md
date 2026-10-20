@@ -18,33 +18,25 @@ Yapay zekâ ile dil dersleri harika, ama çoğu sohbet kapanınca seni unutuyor.
 
 ## Kurulum
 
-```bash
-claude mcp add langcoach -- npx -y langcoach
-```
+[Node.js](https://nodejs.org) 20+ ve [Claude Code](https://docs.anthropic.com/en/docs/claude-code) (oturumu açık) gerekir.
 
-Windows (yerel, WSL değil): Claude Code'da `npx` komutunu `cmd /c` ile sarmalaman gerekir:
+macOS / Linux / WSL:
 
 ```bash
-claude mcp add langcoach -- cmd /c npx -y langcoach
+claude mcp add --scope user langcoach -- npx -y langcoach
 ```
 
-Node 20+ gerekir. (`langcoach` paketi henüz npm'de yayınlanmadı; yayınlanana kadar aşağıdaki "Kaynaktan çalıştırma" yöntemini kullan.)
-
-### Kaynaktan çalıştırma
+Windows (yerel PowerShell/CMD, WSL değil):
 
 ```bash
-git clone https://github.com/oktaybilge1/langcoach.git
-cd langcoach
-npm install
-npm run build
-claude mcp add langcoach -- node <mutlak-yol>/packages/mcp/dist/index.js
+claude mcp add --scope user langcoach -- cmd /c npx -y langcoach
 ```
 
-Windows'ta tam yolu ileri eğik çizgilerle yaz, örneğin:
+**API anahtarı gerekmez.** Dersleri kendi Claude aboneliğin yazar.
 
-```bash
-claude mcp add langcoach -- node C:/Users/sen/langcoach/packages/mcp/dist/index.js
-```
+Ya da bu depo bağlantısını Claude Code'a yapıştır ve şunu söyle: *LangCoach'u benim için kur*
+
+Ayrıntılar, doğrulama, güncelleme, kaldırma ve sorun giderme: [docs/INSTALL.tr.md](https://github.com/oktaybilge1/langcoach/blob/main/docs/INSTALL.tr.md). `langcoach` paketi henüz npm'de yok; yayınlanana kadar o rehberdeki "Kaynaktan çalıştırma" bölümüne bak.
 
 ## Kullanım
 

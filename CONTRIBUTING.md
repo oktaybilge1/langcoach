@@ -2,6 +2,8 @@
 
 Thanks for helping! LangCoach is a small TypeScript monorepo, and contributions of all sizes are welcome: bug reports, docs, tests, translations and features.
 
+AI coding agents: see [AGENTS.md](https://github.com/oktaybilge1/langcoach/blob/main/AGENTS.md) for install and development instructions.
+
 ## Setup
 
 Requires Node 20 or newer (see `.nvmrc`).

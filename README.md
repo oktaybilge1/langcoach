@@ -18,33 +18,25 @@ AI language lessons are great, but most forget you the moment the chat ends. Lan
 
 ## Install
 
-```bash
-claude mcp add langcoach -- npx -y langcoach
-```
+Requires [Node.js](https://nodejs.org) 20+ and [Claude Code](https://docs.anthropic.com/en/docs/claude-code) (signed in).
 
-Windows (native, not WSL): Claude Code needs `npx` wrapped in `cmd /c`:
+macOS / Linux / WSL:
 
 ```bash
-claude mcp add langcoach -- cmd /c npx -y langcoach
+claude mcp add --scope user langcoach -- npx -y langcoach
 ```
 
-Requires Node 20+. (The `langcoach` package is not on npm yet; until it is published, use "Run from source" below.)
-
-### Run from source
+Windows (native PowerShell/CMD, not WSL):
 
 ```bash
-git clone https://github.com/oktaybilge1/langcoach.git
-cd langcoach
-npm install
-npm run build
-claude mcp add langcoach -- node <absolute-path>/packages/mcp/dist/index.js
+claude mcp add --scope user langcoach -- cmd /c npx -y langcoach
 ```
 
-On Windows, use the full path with forward slashes, for example:
+**No API key needed.** Your own Claude subscription writes the lessons.
 
-```bash
-claude mcp add langcoach -- node C:/Users/you/langcoach/packages/mcp/dist/index.js
-```
+Or paste this repo link into Claude Code and say: *Install LangCoach for me*
+
+Details, verification, update, uninstall and troubleshooting: [docs/INSTALL.md](https://github.com/oktaybilge1/langcoach/blob/main/docs/INSTALL.md). The `langcoach` package is not on npm yet; until it is published, see "Run from source" in that guide.
 
 ## Use it
 
