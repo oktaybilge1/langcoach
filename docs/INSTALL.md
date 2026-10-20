@@ -72,7 +72,7 @@ In one file: `~/.langcoach/data.json`. On Windows that is `C:\Users\<you>\.langc
 To use another folder, set `LANGCOACH_HOME` when adding the server:
 
 ```bash
-claude mcp add --scope user -e LANGCOACH_HOME=/path/to/folder langcoach -- npx -y langcoach
+claude mcp add --scope user langcoach -e LANGCOACH_HOME=/path/to/folder -- npx -y langcoach
 ```
 
 To back up or move your data, ask Claude to run the `export_data` tool, and `import_data` to restore it.

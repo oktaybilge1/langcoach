@@ -72,7 +72,7 @@ Tek bir dosyada: `~/.langcoach/data.json`. Windows'ta bu `C:\Users\<sen>\.langco
 Başka bir klasör kullanmak için sunucuyu eklerken `LANGCOACH_HOME` ayarla:
 
 ```bash
-claude mcp add --scope user -e LANGCOACH_HOME=/klasor/yolu langcoach -- npx -y langcoach
+claude mcp add --scope user langcoach -e LANGCOACH_HOME=/klasor/yolu -- npx -y langcoach
 ```
 
 Yedek almak ya da taşımak için Claude'dan `export_data` aracını çalıştırmasını iste; geri yüklemek için `import_data` kullanılır.
