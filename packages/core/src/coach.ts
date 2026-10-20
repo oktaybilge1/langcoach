@@ -1,0 +1,211 @@
+import { randomUUID } from 'node:crypto';
+import { isoWeek, toLocalDate } from './dates.js';
+import { InvalidDataError, NoProfileError, NotFoundError, ThemeRequiredError } from './errors.js';
+import { buildWeekPlan } from './planner.js';
+import { streak, weeklyGoal, xpFor } from './progress.js';
+import { parseState } from './schema.js';
+import { isDue, newSrs, reviewSrs, type Rating } from './srs.js';
+import type { Store } from './store.js';
+import type { Cefr, Lesson, LessonItem, PlanTask, Profile, ReviewCard, State, WeekPlan } from './types.js';
+
+const LEVELS: readonly Cefr[] = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+const KINDS = ['tiny_lesson', 'slang_hang'] as const;
+
+const blank = (v: unknown) => typeof v !== 'string' || v.trim() === '';
+const dupKey = (term: string) => term.trim().toLocaleLowerCase();
+
+function requireProfile(s: State): Profile {
+  if (!s.profile) throw new NoProfileError();
+  return s.profile;
+}
+
+function intIn(v: unknown, min: number, max: number): boolean {
+  return typeof v === 'number' && Number.isInteger(v) && v >= min && v <= max;
+}
+
+export class Coach {
+  constructor(
+    private readonly store: Store,
+    private readonly clock: () => Date = () => new Date(),
+    private readonly newId: () => string = () => randomUUID(),
+  ) {}
+
+  async setProfile(input: Omit<Profile, 'createdAt'>): Promise<Profile> {
+    if (blank(input.nativeLanguage)) throw new InvalidDataError('nativeLanguage must be a non-empty string');
+    if (blank(input.targetLanguage)) throw new InvalidDataError('targetLanguage must be a non-empty string');
+    if (!LEVELS.includes(input.level)) {
+      throw new InvalidDataError(`level must be one of ${LEVELS.join(', ')}`);
+    }
+    if (typeof input.goal !== 'string') throw new InvalidDataError('goal must be a string');
+    if (!intIn(input.minutesPerDay, 5, 180)) {
+      throw new InvalidDataError('minutesPerDay must be an integer from 5 to 180');
+    }
+    if (!intIn(input.daysPerWeek, 1, 7)) {
+      throw new InvalidDataError('daysPerWeek must be an integer from 1 to 7');
+    }
+    const s = await this.store.load();
+    const profile: Profile = {
+      nativeLanguage: input.nativeLanguage,
+      targetLanguage: input.targetLanguage,
+      level: input.level,
+      goal: input.goal,
+      minutesPerDay: input.minutesPerDay,
+      daysPerWeek: input.daysPerWeek,
+      createdAt: s.profile?.createdAt ?? this.clock().toISOString(),
+    };
+    s.profile = profile;
+    await this.store.save(s);
+    return profile;
+  }
+
+  async weekPlan(theme?: string): Promise<WeekPlan> {
+    const s = await this.store.load();
+    const profile = requireProfile(s);
+    const week = isoWeek(this.clock());
+    const existing = s.plans[week];
+    if (existing) return existing;
+    if (theme === undefined || theme.trim() === '') throw new ThemeRequiredError();
+    const plan = buildWeekPlan(profile, week, theme, this.newId);
+    s.plans[week] = plan;
+    await this.store.save(s);
+    return plan;
+  }
+
+  async today(): Promise<{ date: string; tasks: PlanTask[]; planExists: boolean }> {
+    const s = await this.store.load();
+    requireProfile(s);
+    const now = this.clock();
+    const date = toLocalDate(now);
+    const plan = s.plans[isoWeek(now)];
+    if (!plan) return { date, tasks: [], planExists: false };
+    return { date, tasks: plan.tasks.filter((t) => t.date === date), planExists: true };
+  }
+
+  async saveLesson(input: {
+    kind: 'tiny_lesson' | 'slang_hang';
+    situation: string;
+    items: LessonItem[];
+  }): Promise<{ lesson: Lesson; newCards: number; duplicates: string[] }> {
+    if (!KINDS.includes(input.kind)) throw new InvalidDataError(`kind must be one of ${KINDS.join(', ')}`);
+    if (blank(input.situation)) throw new InvalidDataError('situation must be a non-empty string');
+    if (!Array.isArray(input.items) || input.items.length < 1 || input.items.length > 50) {
+      throw new InvalidDataError('items must contain between 1 and 50 entries');
+    }
+    input.items.forEach((it, i) => {
+      if (!it || blank(it.term)) throw new InvalidDataError(`items[${i}].term must be a non-empty string`);
+      if (blank(it.translation)) throw new InvalidDataError(`items[${i}].translation must be a non-empty string`);
+      if (typeof it.example !== 'string') throw new InvalidDataError(`items[${i}].example must be a string`);
+    });
+
+    const s = await this.store.load();
+    requireProfile(s);
+    const now = this.clock();
+    const lesson: Lesson = {
+      id: this.newId(),
+      kind: input.kind,
+      situation: input.situation,
+      items: input.items.map((it) => ({ ...it })),
+      createdAt: now.toISOString(),
+    };
+    const seen = new Set(s.cards.map((c) => dupKey(c.term)));
+    const duplicates: string[] = [];
+    let newCards = 0;
+    for (const it of lesson.items) {
+      const key = dupKey(it.term);
+      if (seen.has(key)) {
+        duplicates.push(it.term);
+        continue;
+      }
+      seen.add(key);
+      s.cards.push({
+        id: this.newId(),
+        lessonId: lesson.id,
+        term: it.term,
+        translation: it.translation,
+        example: it.example,
+        srs: newSrs(now),
+      });
+      newCards++;
+    }
+    s.lessons.push(lesson);
+    await this.store.save(s);
+    return { lesson, newCards, duplicates };
+  }
+
+  async completeTask(
+    taskId: string,
+    opts: { lessonId?: string; cardsReviewed?: number } = {},
+  ): Promise<{ task: PlanTask; xpAwarded: number; alreadyDone: boolean }> {
+    const cardsReviewed = opts.cardsReviewed;
+    if (cardsReviewed !== undefined && !intIn(cardsReviewed, 0, Number.MAX_SAFE_INTEGER)) {
+      throw new InvalidDataError('cardsReviewed must be an integer >= 0');
+    }
+    const s = await this.store.load();
+    requireProfile(s);
+    let task: PlanTask | undefined;
+    for (const plan of Object.values(s.plans)) {
+      task = plan.tasks.find((t) => t.id === taskId);
+      if (task) break;
+    }
+    if (!task) throw new NotFoundError('Task', taskId);
+    if (task.status === 'done') return { task, xpAwarded: 0, alreadyDone: true };
+
+    const now = this.clock();
+    const xp = xpFor(task.type, cardsReviewed);
+    task.status = 'done';
+    task.completedAt = now.toISOString();
+    if (opts.lessonId !== undefined) task.lessonId = opts.lessonId;
+    s.log.push({ at: now.toISOString(), date: toLocalDate(now), taskId, type: task.type, xp });
+    await this.store.save(s);
+    return { task, xpAwarded: xp, alreadyDone: false };
+  }
+
+  async dueReviews(limit = 20): Promise<ReviewCard[]> {
+    const s = await this.store.load();
+    requireProfile(s);
+    const now = this.clock();
+    return s.cards
+      .filter((c) => isDue(c.srs, now))
+      .sort((a, b) => new Date(a.srs.due).getTime() - new Date(b.srs.due).getTime())
+      .slice(0, limit);
+  }
+
+  async submitReview(cardId: string, rating: Rating): Promise<ReviewCard> {
+    const s = await this.store.load();
+    requireProfile(s);
+    const card = s.cards.find((c) => c.id === cardId);
+    if (!card) throw new NotFoundError('Card', cardId);
+    card.srs = reviewSrs(card.srs, rating, this.clock());
+    await this.store.save(s);
+    return card;
+  }
+
+  async progress(): Promise<{
+    profile: Profile | null;
+    streak: number;
+    totalXp: number;
+    weekly: { done: number; planned: number };
+    dueCount: number;
+  }> {
+    const s = await this.store.load();
+    const now = this.clock();
+    return {
+      profile: s.profile,
+      streak: streak(s.log, toLocalDate(now)),
+      totalXp: s.log.reduce((sum, e) => sum + e.xp, 0),
+      weekly: weeklyGoal(s.plans[isoWeek(now)]),
+      dueCount: s.cards.filter((c) => isDue(c.srs, now)).length,
+    };
+  }
+
+  async exportData(): Promise<State> {
+    return this.store.load();
+  }
+
+  async importData(raw: unknown): Promise<{ lessons: number; cards: number }> {
+    const parsed = parseState(raw);
+    await this.store.backup();
+    await this.store.save(parsed);
+    return { lessons: parsed.lessons.length, cards: parsed.cards.length };
+  }
+}
