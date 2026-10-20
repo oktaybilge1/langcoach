@@ -18,6 +18,11 @@ export interface Store {
   backup(): Promise<string | null>;
   /** load → fn → save (only if fn returns `state`), all under one lock. */
   transaction<T>(fn: TransactionFn<T>): Promise<T>;
+  /**
+   * Under the same lock: back up the current file as raw bytes (even if it is corrupt or
+   * invalid), then save `next`. Never loads, so it can restore over a broken data file.
+   */
+  replace(next: State): Promise<string | null>;
 }
 
 export interface JsonFileStoreOptions {
@@ -133,6 +138,19 @@ export class JsonFileStore implements Store {
     });
   }
 
+  replace(next: State): Promise<string | null> {
+    return mutexFor(this.filePath).run(async () => {
+      const token = await this.acquireLock();
+      try {
+        const backupPath = await this.backup();
+        await this.save(next);
+        return backupPath;
+      } finally {
+        await this.releaseLock(token);
+      }
+    });
+  }
+
   /** Copy corrupt bytes aside once: reuse an existing data.corrupt-*.json with identical bytes. */
   private async preserveCorrupt(bytes: Buffer): Promise<string> {
     const dir = dirname(this.filePath);
@@ -149,39 +167,63 @@ export class JsonFileStore implements Store {
   }
 
   private async acquireLock(): Promise<string> {
-    await mkdir(dirname(this.filePath), { recursive: true });
+    const dir = dirname(this.filePath);
+    await mkdir(dir, { recursive: true });
     const token = randomBytes(8).toString('hex');
     const deadline = Date.now() + this.lockTimeoutMs;
     let delay = 20;
     for (;;) {
+      let openCode: string | undefined;
       try {
         const fh = await open(this.lockPath, 'wx');
         try {
           await fh.writeFile(JSON.stringify({ pid: process.pid, at: Date.now(), token }), 'utf8');
-        } finally {
-          await fh.close();
+        } catch (e) {
+          // Never leave an empty or partial lock behind (e.g. ENOSPC).
+          await fh.close().catch(() => undefined);
+          await unlink(this.lockPath).catch(() => undefined);
+          throw e;
         }
+        await fh.close();
         return token;
       } catch (e) {
-        if (code(e) !== 'EEXIST' && code(e) !== 'EPERM' && code(e) !== 'EACCES') throw e;
+        openCode = code(e);
+        if (openCode !== 'EEXIST' && openCode !== 'EPERM' && openCode !== 'EACCES') throw e;
       }
-      const cleared = await this.clearIfStale();
+      const lock = await this.inspectLock();
+      // The lock was released or we removed a stale one: real progress, retry at once.
+      if (lock === 'removed' || (lock === 'missing' && openCode === 'EEXIST')) continue;
       if (Date.now() >= deadline) {
+        if (lock === 'missing') {
+          // EPERM/EACCES with no lock file present: not contention, the folder rejects new files.
+          throw new Error(
+            `LangCoach cannot create files in its data folder (${dir}): the folder is not writable. ` +
+              'Check its permissions or set LANGCOACH_HOME to a writable folder.',
+          );
+        }
+        if (lock === 'stuck') {
+          throw new Error(
+            `LangCoach could not remove an old lock file: ${this.lockPath}. ` +
+              'Make sure no other LangCoach is running, delete that file and try again.',
+          );
+        }
         throw new Error('LangCoach data file is busy, try again.');
       }
-      if (cleared) continue;
       await sleep(Math.min(delay, Math.max(1, deadline - Date.now())));
       delay = Math.min(delay * 2, 200);
     }
   }
 
-  /** Remove the lock file if it is older than staleLockMs. Returns true if it was removed (or vanished). */
-  private async clearIfStale(): Promise<boolean> {
+  /**
+   * Look at the existing lock file: 'missing' (no lock file), 'held' (fresh, or unreadable),
+   * 'removed' (it was stale and we deleted it) or 'stuck' (stale but could not be deleted).
+   */
+  private async inspectLock(): Promise<'missing' | 'held' | 'removed' | 'stuck'> {
     let mtime: number;
     try {
       mtime = (await stat(this.lockPath)).mtimeMs;
     } catch (e) {
-      return isNotFound(e);
+      return isNotFound(e) ? 'missing' : 'held';
     }
     let at = mtime;
     try {
@@ -190,9 +232,13 @@ export class JsonFileStore implements Store {
     } catch {
       // Unreadable or half-written lock: fall back to its mtime.
     }
-    if (Date.now() - at <= this.staleLockMs) return false;
-    await unlink(this.lockPath).catch(() => undefined);
-    return true;
+    if (Date.now() - at <= this.staleLockMs) return 'held';
+    try {
+      await unlink(this.lockPath);
+      return 'removed';
+    } catch (e) {
+      return isNotFound(e) ? 'removed' : 'stuck';
+    }
   }
 
   private async releaseLock(token: string): Promise<void> {
@@ -241,6 +287,12 @@ export class MemoryStore implements Store {
       const out = await fn(await this.load());
       if (out.state !== undefined) await this.save(out.state);
       return out.result;
+    });
+  }
+  replace(next: State): Promise<string | null> {
+    return this.mutex.run(async () => {
+      await this.save(next);
+      return null;
     });
   }
 }

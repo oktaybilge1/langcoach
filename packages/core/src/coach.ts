@@ -217,9 +217,8 @@ export class Coach {
 
   async importData(raw: unknown): Promise<{ lessons: number; cards: number }> {
     const parsed = parseState(raw);
-    return this.store.transaction(async () => {
-      await this.store.backup();
-      return { state: parsed, result: { lessons: parsed.lessons.length, cards: parsed.cards.length } };
-    });
+    // replace() never loads the current file, so a corrupt or invalid data.json can be restored over.
+    await this.store.replace(parsed);
+    return { lessons: parsed.lessons.length, cards: parsed.cards.length };
   }
 }

@@ -46,6 +46,24 @@ describe('importData on a real data file', () => {
   });
 });
 
+describe('importData restores over a broken data file', () => {
+  const valid = () => ({ ...emptyState(), profile: { ...PROFILE, createdAt: '2026-10-01T00:00:00.000Z' } });
+
+  test.each([
+    ['corrupt JSON', '{ broken'],
+    ['schema-invalid JSON', JSON.stringify({ version: 1, profile: { level: 'Z9' } })],
+  ])('%s: import succeeds, backup holds the old bytes, load works afterwards', async (_, bytes) => {
+    writeFileSync(file, bytes);
+    const store = new JsonFileStore(file);
+    const coach = new Coach(store);
+    expect(await coach.importData(valid())).toEqual({ lessons: 0, cards: 0 });
+    expect(backups()).toHaveLength(1);
+    expect(readFileSync(join(dir, backups()[0]!), 'utf8')).toBe(bytes);
+    expect((await store.load()).profile?.targetLanguage).toBe('Turkish');
+    expect(readdirSync(dir).filter((f) => f.endsWith('.lock') || f.endsWith('.tmp'))).toEqual([]);
+  });
+});
+
 describe('corrupt data file', () => {
   test('two loads of the same corrupt file keep one corrupt copy', async () => {
     writeFileSync(file, '{ broken');
