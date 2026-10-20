@@ -1,0 +1,16 @@
+{
+  "name": "@langcoach/core",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "exports": "./src/index.ts",
+  "types": "./src/index.ts",
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "ts-fsrs": "^5.4.2",
+    "zod": "^4.6.7"
+  }
+}
