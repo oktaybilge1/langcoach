@@ -5,24 +5,28 @@ import type { State } from './types.js';
 const cefr = z.enum(['A1', 'A2', 'B1', 'B2', 'C1', 'C2']);
 const taskType = z.enum(['tiny_lesson', 'slang_hang', 'review', 'quiz']);
 
-const profile = z.object({
+// Every object is "loose": keys this version does not know about are kept, so data written by a
+// newer LangCoach survives a load → save by this one.
+const obj = z.looseObject;
+
+const profile = obj({
   nativeLanguage: z.string(),
   targetLanguage: z.string(),
   level: cefr,
   goal: z.string(),
-  minutesPerDay: z.number(),
-  daysPerWeek: z.number(),
+  minutesPerDay: z.number().int().min(5).max(180),
+  daysPerWeek: z.number().int().min(1).max(7),
   createdAt: z.string(),
 });
 
-const lessonItem = z.object({
+const lessonItem = obj({
   term: z.string(),
   translation: z.string(),
   example: z.string(),
   note: z.string().optional(),
 });
 
-const lesson = z.object({
+const lesson = obj({
   id: z.string(),
   kind: z.enum(['tiny_lesson', 'slang_hang']),
   situation: z.string(),
@@ -31,16 +35,14 @@ const lesson = z.object({
 });
 
 // Required core fields; remaining ts-fsrs fields pass through untouched.
-const srs = z
-  .object({
-    due: z.string(),
-    state: z.number(),
-    reps: z.number(),
-    lapses: z.number(),
-  })
-  .passthrough();
+const srs = obj({
+  due: z.iso.datetime({ offset: true }),
+  state: z.number(),
+  reps: z.number(),
+  lapses: z.number(),
+});
 
-const reviewCard = z.object({
+const reviewCard = obj({
   id: z.string(),
   lessonId: z.string(),
   term: z.string(),
@@ -49,27 +51,27 @@ const reviewCard = z.object({
   srs,
 });
 
-const planTask = z.object({
+const planTask = obj({
   id: z.string(),
   date: z.string(),
   type: taskType,
-  minutes: z.number(),
+  minutes: z.number().int().min(1),
   status: z.enum(['todo', 'done']),
   completedAt: z.string().optional(),
   lessonId: z.string().optional(),
 });
 
-const weekPlan = z.object({ week: z.string(), theme: z.string(), tasks: z.array(planTask) });
+const weekPlan = obj({ week: z.string(), theme: z.string(), tasks: z.array(planTask) });
 
-const logEntry = z.object({
+const logEntry = obj({
   at: z.string(),
   date: z.string(),
   taskId: z.string(),
   type: taskType,
-  xp: z.number(),
+  xp: z.number().min(0),
 });
 
-const stateSchema = z.object({
+const stateSchema = obj({
   version: z.literal(1),
   profile: profile.nullable(),
   plans: z.record(z.string(), weekPlan),
