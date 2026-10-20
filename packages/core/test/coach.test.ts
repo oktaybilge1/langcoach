@@ -199,16 +199,27 @@ describe('Coach', () => {
   });
 
   test('progress after completing a full study day', async () => {
+    // Plan created on Tuesday: study days run Tue..Sun (6 days), Tuesday is the first one.
     await coach.setProfile(profileInput({ daysPerWeek: 7 }));
     await coach.weekPlan('food');
     const { tasks } = await coach.today();
-    expect(tasks.map((t) => t.type)).toEqual(['review', 'slang_hang']);
+    expect(tasks.map((t) => t.type)).toEqual(['tiny_lesson']);
     for (const t of tasks) await coach.completeTask(t.id, { cardsReviewed: 0 });
     const p = await coach.progress();
     expect(p.streak).toBe(1);
-    expect(p.totalXp).toBe(30);
+    expect(p.totalXp).toBe(20);
     expect(p.weekly.done).toBe(1);
-    expect(p.weekly.planned).toBe(7);
+    expect(p.weekly.planned).toBe(6);
+  });
+
+  test('weekPlan created on Tuesday → today() returns tasks for Tuesday', async () => {
+    await coach.setProfile(profileInput({ daysPerWeek: 3 }));
+    const plan = await coach.weekPlan('food');
+    expect(plan.tasks.every((t) => t.date >= '2026-10-20')).toBe(true);
+    const t = await coach.today();
+    expect(t.date).toBe('2026-10-20');
+    expect(t.tasks.length).toBeGreaterThan(0);
+    expect(t.tasks.map((x) => x.type)).toEqual(['tiny_lesson']);
   });
 
   test('importData invalid leaves state untouched', async () => {

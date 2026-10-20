@@ -67,7 +67,7 @@ export class Coach {
       const existing = s.plans[week];
       if (existing) return { result: existing };
       if (theme === undefined || theme.trim() === '') throw new ThemeRequiredError();
-      const plan = buildWeekPlan(profile, week, theme, this.newId);
+      const plan = buildWeekPlan(profile, week, theme, this.newId, toLocalDate(now));
       s.plans[week] = plan;
       return { state: s, result: plan };
     });

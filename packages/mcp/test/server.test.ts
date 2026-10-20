@@ -71,12 +71,13 @@ describe('langcoach MCP server', () => {
     const plan = JSON.parse((await call('get_weekly_plan', { theme: 'Cafe' })).text);
     expect(plan.tasks.length).toBeGreaterThan(0);
     const today = JSON.parse((await call('get_today')).text);
-    const main = today.tasks.find((t: { type: string }) => t.type === 'slang_hang');
+    // The plan is created on Tuesday, so Tuesday is its first study day: a tiny_lesson.
+    const main = today.tasks.find((t: { type: string }) => t.type === 'tiny_lesson');
     expect(main).toBeDefined();
     const saved = JSON.parse(
       (
         await call('save_lesson', {
-          kind: 'slang_hang',
+          kind: 'tiny_lesson',
           situation: 'Ordering coffee',
           items: [{ term: 'kawa', translation: 'coffee', example: 'Poprosze kawe.' }],
         })
