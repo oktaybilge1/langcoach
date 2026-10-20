@@ -1,7 +1,10 @@
 import { describe, expect, test } from 'vitest';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js';
-import { Coach, MemoryStore } from '@langcoach/core';
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { Coach, JsonFileStore, MemoryStore, type Store } from '@langcoach/core';
 import { createServer } from '../src/server.js';
 import { TUTOR_PROMPT } from '../src/prompt.js';
 
@@ -14,9 +17,9 @@ const PROFILE = {
   daysPerWeek: 7,
 };
 
-async function setup() {
+async function setup(store: Store = new MemoryStore()) {
   const coach = new Coach(
-    new MemoryStore(),
+    store,
     () => new Date(2026, 9, 20, 10, 0),
   );
   const server = createServer(coach);
@@ -113,5 +116,20 @@ describe('langcoach MCP server', () => {
     expect(r.isError).toBe(true);
     expect(r.text.toLowerCase()).toContain('invalid json');
     expect((await call('export_data')).text).toBe(before);
+  });
+
+  test('corrupt data file: error names the preserved copy once and explains recovery', async () => {
+    const dir = mkdtempSync(join(tmpdir(), 'langcoach-mcp-'));
+    try {
+      writeFileSync(join(dir, 'data.json'), '{ broken');
+      const { call } = await setup(new JsonFileStore(join(dir, 'data.json')));
+      const r = await call('get_progress');
+      expect(r.isError).toBe(true);
+      const paths = r.text.match(/data\.corrupt-[^\s)]+?\.json/g) ?? [];
+      expect(paths).toHaveLength(1);
+      expect(r.text).toContain('import_data');
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
   });
 });

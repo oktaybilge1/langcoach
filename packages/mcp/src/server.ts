@@ -1,6 +1,6 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
-import { CorruptDataError, type Coach } from '@langcoach/core';
+import type { Coach } from '@langcoach/core';
 import { TUTOR_PROMPT } from './prompt.js';
 
 type ToolResult = { content: { type: 'text'; text: string }[]; isError?: boolean };
@@ -9,17 +9,12 @@ const ok = (value: unknown): ToolResult => ({
   content: [{ type: 'text', text: JSON.stringify(value, null, 2) }],
 });
 
-const fail = (err: unknown): ToolResult => {
-  let text: string;
-  if (err instanceof CorruptDataError) {
-    text = `${err.message} (your original file was preserved at: ${err.preservedAt})`;
-  } else if (err instanceof Error) {
-    text = err.message;
-  } else {
-    text = String(err);
-  }
-  return { isError: true, content: [{ type: 'text', text }] };
-};
+// Error messages are written for the learner. A CorruptDataError message already names the
+// preserved copy and the recovery steps, so it is passed through as is.
+const fail = (err: unknown): ToolResult => ({
+  isError: true,
+  content: [{ type: 'text', text: err instanceof Error ? err.message : String(err) }],
+});
 
 async function run(fn: () => Promise<unknown>): Promise<ToolResult> {
   try {
