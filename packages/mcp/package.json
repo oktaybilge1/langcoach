@@ -17,7 +17,7 @@
   },
   "scripts": {
     "build": "tsup",
-    "prepack": "node scripts/copy-docs.mjs"
+    "prepack": "npm run build && node scripts/copy-docs.mjs"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.32.1",

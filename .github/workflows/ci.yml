@@ -22,3 +22,30 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: npm run build
+
+  pack-smoke:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Pack, install the tarball in a fresh folder, run the stdio smoke test
+        shell: bash
+        run: |
+          set -euo pipefail
+          SMOKE_DIR="$(node -p 'require("path").resolve(process.env.RUNNER_TEMP, "langcoach-smoke").split(require("path").sep).join("/")')"
+          mkdir -p "$SMOKE_DIR/pkg" "$SMOKE_DIR/install"
+          npm pack -w langcoach --pack-destination "$SMOKE_DIR/pkg"
+          TGZ="$(ls "$SMOKE_DIR"/pkg/langcoach-*.tgz)"
+          cd "$SMOKE_DIR/install"
+          npm init -y > /dev/null
+          npm i --no-audit --no-fund "$TGZ"
+          cd "$GITHUB_WORKSPACE"
+          node scripts/smoke-stdio.mjs "$SMOKE_DIR/install"
