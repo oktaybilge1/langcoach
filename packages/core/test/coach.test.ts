@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, test } from 'vitest';
 import { Coach } from '../src/coach.js';
 import { InvalidDataError, NoProfileError, NotFoundError, ThemeRequiredError } from '../src/errors.js';
+import { parseState } from '../src/schema.js';
 import { MemoryStore } from '../src/store.js';
 import type { Profile } from '../src/types.js';
 
@@ -155,6 +156,36 @@ describe('Coach', () => {
     expect(new Date(updated.srs.due).getTime()).toBeGreaterThan(NOW.getTime());
     expect((await coach.dueReviews()).map((c) => c.id)).toEqual([due[1]!.id]);
     await expect(coach.submitReview('nope', 3)).rejects.toBeInstanceOf(NotFoundError);
+  });
+
+  test('unvalidated optional fields are rejected and nothing is saved', async () => {
+    await coach.setProfile(profileInput());
+    const plan = await coach.weekPlan('food');
+    const before = await coach.exportData();
+    await expect(
+      coach.saveLesson({ ...lesson('a'), items: [{ term: 'a', translation: 't', example: '', note: 42 as never }] }),
+    ).rejects.toBeInstanceOf(InvalidDataError);
+    await expect(
+      coach.saveLesson({ ...lesson('a'), items: [{ term: 'a', translation: 't', example: 5 as never }] }),
+    ).rejects.toBeInstanceOf(InvalidDataError);
+    await expect(coach.completeTask(plan.tasks[0]!.id, { lessonId: 7 as never })).rejects.toBeInstanceOf(
+      InvalidDataError,
+    );
+    await expect(coach.weekPlan(123 as never)).rejects.toBeInstanceOf(InvalidDataError);
+    await expect(coach.dueReviews(0)).rejects.toBeInstanceOf(InvalidDataError);
+    await expect(coach.dueReviews(1.5)).rejects.toBeInstanceOf(InvalidDataError);
+    const after = await coach.exportData();
+    expect(after).toEqual(before);
+    expect(after.plans[Object.keys(after.plans)[0]!]!.tasks[0]!.status).toBe('todo');
+  });
+
+  test('unknown item keys are dropped and state still parses', async () => {
+    await coach.setProfile(profileInput());
+    const item = { term: 'a', translation: 't', example: 'e', note: 'n', extra: 'x' };
+    const r = await coach.saveLesson({ ...lesson('a'), items: [item] });
+    expect(r.lesson.items[0]).toEqual({ term: 'a', translation: 't', example: 'e', note: 'n' });
+    const exported = JSON.parse(JSON.stringify(await coach.exportData())) as unknown;
+    expect(() => parseState(exported)).not.toThrow();
   });
 
   test('progress works without profile', async () => {

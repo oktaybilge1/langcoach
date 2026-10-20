@@ -59,6 +59,7 @@ export class Coach {
   }
 
   async weekPlan(theme?: string): Promise<WeekPlan> {
+    if (theme !== undefined && typeof theme !== 'string') throw new InvalidDataError('theme must be a string');
     const s = await this.store.load();
     const profile = requireProfile(s);
     const week = isoWeek(this.clock());
@@ -95,6 +96,9 @@ export class Coach {
       if (!it || blank(it.term)) throw new InvalidDataError(`items[${i}].term must be a non-empty string`);
       if (blank(it.translation)) throw new InvalidDataError(`items[${i}].translation must be a non-empty string`);
       if (typeof it.example !== 'string') throw new InvalidDataError(`items[${i}].example must be a string`);
+      if (it.note !== undefined && typeof it.note !== 'string') {
+        throw new InvalidDataError(`items[${i}].note must be a string`);
+      }
     });
 
     const s = await this.store.load();
@@ -104,7 +108,11 @@ export class Coach {
       id: this.newId(),
       kind: input.kind,
       situation: input.situation,
-      items: input.items.map((it) => ({ ...it })),
+      items: input.items.map((it) => {
+        const item: LessonItem = { term: it.term, translation: it.translation, example: it.example };
+        if (it.note !== undefined) item.note = it.note;
+        return item;
+      }),
       createdAt: now.toISOString(),
     };
     const seen = new Set(s.cards.map((c) => dupKey(c.term)));
@@ -140,6 +148,9 @@ export class Coach {
     if (cardsReviewed !== undefined && !intIn(cardsReviewed, 0, Number.MAX_SAFE_INTEGER)) {
       throw new InvalidDataError('cardsReviewed must be an integer >= 0');
     }
+    if (opts.lessonId !== undefined && typeof opts.lessonId !== 'string') {
+      throw new InvalidDataError('lessonId must be a string');
+    }
     const s = await this.store.load();
     requireProfile(s);
     let task: PlanTask | undefined;
@@ -161,6 +172,7 @@ export class Coach {
   }
 
   async dueReviews(limit = 20): Promise<ReviewCard[]> {
+    if (!intIn(limit, 1, Number.MAX_SAFE_INTEGER)) throw new InvalidDataError('limit must be a positive integer');
     const s = await this.store.load();
     requireProfile(s);
     const now = this.clock();
