@@ -8,17 +8,34 @@ const lll: SenderLike = { id: ID, url: 'https://labs.google/lll/en', tab: {} };
 const allow = (type: string, s: SenderLike, e2e = false) => isAllowed(type, s, ID, ORIGIN, e2e);
 
 describe('isAllowed', () => {
-  it('lets extension pages use UI messages', () => {
-    for (const t of ['getSnapshot', 'setProfile', 'getDue', 'review', 'updateCard', 'exportData', 'importData', 'reset', 'getSettings', 'setSettings']) {
+  it('lets extension pages use UI messages plus undo and saveManual', () => {
+    for (const t of [
+      'getSnapshot',
+      'setProfile',
+      'createPlan',
+      'completeReview',
+      'getDue',
+      'review',
+      'updateCard',
+      'undo',
+      'saveManual',
+      'exportData',
+      'importData',
+      'reset',
+      'getSettings',
+      'setSettings',
+    ]) {
       expect(allow(t, page)).toBe(true);
     }
   });
-  it('lets content scripts on labs.google/lll use capture/undo/saveManual only', () => {
+  it('lets content scripts on labs.google/lll use capture/undo/saveManual/openPanel only', () => {
     for (const t of ['capture', 'undo', 'saveManual', 'openPanel']) expect(allow(t, lll)).toBe(true);
-    for (const t of ['reset', 'importData', 'getSnapshot', 'setSettings']) expect(allow(t, lll)).toBe(false);
+    for (const t of ['reset', 'importData', 'getSnapshot', 'setSettings', 'createPlan', 'completeReview']) {
+      expect(allow(t, lll)).toBe(false);
+    }
   });
-  it('keeps capture/undo/saveManual away from extension pages', () => {
-    for (const t of ['capture', 'undo', 'saveManual', 'openPanel']) expect(allow(t, page)).toBe(false);
+  it('keeps capture and openPanel away from extension pages', () => {
+    for (const t of ['capture', 'openPanel']) expect(allow(t, page)).toBe(false);
   });
   it('rejects foreign ids, tabless content senders, other sites and lookalikes', () => {
     expect(allow('reset', { ...page, id: 'evil' })).toBe(false);

@@ -1,4 +1,4 @@
-import type { PlanTask, Profile, Rating, ReviewCard, WeekPlan } from '@langcoach/core/browser';
+import type { PlanTask, Profile, Rating, ReviewCard, State, WeekPlan } from '@langcoach/core/browser';
 import type { CaptureKind } from '../lib/parse';
 
 export type ProfileInput = Omit<Profile, 'createdAt'>;
@@ -33,6 +33,8 @@ export interface Snapshot {
   progress: { streak: number; totalXp: number; weekly: { done: number; planned: number }; dueCount: number };
   dueCount: number;
   lastCapture: LastCapture | null;
+  /** Full learner state for Progress/Achievements/Today grammar display in the side panel. */
+  state?: State;
 }
 
 /** Outcome of a `capture` message (null data = unknown shape, ignored). */
@@ -59,6 +61,11 @@ export interface MessageMap {
   openPanel: { request: Record<never, never>; response: null };
   getSnapshot: { request: Record<never, never>; response: Snapshot };
   setProfile: { request: { profile: ProfileInput }; response: Profile };
+  createPlan: { request: { theme: string }; response: WeekPlan };
+  completeReview: {
+    request: { cardsReviewed: number };
+    response: { task: PlanTask | null; xpAwarded: number };
+  };
   getDue: { request: { limit: number }; response: ReviewCard[] };
   review: { request: { cardId: string; rating: Rating }; response: ReviewCard };
   updateCard: {
@@ -101,6 +108,8 @@ export const MESSAGE_TYPES: readonly MessageType[] = [
   'openPanel',
   'getSnapshot',
   'setProfile',
+  'createPlan',
+  'completeReview',
   'getDue',
   'review',
   'updateCard',

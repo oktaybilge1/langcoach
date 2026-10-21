@@ -4,15 +4,19 @@ export interface SenderLike {
   tab?: unknown;
 }
 
-/** Messages only content scripts on the lesson site may send. */
+/** Messages content scripts on the lesson site may send. */
 const CONTENT_TYPES: ReadonlySet<string> = new Set(['capture', 'undo', 'saveManual', 'openPanel']);
-/** Messages only extension pages (side panel) may send. */
+/** Messages extension pages (side panel) may send. */
 const PAGE_TYPES: ReadonlySet<string> = new Set([
   'getSnapshot',
   'setProfile',
+  'createPlan',
+  'completeReview',
   'getDue',
   'review',
   'updateCard',
+  'undo',
+  'saveManual',
   'exportData',
   'importData',
   'reset',
@@ -41,10 +45,10 @@ export function isAllowed(
 ): boolean {
   if (!sender || sender.id !== runtimeId) return false;
   const url = typeof sender.url === 'string' ? sender.url : '';
+  if (PAGE_TYPES.has(type) && url !== '' && url.startsWith(extensionOrigin)) return true;
   if (CONTENT_TYPES.has(type)) {
     if (!sender.tab) return false;
     return url.startsWith(LLL_PREFIX) || (e2e && isLocalDev(url));
   }
-  if (PAGE_TYPES.has(type)) return url !== '' && url.startsWith(extensionOrigin);
   return false;
 }

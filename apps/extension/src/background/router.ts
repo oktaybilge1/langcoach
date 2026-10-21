@@ -31,6 +31,8 @@ export interface RouterDeps {
   clock?: () => Date;
   /** chrome.sidePanel (injected in tests). Must be called synchronously inside the message handler. */
   sidePanel?: { open(options: { tabId: number }): Promise<void> };
+  /** Optional hook notified whenever settings change (e.g. to reschedule reminders). */
+  onSettingsChanged?: (settings: Settings) => void | Promise<void>;
   /** Extension-console logger; defaults to console.warn. */
   log?: (...args: unknown[]) => void;
 }
@@ -71,6 +73,14 @@ export function validateMessage(m: Record<string, unknown>): void {
       break;
     case 'setProfile':
       if (!isObj(m.profile)) bad('profile must be an object');
+      break;
+    case 'createPlan':
+      id(m.theme, 'theme');
+      break;
+    case 'completeReview':
+      if (!Number.isInteger(m.cardsReviewed) || (m.cardsReviewed as number) < 1 || (m.cardsReviewed as number) > 1000) {
+        bad('cardsReviewed must be an integer from 1 to 1000');
+      }
       break;
     case 'getDue':
       if (!Number.isInteger(m.limit) || (m.limit as number) < 1 || (m.limit as number) > 200) {
@@ -190,6 +200,7 @@ export function createRouter(deps: RouterDeps) {
       },
       dueCount: progress.dueCount,
       lastCapture: (lc[LAST_CAPTURE_KEY] as LastCapture | undefined) ?? null,
+      state,
     };
   }
 
@@ -208,6 +219,8 @@ export function createRouter(deps: RouterDeps) {
     },
     getSnapshot: () => snapshot(),
     setProfile: (m) => coach.setProfile(m.profile),
+    createPlan: (m) => coach.weekPlan(m.theme),
+    completeReview: (m) => coach.autoComplete('review', { cardsReviewed: m.cardsReviewed }),
     getDue: (m) => coach.dueReviews(m.limit),
     review: (m) => coach.submitReview(m.cardId, m.rating),
     updateCard: (m) => coach.updateCard(m.cardId, m.patch),
@@ -238,6 +251,7 @@ export function createRouter(deps: RouterDeps) {
       serialized(async () => {
         const next = mergeSettings(await readSettings(), m.settings);
         await area.set({ [SETTINGS_KEY]: next });
+        if (deps.onSettingsChanged) await deps.onSettingsChanged(next);
         return next;
       }),
   };
