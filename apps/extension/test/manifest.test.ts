@@ -12,7 +12,7 @@ describe('manifest', () => {
     expect(m.minimum_chrome_version).toBe('116');
   });
   it('has exact permissions and host permissions', () => {
-    expect([...m.permissions].sort()).toEqual(['alarms', 'contextMenus', 'notifications', 'sidePanel', 'storage']);
+    expect([...m.permissions].sort()).toEqual(['alarms', 'contextMenus', 'notifications', 'sidePanel', 'storage', 'unlimitedStorage']);
     expect(m.host_permissions).toEqual(['https://labs.google/lll/*']);
   });
   it('declares the MAIN-world and isolated content scripts at document_start', () => {

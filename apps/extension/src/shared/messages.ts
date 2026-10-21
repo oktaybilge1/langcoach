@@ -76,6 +76,8 @@ export type ResponseOf<K extends MessageType> = MessageMap[K]['response'];
 export interface ErrorInfo {
   name: string;
   message: string;
+  /** Machine-readable class: 'forbidden' (sender policy) or 'invalid' (bad payload / data). */
+  code?: 'forbidden' | 'invalid';
   preservedAt?: string;
 }
 

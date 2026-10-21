@@ -32,8 +32,66 @@ export interface RouterDeps {
 
 export function toErrorInfo(e: unknown): ErrorInfo {
   if (e instanceof CorruptDataError) return { name: e.name, message: e.message, preservedAt: e.preservedAt };
+  if (e instanceof InvalidDataError) return { name: e.name, message: e.message, code: 'invalid' };
   if (e instanceof Error) return { name: e.name, message: e.message };
   return { name: 'Error', message: String(e) };
+}
+
+const CAPTURE_KINDS = ['terms', 'grammar', 'conversation', 'object-descriptors'];
+const MAX_JSON = 20 * 1024 * 1024;
+const bad = (m: string): never => {
+  throw new InvalidDataError(m);
+};
+const isObj = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null && !Array.isArray(v);
+const id = (v: unknown, name: string) => {
+  if (typeof v !== 'string' || v === '' || v.length > 200) bad(`${name} must be a non-empty string up to 200 characters`);
+};
+const optStr = (v: unknown, name: string) => {
+  if (v !== undefined && typeof v !== 'string') bad(`${name} must be a string`);
+};
+
+/** Runtime payload guard per message type; throws InvalidDataError (code 'invalid'). */
+export function validateMessage(m: Record<string, unknown>): void {
+  switch (m.type) {
+    case 'capture':
+      if (!CAPTURE_KINDS.includes(m.kind as string)) bad('kind is not a known capture kind');
+      if (typeof m.pageUrl !== 'string') bad('pageUrl must be a string');
+      break;
+    case 'undo':
+      id(m.lessonId, 'lessonId');
+      break;
+    case 'setProfile':
+      if (!isObj(m.profile)) bad('profile must be an object');
+      break;
+    case 'getDue':
+      if (!Number.isInteger(m.limit) || (m.limit as number) < 1 || (m.limit as number) > 200) {
+        bad('limit must be an integer from 1 to 200');
+      }
+      break;
+    case 'review':
+      id(m.cardId, 'cardId');
+      if (![1, 2, 3, 4].includes(m.rating as number)) bad('rating must be 1, 2, 3 or 4');
+      break;
+    case 'updateCard':
+      id(m.cardId, 'cardId');
+      if (!isObj(m.patch)) bad('patch must be an object');
+      optStr((m.patch as Record<string, unknown>).translation, 'translation');
+      optStr((m.patch as Record<string, unknown>).example, 'example');
+      break;
+    case 'saveManual':
+      id(m.term, 'term');
+      optStr(m.translation, 'translation');
+      optStr(m.example, 'example');
+      optStr(m.pronunciation, 'pronunciation');
+      break;
+    case 'importData':
+      if (typeof m.json !== 'string') bad('json must be a string');
+      else if (m.json.length > MAX_JSON) bad('json is too large (20 MB maximum)');
+      break;
+    case 'setSettings':
+      if (!isObj(m.settings)) bad('settings must be an object');
+      break;
+  }
 }
 
 const TIME_RE = /^([01]\d|2[0-3]):[0-5]\d$/;
@@ -67,9 +125,26 @@ export function createRouter(deps: RouterDeps) {
   const { coach, store, area } = deps;
   const clock = deps.clock ?? (() => new Date());
 
+  let settingsTail: Promise<unknown> = Promise.resolve();
+  const serialized = <T>(task: () => Promise<T>): Promise<T> => {
+    const next = settingsTail.then(task, task);
+    settingsTail = next.catch(() => undefined);
+    return next;
+  };
+
   async function readSettings(): Promise<Settings> {
-    const stored = (await area.get(SETTINGS_KEY))[SETTINGS_KEY];
-    return { ...DEFAULT_SETTINGS, ...(typeof stored === 'object' && stored !== null ? stored : {}) };
+    const raw = (await area.get(SETTINGS_KEY))[SETTINGS_KEY];
+    const st = isObj(raw) ? raw : {};
+    return {
+      autoSave: typeof st.autoSave === 'boolean' ? st.autoSave : DEFAULT_SETTINGS.autoSave,
+      reminderTime:
+        st.reminderTime === null || (typeof st.reminderTime === 'string' && TIME_RE.test(st.reminderTime))
+          ? st.reminderTime
+          : DEFAULT_SETTINGS.reminderTime,
+      uiLanguage:
+        typeof st.uiLanguage === 'string' && st.uiLanguage !== '' ? st.uiLanguage : DEFAULT_SETTINGS.uiLanguage,
+      hasCamera: typeof st.hasCamera === 'boolean' ? st.hasCamera : DEFAULT_SETTINGS.hasCamera,
+    };
   }
 
   async function snapshot(): Promise<Snapshot> {
@@ -126,16 +201,18 @@ export function createRouter(deps: RouterDeps) {
       return null;
     },
     getSettings: () => readSettings(),
-    setSettings: async (m) => {
-      const next = mergeSettings(await readSettings(), m.settings ?? {});
-      await area.set({ [SETTINGS_KEY]: next });
-      return next;
-    },
+    setSettings: (m) =>
+      serialized(async () => {
+        const next = mergeSettings(await readSettings(), m.settings);
+        await area.set({ [SETTINGS_KEY]: next });
+        return next;
+      }),
   };
 
   return {
     async handle<K extends MessageType>(msg: { type: K } & MessageMap[K]['request']): Promise<Response<ResponseOf<K>>> {
       try {
+        validateMessage(msg as unknown as Record<string, unknown>);
         const h = handlers[msg.type] as (m: Message) => Promise<ResponseOf<K>>;
         return { ok: true, data: await h(msg as Message) };
       } catch (e) {

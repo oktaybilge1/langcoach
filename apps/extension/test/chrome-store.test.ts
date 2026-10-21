@@ -65,13 +65,26 @@ describe('ChromeStorageStore', () => {
     expect(area.data.get(err.preservedAt)).toBe('{not json');
   });
 
+  it('preserves identical corrupt bytes only once', async () => {
+    const area = fakeArea();
+    area.data.set('langcoach:state', '{not json');
+    const store = new ChromeStorageStore(area);
+    const a = await store.load().catch((e) => e);
+    const b = await store.load().catch((e) => e);
+    expect(b.preservedAt).toBe(a.preservedAt);
+    expect([...area.data.keys()].filter((k) => k.startsWith('langcoach:corrupt:'))).toHaveLength(1);
+    area.data.set('langcoach:state', '{different');
+    const c = await store.load().catch((e) => e);
+    expect(c.preservedAt).not.toBe(a.preservedAt);
+  });
+
   it('structurally invalid data throws InvalidDataError', async () => {
     const area = fakeArea();
     area.data.set('langcoach:state', JSON.stringify({ version: 9 }));
     await expect(new ChromeStorageStore(area).load()).rejects.toBeInstanceOf(InvalidDataError);
   });
 
-  it('backup returns null when empty and keeps only the 5 newest', async () => {
+  it('backup returns null when empty and keeps only the 3 newest', async () => {
     const area = fakeArea();
     const store = new ChromeStorageStore(area);
     expect(await store.backup()).toBeNull();
@@ -83,8 +96,8 @@ describe('ChromeStorageStore', () => {
       keys.push(k as string);
     }
     const remaining = [...area.data.keys()].filter((k) => k.startsWith('langcoach:backup:'));
-    expect(remaining).toHaveLength(5);
-    for (const k of keys.slice(-5)) expect(remaining).toContain(k);
+    expect(remaining).toHaveLength(3);
+    for (const k of keys.slice(-3)) expect(remaining).toContain(k);
   });
 
   it('replace backs up raw (even corrupt) data then saves', async () => {

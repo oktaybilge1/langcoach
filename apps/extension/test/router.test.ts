@@ -92,6 +92,54 @@ describe('background router', () => {
     expect(bad).toMatchObject({ ok: false, error: { name: 'InvalidDataError' } });
   });
 
+  it('persists concurrent setSettings calls', async () => {
+    const { call } = setup();
+    await Promise.all([
+      call({ type: 'setSettings', settings: { autoSave: false } }),
+      call({ type: 'setSettings', settings: { reminderTime: '08:00' } }),
+      call({ type: 'setSettings', settings: { hasCamera: true } }),
+    ]);
+    const r = await call({ type: 'getSettings' });
+    expect(r.data).toEqual({ autoSave: false, reminderTime: '08:00', uiLanguage: 'auto', hasCamera: true });
+  });
+
+  it('falls back to defaults per bad stored settings field', async () => {
+    const { call, area } = setup();
+    area.data.set('langcoach:settings', { autoSave: 'yes', reminderTime: '07:15', uiLanguage: 5, hasCamera: true });
+    const r = await call({ type: 'getSettings' });
+    expect(r.data).toEqual({ autoSave: true, reminderTime: '07:15', uiLanguage: 'auto', hasCamera: true });
+  });
+
+  it.each<[string, unknown]>([
+    ['getDue limit 0', { type: 'getDue', limit: 0 }],
+    ['getDue limit 201', { type: 'getDue', limit: 201 }],
+    ['getDue limit float', { type: 'getDue', limit: 1.5 }],
+    ['review rating 5', { type: 'review', cardId: 'a', rating: 5 }],
+    ['review empty cardId', { type: 'review', cardId: '', rating: 3 }],
+    ['review long cardId', { type: 'review', cardId: 'x'.repeat(201), rating: 3 }],
+    ['undo lessonId number', { type: 'undo', lessonId: 4 }],
+    ['saveManual empty term', { type: 'saveManual', term: '' }],
+    ['saveManual long term', { type: 'saveManual', term: 'x'.repeat(201) }],
+    ['updateCard patch array', { type: 'updateCard', cardId: 'a', patch: [] }],
+    ['updateCard patch field', { type: 'updateCard', cardId: 'a', patch: { example: 3 } }],
+    ['importData non-string', { type: 'importData', json: 5 }],
+    ['importData too large', { type: 'importData', json: 'x'.repeat(20 * 1024 * 1024 + 1) }],
+    ['setProfile null', { type: 'setProfile', profile: null }],
+    ['setSettings null', { type: 'setSettings', settings: null }],
+    ['capture bad kind', { type: 'capture', kind: 'nope', request: {}, response: {}, pageUrl: 'x' }],
+    ['capture bad url', { type: 'capture', kind: 'terms', request: {}, response: {}, pageUrl: 5 }],
+  ])('rejects invalid payload: %s', async (_n, msg) => {
+    const { call } = setup();
+    const r = await call(msg as Message);
+    expect(r).toMatchObject({ ok: false, error: { code: 'invalid' } });
+  });
+
+  it('accepts a valid capture payload (reaches the Task 5 stub, not the validator)', async () => {
+    const { call } = setup();
+    const r = await call({ type: 'capture', kind: 'terms', request: {}, response: { a: 1 }, pageUrl: 'https://labs.google/lll/x' });
+    expect(r.error).not.toMatchObject({ code: 'invalid' });
+  });
+
   it('isMessage guards unknown input', () => {
     expect(isMessage({ type: 'reset' })).toBe(true);
     expect(isMessage({ type: 'nope' })).toBe(false);

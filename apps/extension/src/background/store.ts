@@ -10,7 +10,7 @@ import {
 export const STATE_KEY = 'langcoach:state';
 export const BACKUP_PREFIX = 'langcoach:backup:';
 export const CORRUPT_PREFIX = 'langcoach:corrupt:';
-export const MAX_BACKUPS = 5;
+export const MAX_BACKUPS = 3;
 
 /** The subset of chrome.storage.StorageArea that the store needs (so tests can inject a fake). */
 export interface StorageAreaLike {
@@ -47,8 +47,11 @@ export class ChromeStorageStore implements Store {
       if (typeof raw !== 'string') throw new Error('stored state is not a string');
       parsed = JSON.parse(raw);
     } catch {
-      const preservedAt = `${CORRUPT_PREFIX}${stamp()}`;
-      await this.area.set({ [preservedAt]: raw });
+      const all = await this.area.get(null);
+      // Preserve once: reuse an existing copy with identical bytes.
+      const existing = Object.keys(all).find((k) => k.startsWith(CORRUPT_PREFIX) && all[k] === raw);
+      const preservedAt = existing ?? `${CORRUPT_PREFIX}${stamp()}`;
+      if (!existing) await this.area.set({ [preservedAt]: raw });
       throw new CorruptDataError(
         `Stored data is not valid JSON. The original was preserved under ${preservedAt}. ` +
           'Import a backup or reset to start fresh.',
