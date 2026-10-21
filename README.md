@@ -6,17 +6,28 @@
 [![npm](https://img.shields.io/npm/v/langcoach)](https://www.npmjs.com/package/langcoach)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/oktaybilge1/langcoach/blob/main/LICENSE)
 
-**Your language coach inside Claude Code: weekly plan, daily tasks, spaced-repetition reviews, streak and XP, for any language pair.**
+**Your personal language coach for [Little Language Lessons](https://labs.google/lll/en) and Claude Code: weekly plan, daily tasks, spaced-repetition reviews (FSRS), streak and XP.**
 
-<!-- TODO: hero GIF of a real session goes here: docs/media/demo.gif (not recorded yet) -->
+<!-- TODO: hero GIF of the Chrome extension side panel + Tiny Lesson capture goes here: docs/media/extension-demo.gif -->
 
-AI language lessons are great, but most forget you the moment the chat ends. LangCoach is an MCP server that gives Claude a memory for your learning: Claude writes the lessons in your target language, LangCoach stores your plan, reviews and progress on your machine.
+One-off AI language exercises are great, but they forget you the moment you close the tab. **LangCoach** adds the missing structure—a personalized weekly plan, automatic vocabulary capture, FSRS flashcards, streaks, and XP—available in two ways:
 
-- No API key, no account, no server.
-- Works with any native + target language.
-- Your data stays on your machine.
+1. **Browser Extension (Chrome / Edge / Brave):** Opens a Side Panel right next to [Google Labs' Little Language Lessons](https://labs.google/lll/en), automatically captures every Tiny Lesson, Slang Hang, and Word Cam exercise you run, and schedules your reviews.
+2. **Claude Code MCP Server:** Gives Claude Code a persistent memory for your lessons, reviews, and weekly study plan in the terminal.
 
-## Install
+- **No API key, no account, no server.**
+- **100% local:** Your data never leaves your machine ([Privacy Policy](https://github.com/oktaybilge1/langcoach/blob/main/docs/PRIVACY.md)).
+
+## 1. Browser Extension (Little Language Lessons Companion)
+
+<!-- TODO: Replace with Chrome Web Store & Edge Add-ons badges once approved -->
+**[Add to Chrome (Coming Soon)](https://github.com/oktaybilge1/langcoach/blob/main/docs/extension/INSTALL.md)** · **[Install Unpacked / ZIP Guide](https://github.com/oktaybilge1/langcoach/blob/main/docs/extension/INSTALL.md)**
+
+- **Automatic capture:** Generates flashcards automatically when you use Tiny Lesson, Slang Hang, or Word Cam on `https://labs.google/lll/*` (with one-click Undo and right-click "Save to LangCoach").
+- **Side panel coach:** Today's tasks, FSRS flashcard review (`Space` to flip, `1–4` to rate, `speechSynthesis` audio), weekly plan, streak, XP, and achievements.
+- **23 LLL target languages & 5 UI languages:** English, Türkçe, Español, Français, Português (Brasil), plus full RTL card support.
+
+## 2. Claude Code MCP Server
 
 Requires [Node.js](https://nodejs.org) 20+ and [Claude Code](https://docs.anthropic.com/en/docs/claude-code) (signed in).
 

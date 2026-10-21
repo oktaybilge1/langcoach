@@ -23,6 +23,7 @@
     "build": "node scripts/build.mjs",
     "build:e2e": "node scripts/build.mjs --mode e2e",
     "test:e2e": "node scripts/build.mjs --mode e2e && playwright test -c playwright.config.ts",
+    "zip": "node scripts/zip.mjs",
     "icons": "node scripts/gen-icons.mjs"
   }
 }

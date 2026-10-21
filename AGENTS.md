@@ -30,15 +30,18 @@ Commands (run from the repo root):
 ```bash
 npm install
 npm run typecheck
-npm test            # vitest
-npm run build
+npm test                                    # vitest (core + mcp + extension unit/integration)
+npm run build                               # builds core, mcp, and MV3 browser extension
+npm run test:e2e -w @langcoach/extension    # Playwright E2E against local LLL mock
+npm run zip -w @langcoach/extension         # packages apps/extension/dist into langcoach-extension-<ver>.zip
 ```
 
 Layout:
 
-- `packages/core`: all logic (plans, FSRS reviews, streak, XP, storage). No MCP code.
+- `packages/core`: all logic (plans, FSRS reviews, streak, XP, storage). Node (`@langcoach/core`) and browser (`@langcoach/core/browser`) entry points. No MCP code.
 - `packages/mcp`: the MCP server published to npm as `langcoach`.
-- `docs/`: install guide and design spec.
+- `apps/extension`: Manifest V3 browser extension (Chrome/Edge/Brave) for `https://labs.google/lll/*` (Side Panel UI, automatic fetch/XHR lesson capture, FSRS review deck, daily reminder).
+- `docs/`: install guides (`docs/INSTALL.md`, `docs/extension/INSTALL.md`), store listing, privacy policy, and design specs.
 
 Rules:
 

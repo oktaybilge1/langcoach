@@ -6,17 +6,28 @@
 [![npm](https://img.shields.io/npm/v/langcoach)](https://www.npmjs.com/package/langcoach)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/oktaybilge1/langcoach/blob/main/LICENSE)
 
-**Claude Code içindeki dil koçun: haftalık plan, günlük görevler, aralıklı tekrar, seri ve XP. Her dil çifti için.**
+**[Little Language Lessons](https://labs.google/lll/en) ve Claude Code için kişisel dil koçun: haftalık plan, günlük görevler, aralıklı tekrar kartları (FSRS), seri ve XP.**
 
-<!-- TODO: gerçek bir oturumun tanıtım GIF dosyası buraya gelecek: docs/media/demo.gif (henüz kaydedilmedi) -->
+<!-- TODO: Chrome uzantısı yan panel + Tiny Lesson yakalama tanıtım GIF dosyası buraya gelecek: docs/media/extension-demo.gif -->
 
-Yapay zekâ ile dil dersleri harika, ama çoğu sohbet kapanınca seni unutuyor. LangCoach, Claude'a öğrenmen için bir hafıza kazandıran bir MCP sunucusudur: dersleri hedef dilinde Claude yazar, planını, tekrarlarını ve ilerlemeni LangCoach kendi bilgisayarında saklar.
+Tek seferlik yapay zekâ dil alıştırmaları harika ama sekmeyi kapattığın anda seni unutuyor. **LangCoach**, eksik olan yapıyı—kişisel haftalık çalışma planı, otomatik kelime yakalama, FSRS tekrar kartları, günlük seri ve XP—iki farklı kapıdan sunar:
 
-- API anahtarı, hesap ya da sunucu yok.
-- Her ana dil + hedef dil çiftiyle çalışır.
-- Verin bilgisayarında kalır.
+1. **Tarayıcı Uzantısı (Chrome / Edge / Brave):** [Google Labs Little Language Lessons](https://labs.google/lll/en) sayfasının hemen yanında bir Yan Panel açar; yaptığın Tiny Lesson, Slang Hang ve Word Cam alıştırmalarını otomatik olarak yakalar ve tekrarlarını zamanlar.
+2. **Claude Code MCP Sunucusu:** Terminalde Claude Code'a derslerin, tekrarların ve haftalık planın için kalıcı bir hafıza kazandırır.
 
-## Kurulum
+- **API anahtarı, hesap ya da sunucu yok.**
+- **%100 yerel:** Verin bilgisayarından dışarı çıkmaz ([Gizlilik Politikası](https://github.com/oktaybilge1/langcoach/blob/main/docs/PRIVACY.md)).
+
+## 1. Tarayıcı Uzantısı (Little Language Lessons Koçu)
+
+<!-- TODO: Mağaza onayından sonra Chrome Web Mağazası ve Edge rozetleriyle değiştirilecek -->
+**[Chrome'a Ekle (Yakında)](https://github.com/oktaybilge1/langcoach/blob/main/docs/extension/INSTALL.tr.md)** · **[ZIP / Paketlenmemiş Öğe Kurulum Rehberi](https://github.com/oktaybilge1/langcoach/blob/main/docs/extension/INSTALL.tr.md)**
+
+- **Otomatik yakalama:** `https://labs.google/lll/*` üzerinde Tiny Lesson, Slang Hang veya Word Cam kullandığında kelimeleri, deyimleri ve dilbilgisi notlarını otomatik olarak kartlara dönüştürür (tek tıkla Geri Al ve sağ tıkla "LangCoach'a kaydet" desteğiyle).
+- **Yan panel koçu:** Bugünün görevleri, FSRS kart tekrarı (`Boşluk` ile çevir, `1–4` ile puanla, sesli telaffuz), haftalık plan, seri, XP ve rozetler.
+- **23 hedef dil ve 5 arayüz dili:** Türkçe, English, Español, Français, Português (Brasil) ve tam RTL kart desteği.
+
+## 2. Claude Code MCP Sunucusu
 
 [Node.js](https://nodejs.org) 20+ ve [Claude Code](https://docs.anthropic.com/en/docs/claude-code) (oturumu açık) gerekir.
 

@@ -49,3 +49,25 @@ jobs:
           npm i --no-audit --no-fund "$TGZ"
           cd "$GITHUB_WORKSPACE"
           node scripts/smoke-stdio.mjs "$SMOKE_DIR/install"
+
+  extension-e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Run extension E2E tests against local LLL mock
+        run: npm run test:e2e -w @langcoach/extension
+      - name: Build production extension and package ZIP
+        run: |
+          npm run build -w @langcoach/extension
+          npm run zip -w @langcoach/extension
+      - uses: actions/upload-artifact@v4
+        with:
+          name: langcoach-extension
+          path: apps/extension/langcoach-extension-*.zip
