@@ -145,3 +145,23 @@ describe('deleteAll', () => {
     expect(s).toEqual({ version: 1, profile: null, plans: {}, lessons: [], cards: [], log: [] });
   });
 });
+
+describe('attachGrammar', () => {
+  const grammar = [{ topic: 'Conditional', description: 'd', examples: [{ sentence: 's', translation: 't' }] }];
+  test('stores grammar on an existing lesson and persists it', async () => {
+    const { lesson: l } = await coach.saveLesson(lesson('uno'));
+    const r = await coach.attachGrammar(l.id, grammar);
+    expect(r.grammar).toEqual(grammar);
+    const s = await coach.exportData();
+    expect(s.lessons[0]?.grammar).toEqual(grammar);
+    expect(s.cards).toHaveLength(1);
+  });
+  test('unknown lesson -> NotFoundError', async () => {
+    await expect(coach.attachGrammar('nope', grammar)).rejects.toBeInstanceOf(NotFoundError);
+  });
+  test('invalid grammar -> InvalidDataError and no write', async () => {
+    const { lesson: l } = await coach.saveLesson(lesson('uno'));
+    await expect(coach.attachGrammar(l.id, [{ topic: 1 }] as never)).rejects.toBeInstanceOf(InvalidDataError);
+    expect((await coach.exportData()).lessons[0]?.grammar).toBeUndefined();
+  });
+});

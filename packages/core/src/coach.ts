@@ -207,6 +207,17 @@ export class Coach {
     });
   }
 
+  /** Set (replace) the grammar topics of an existing lesson; used when grammar arrives separately from terms. */
+  async attachGrammar(lessonId: string, grammar: GrammarPoint[]): Promise<Lesson> {
+    validateGrammar(grammar);
+    return this.store.transaction((s) => {
+      const lesson = s.lessons.find((l) => l.id === lessonId);
+      if (!lesson) throw new NotFoundError('Lesson', lessonId);
+      lesson.grammar = grammar;
+      return { state: s, result: lesson };
+    });
+  }
+
   async saveManualCard(input: {
     term: string;
     translation?: string;
