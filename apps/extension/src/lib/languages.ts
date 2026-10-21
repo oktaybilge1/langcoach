@@ -38,6 +38,26 @@ export const LLL_LANGUAGES: LllLanguage[] = [
   { label: 'Urdu', apiNames: ['Urdu'], bcp47: 'ur', rtl: true },
 ];
 
+const QUALIFIERS: Record<string, string> = {
+  cantonese: 'Chinese (Hong Kong)',
+  taiwanese: 'Chinese (Taiwan)',
+  brazilian: 'Portuguese (Brazil)',
+  latin: 'Spanish (LatAm)',
+  latam: 'Spanish (LatAm)',
+  australian: 'English (AU)',
+  british: 'English (UK)',
+  american: 'English (US)',
+};
+
+const FAMILIES: Record<string, { label: string; bcp47: string }> = {
+  english: { label: 'English', bcp47: 'en-US' },
+  spanish: { label: 'Spanish', bcp47: 'es-ES' },
+  portuguese: { label: 'Portuguese', bcp47: 'pt-BR' },
+  french: { label: 'French', bcp47: 'fr-FR' },
+  chinese: { label: 'Chinese', bcp47: 'zh-CN' },
+  mandarin: { label: 'Chinese', bcp47: 'zh-CN' },
+};
+
 const norm = (s: string): string => s.trim().toLowerCase();
 const toResolved = (l: LllLanguage): ResolvedLanguage => ({ label: l.label, bcp47: l.bcp47, rtl: l.rtl });
 const words = (s: string): string[] => norm(s).split(/[^\p{L}]+/u).filter(Boolean);
@@ -48,14 +68,20 @@ export function resolveLanguage(apiName: string): ResolvedLanguage {
   const exact = LLL_LANGUAGES.find((l) => norm(l.label) === n || l.apiNames.some((a) => norm(a) === n));
   if (exact) return toResolved(exact);
   const tokens = words(n);
-  // Prefer the language word (first word of the label), then any word of an API name.
+  const byLabel = (l: string): ResolvedLanguage => toResolved(LLL_LANGUAGES.find((x) => x.label === l)!);
+  // Regional qualifiers first, then bare family defaults, then single-language labels.
   for (const t of tokens) {
-    const byLabel = LLL_LANGUAGES.find((l) => words(l.label)[0] === t);
-    if (byLabel) return toResolved(byLabel);
+    const q = QUALIFIERS[t];
+    if (q) return byLabel(q);
+  }
+  if (tokens.includes('canadian') && tokens.includes('french')) return byLabel('French (Canada)');
+  for (const t of tokens) {
+    const f = FAMILIES[t];
+    if (f) return { label: f.label, bcp47: f.bcp47, rtl: false };
   }
   for (const t of tokens) {
-    const byApi = LLL_LANGUAGES.find((l) => l.apiNames.some((a) => words(a).includes(t)));
-    if (byApi) return toResolved(byApi);
+    const hit = LLL_LANGUAGES.find((l) => words(l.label)[0] === t);
+    if (hit) return toResolved(hit);
   }
   return { label: raw, bcp47: 'und', rtl: false };
 }

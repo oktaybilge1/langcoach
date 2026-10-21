@@ -24,6 +24,13 @@ describe('kindFromUrl', () => {
     expect(kindFromUrl('not a url')).toBeNull();
     expect(kindFromUrl('')).toBeNull();
   });
+  it('requires https and no port in production', () => {
+    expect(kindFromUrl('http://labs.google/lll/api/insights/terms')).toBeNull();
+    expect(kindFromUrl('https://labs.google:8443/lll/api/insights/terms')).toBeNull();
+    expect(kindFromUrl('http://labs.google/lll/api/insights/terms', { allowLocalhost: true })).toBeNull();
+    expect(kindFromUrl('ftp://localhost/lll/api/insights/terms', { allowLocalhost: true })).toBeNull();
+    expect(kindFromUrl('https://localhost:5173/lll/api/insights/terms', { allowLocalhost: true })).toBe('terms');
+  });
   it('accepts localhost only with allowLocalhost', () => {
     const u = 'http://localhost:5173/lll/api/insights/terms';
     expect(kindFromUrl(u)).toBeNull();
@@ -114,22 +121,114 @@ describe('parseCapture robustness', () => {
       expect(parseCapture(k, null, fx('terms-es.json'))).toBeNull();
     }
   });
-  it('never throws on random JSON', () => {
-    let seed = 12345;
-    const rnd = () => ((seed = (seed * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff);
-    const keys = ['vocabulary', 'phrases', 'term', 'phrase', 'translation', 'transliteration', 'relevantGrammar', 'examples', 'dialogue', 'notes', 'message', 'context', 'descriptors', 'descriptor', 'sourceLanguage', 'targetLanguage', 'object'];
-    const gen = (d: number): unknown => {
+  it('never throws on schema-aware random JSON (and mostly parses past the header)', () => {
+    const rnd = mulberry32(0xc0ffee);
+    const pick = <T,>(a: readonly T[]): T => a[Math.floor(rnd() * a.length)]!;
+    const scalar = (): unknown => pick([null, 1, -0, 3.5, 'a', true, false, '', 'x'.repeat(5000), '\n', ' a \n b ', undefined]);
+    const val = (d: number): unknown => {
       const r = rnd();
-      if (d <= 0 || r < 0.25) return [null, 1, 'a', true, ''][Math.floor(rnd() * 5)];
-      if (r < 0.6) return Array.from({ length: Math.floor(rnd() * 4) }, () => gen(d - 1));
-      const o: Record<string, unknown> = {};
-      for (let i = 0; i < Math.floor(rnd() * 5); i++) o[keys[Math.floor(rnd() * keys.length)]!] = gen(d - 1);
-      return o;
+      if (d <= 0 || r < 0.5) return scalar();
+      if (r < 0.75) return Array.from({ length: Math.floor(rnd() * 3) }, () => val(d - 1));
+      return { term: val(d - 1), phrase: val(d - 1), notes: val(d - 1) };
     };
-    for (let i = 0; i < 200; i++) {
-      const req = gen(2);
-      const res = gen(4);
-      for (const k of kinds) expect(() => parseCapture(k, req, res)).not.toThrow();
+    const maybe = (v: unknown): unknown => (rnd() < 0.2 ? val(2) : v);
+    const s = (): unknown => maybe(pick(['t', 'ü', '\n', 'a\nb']));
+    const arr = (f: () => unknown): unknown => (rnd() < 0.15 ? val(2) : Array.from({ length: Math.floor(rnd() * 4) }, () => (rnd() < 0.15 ? val(2) : f())));
+    const example = () => ({ sentence: s(), translation: s(), transliteration: s(), explanation: s() });
+    const res = (): Record<string, unknown> => ({
+      vocabulary: arr(() => ({ term: s(), transliteration: s(), translation: s() })),
+      phrases: arr(() => ({ phrase: s(), transliteration: s(), translation: s() })),
+      relevantGrammar: arr(() => ({ topic: s(), description: s(), examples: arr(example) })),
+      context: s(),
+      dialogue: arr(() => ({
+        speaker: s(), gender: s(), message: s(), transliteration: s(),
+        notes: rnd() < 0.2 ? val(2) : Object.fromEntries(Array.from({ length: Math.floor(rnd() * 3) }, () => [pick(['k1', 'k2', '崩了']), s()])),
+      })),
+      descriptors: arr(() => ({ descriptor: s(), pronunciation: s(), translation: s(), exampleSentence: s() })),
+    });
+    let parsed = 0;
+    for (let i = 0; i < 400; i++) {
+      const r = res();
+      for (const k of kinds) {
+        let out: unknown;
+        expect(() => { out = parseCapture(k, { ...esReq, object: s() }, r); }).not.toThrow();
+        if (out) parsed++;
+      }
     }
+    expect(parsed).toBeGreaterThan(100);
+  });
+  it('survives hostile inputs', () => {
+    const getter: Record<string, unknown> = {};
+    Object.defineProperty(getter, 'vocabulary', { enumerable: true, get() { throw new Error('boom'); } });
+    for (const k of kinds) expect(parseCapture(k, esReq, getter)).toBeNull();
+    const evilReq = {};
+    Object.defineProperty(evilReq, 'sourceLanguage', { get() { throw new Error('boom'); } });
+    expect(parseCapture('terms', evilReq, fx('terms-es.json'))).toBeNull();
+
+    const notes = JSON.parse('{"__proto__":"x","constructor":"y"}') as Record<string, string>;
+    const p = parseCapture('conversation', zhReq, { context: 'c', dialogue: [{ message: 'm', transliteration: '', notes }] });
+    expect(p?.items.map((i) => i.term).sort()).toEqual(['__proto__', 'constructor']);
+
+    const big = 'x'.repeat(1_000_000);
+    const t = parseCapture('terms', esReq, { vocabulary: [{ term: big, translation: big, transliteration: big }] })!;
+    expect(t.items[0]!.term).toHaveLength(1_000_000);
+    const c = parseCapture('conversation', zhReq, { context: big, dialogue: [{ message: 'm', notes: { k: 'v' } }] })!;
+    expect(c.situation).toHaveLength(200);
   });
 });
+
+describe('parseCapture leniency and details', () => {
+  it('skips malformed vocabulary entries among good ones', () => {
+    const p = parseCapture('terms', esReq, {
+      vocabulary: [{ term: 'a', translation: 'A' }, { bad: 1 }, null, { term: 'b', translation: 'B' }],
+      phrases: 'oops',
+    })!;
+    expect(p.items.map((i) => i.term)).toEqual(['a', 'b']);
+  });
+  it('returns null when no valid item remains', () => {
+    expect(parseCapture('terms', esReq, { vocabulary: [{ bad: 1 }], phrases: [null] })).toBeNull();
+    expect(parseCapture('conversation', zhReq, { context: 'c', dialogue: [{ message: 'm', notes: {} }] })).toBeNull();
+  });
+  it('skips malformed grammar topics and examples', () => {
+    const p = parseCapture('grammar', esReq, {
+      relevantGrammar: [
+        { topic: 'T', description: 'D', examples: [{ sentence: 's', translation: 't' }, { nope: 1 }] },
+        { topic: 7 },
+        null,
+      ],
+    })!;
+    expect(p.grammar).toHaveLength(1);
+    expect(p.grammar![0]!.examples).toHaveLength(1);
+  });
+  it('skips malformed conversation lines and notes', () => {
+    const p = parseCapture('conversation', zhReq, {
+      context: 'c',
+      dialogue: [1, { message: 'm', notes: { good: 'g', bad: 5 } }, { message: 3, notes: { x: 'y' } }],
+    })!;
+    expect(p.items.map((i) => i.term)).toEqual(['good']);
+  });
+  it('trims lines and drops empty ones in gendered terms (intentional)', () => {
+    const p = parseCapture('terms', esReq, { vocabulary: [{ term: ' a \n\n b ', translation: 't', transliteration: ' x \n y ' }] })!;
+    expect(p.items[0]).toMatchObject({ term: 'a / b', pronunciation: 'x / y' });
+  });
+  it('truncates context by code points', () => {
+    const context = 'a'.repeat(199) + '😀' + 'tail';
+    const p = parseCapture('conversation', zhReq, { context, dialogue: [{ message: 'm', notes: { k: 'v' } }] })!;
+    expect(Array.from(p.situation)).toHaveLength(200);
+    expect(p.situation.endsWith('😀')).toBe(true);
+  });
+  it('uses Tiny Lesson situation without purpose', () => {
+    const p = parseCapture('terms', { sourceLanguage: 'English', targetLanguage: 'European Spanish' }, fx('terms-es.json'))!;
+    expect(p.situation).toBe('Tiny Lesson');
+    expect(p.purpose).toBeUndefined();
+  });
+});
+
+function mulberry32(a: number): () => number {
+  return () => {
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
