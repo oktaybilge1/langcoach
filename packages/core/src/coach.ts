@@ -33,6 +33,35 @@ function requireProfile(s: State): Profile {
   return s.profile;
 }
 
+const isObj = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null && !Array.isArray(v);
+const optStr = (v: unknown) => v === undefined || typeof v === 'string';
+
+function validateGrammar(g: unknown): void {
+  if (!Array.isArray(g)) throw new InvalidDataError('grammar must be an array');
+  g.forEach((p, i) => {
+    if (!isObj(p)) throw new InvalidDataError(`grammar[${i}] must be an object`);
+    if (typeof p.topic !== 'string') throw new InvalidDataError(`grammar[${i}].topic must be a string`);
+    if (typeof p.description !== 'string') throw new InvalidDataError(`grammar[${i}].description must be a string`);
+    if (!Array.isArray(p.examples)) throw new InvalidDataError(`grammar[${i}].examples must be an array`);
+    p.examples.forEach((e: unknown, j: number) => {
+      const at = `grammar[${i}].examples[${j}]`;
+      if (!isObj(e)) throw new InvalidDataError(`${at} must be an object`);
+      if (typeof e.sentence !== 'string') throw new InvalidDataError(`${at}.sentence must be a string`);
+      if (typeof e.translation !== 'string') throw new InvalidDataError(`${at}.translation must be a string`);
+      if (!optStr(e.transliteration)) throw new InvalidDataError(`${at}.transliteration must be a string`);
+      if (!optStr(e.explanation)) throw new InvalidDataError(`${at}.explanation must be a string`);
+    });
+  });
+}
+
+function validateSource(s: unknown): void {
+  if (!isObj(s)) throw new InvalidDataError('source must be an object');
+  if (s.app !== 'lll') throw new InvalidDataError("source.app must be 'lll'");
+  if (typeof s.targetLanguage !== 'string') throw new InvalidDataError('source.targetLanguage must be a string');
+  if (typeof s.sourceLanguage !== 'string') throw new InvalidDataError('source.sourceLanguage must be a string');
+  if (!optStr(s.purpose)) throw new InvalidDataError('source.purpose must be a string');
+}
+
 function intIn(v: unknown, min: number, max: number): boolean {
   return typeof v === 'number' && Number.isInteger(v) && v >= min && v <= max;
 }
@@ -120,12 +149,8 @@ export class Coach {
         throw new InvalidDataError(`items[${i}].pronunciation must be a string`);
       }
     });
-    if (input.grammar !== undefined && !Array.isArray(input.grammar)) {
-      throw new InvalidDataError('grammar must be an array');
-    }
-    if (input.source !== undefined && (input.source === null || typeof input.source !== 'object')) {
-      throw new InvalidDataError('source must be an object');
-    }
+    if (input.grammar !== undefined) validateGrammar(input.grammar);
+    if (input.source !== undefined) validateSource(input.source);
 
     return this.store.transaction((s) => {
       const now = this.clock();
@@ -230,6 +255,7 @@ export class Coach {
   }
 
   async updateCard(cardId: string, patch: { translation?: string; example?: string }): Promise<ReviewCard> {
+    if (!isObj(patch)) throw new InvalidDataError('patch must be an object');
     for (const f of ['translation', 'example'] as const) {
       if (patch?.[f] !== undefined && typeof patch[f] !== 'string') throw new InvalidDataError(`${f} must be a string`);
     }

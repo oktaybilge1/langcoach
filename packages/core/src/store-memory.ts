@@ -1,3 +1,4 @@
+import { parseState } from './schema.js';
 import { emptyState, type State } from './types.js';
 
 /** What a transaction body returns: a new `state` to save (omit to save nothing) and a `result`. */
@@ -35,6 +36,7 @@ export class MemoryStore implements Store {
     return structuredClone(this.state);
   }
   async save(s: State): Promise<void> {
+    parseState(s); // never keep a state that load() would reject
     this.state = structuredClone(s);
   }
   async backup(): Promise<string | null> {

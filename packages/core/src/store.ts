@@ -71,6 +71,7 @@ export class JsonFileStore implements Store {
   }
 
   async save(s: State): Promise<void> {
+    parseState(s); // refuse before touching disk: a state load() would reject must never be written
     const dir = dirname(this.filePath);
     await mkdir(dir, { recursive: true });
     const tmp = join(dir, `${basename(this.filePath)}.${process.pid}.${randomBytes(6).toString('hex')}.tmp`);
@@ -113,7 +114,8 @@ export class JsonFileStore implements Store {
     });
   }
 
-  replace(next: State): Promise<string | null> {
+  async replace(next: State): Promise<string | null> {
+    parseState(next); // validate before backing up or locking: invalid input leaves no trace
     return mutexFor(this.filePath).run(async () => {
       const token = await this.acquireLock();
       try {
