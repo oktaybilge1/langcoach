@@ -60,7 +60,7 @@ function termItems(list: unknown, termKey: string): ParsedCapture['items'] | nul
   for (const e of list) {
     if (!isObj(e)) continue;
     const term = joinLines(str(e[termKey]) ?? '');
-    const translation = str(e.translation);
+    const translation = nonEmpty(e.translation);
     if (!term || translation === undefined) continue;
     const pron = joinLines(str(e.transliteration) ?? '');
     out.push({ term, translation, example: '', ...(pron ? { pronunciation: pron } : {}) });
@@ -103,7 +103,7 @@ function parseInner(kind: CaptureKind, requestBody: unknown, responseBody: unkno
       for (const x of g.examples) {
         if (!isObj(x)) continue;
         const sentence = nonEmpty(x.sentence);
-        const translation = str(x.translation);
+        const translation = nonEmpty(x.translation);
         if (!sentence || translation === undefined) continue;
         const tr = nonEmpty(x.transliteration);
         const ex = nonEmpty(x.explanation);
@@ -140,8 +140,9 @@ function parseInner(kind: CaptureKind, requestBody: unknown, responseBody: unkno
       if (message === undefined || !isObj(notes)) continue;
       const pron = nonEmpty(line.transliteration);
       for (const [key, expl] of Object.entries(notes)) {
-        if (typeof expl !== 'string' || !key) continue;
-        items.push({ term: key, translation: expl, example: message, ...(pron ? { pronunciation: pron } : {}) });
+        const explanation = nonEmpty(expl);
+        if (!key.trim() || explanation === undefined) continue;
+        items.push({ term: key, translation: explanation, example: message, ...(pron ? { pronunciation: pron } : {}) });
       }
     }
     if (items.length === 0) return null;
@@ -155,7 +156,7 @@ function parseInner(kind: CaptureKind, requestBody: unknown, responseBody: unkno
   for (const d of descriptors) {
     if (!isObj(d)) continue;
     const term = nonEmpty(d.descriptor);
-    const translation = str(d.translation);
+    const translation = nonEmpty(d.translation);
     if (!term || translation === undefined) continue;
     const pron = nonEmpty(d.pronunciation);
     items.push({ term, translation, example: str(d.exampleSentence) ?? '', ...(pron ? { pronunciation: pron } : {}) });

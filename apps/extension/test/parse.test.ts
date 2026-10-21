@@ -152,7 +152,13 @@ describe('parseCapture robustness', () => {
       for (const k of kinds) {
         let out: unknown;
         expect(() => { out = parseCapture(k, { ...esReq, object: s() }, r); }).not.toThrow();
-        if (out) parsed++;
+        if (out) {
+          parsed++;
+          for (const it of (out as { items: { term: string; translation: string }[] }).items) {
+            expect(it.term.trim()).not.toBe('');
+            expect(it.translation.trim()).not.toBe('');
+          }
+        }
       }
     }
     expect(parsed).toBeGreaterThan(100);
@@ -184,6 +190,29 @@ describe('parseCapture leniency and details', () => {
       phrases: 'oops',
     })!;
     expect(p.items.map((i) => i.term)).toEqual(['a', 'b']);
+  });
+  it('skips entries with blank term or translation (core saveLesson rejects them)', () => {
+    const terms = parseCapture('terms', esReq, {
+      vocabulary: [{ term: 'a', translation: 'A' }, { term: 'b', translation: '  ' }, { term: ' ', translation: 'C' }],
+      phrases: [{ phrase: 'p', translation: '' }, { phrase: 'q', translation: 'Q' }],
+    })!;
+    expect(terms.items.map((i) => i.term)).toEqual(['a', 'q']);
+    const conv = parseCapture('conversation', zhReq, {
+      context: 'c',
+      dialogue: [{ message: 'm', notes: { good: 'g', empty: '', blank: ' ', ' ': 'v' } }],
+    })!;
+    expect(conv.items.map((i) => i.term)).toEqual(['good']);
+    const obj = parseCapture('object-descriptors', zhReq, {
+      descriptors: [{ descriptor: 'd', translation: 'D' }, { descriptor: 'e', translation: ' ' }, { descriptor: ' ', translation: 'F' }],
+    })!;
+    expect(obj.items.map((i) => i.term)).toEqual(['d']);
+    const gr = parseCapture('grammar', esReq, {
+      relevantGrammar: [{ topic: 'T', description: 'D', examples: [{ sentence: 's', translation: 't' }, { sentence: 's2', translation: ' ' }, { sentence: ' ', translation: 't3' }] }],
+    })!;
+    expect(gr.grammar![0]!.examples).toHaveLength(1);
+  });
+  it('returns null when only blank entries remain', () => {
+    expect(parseCapture('terms', esReq, { vocabulary: [{ term: 'a', translation: '' }] })).toBeNull();
   });
   it('returns null when no valid item remains', () => {
     expect(parseCapture('terms', esReq, { vocabulary: [{ bad: 1 }], phrases: [null] })).toBeNull();
