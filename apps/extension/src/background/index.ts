@@ -3,6 +3,7 @@ import { Coach } from '@langcoach/core/browser';
 import { isMessage } from '../shared/messages';
 import { createMenuClickHandler, registerMenus } from './menu';
 import { isAllowed } from './policy';
+import { createReminderAlarmHandler, createReminderClickHandler, scheduleReminder } from './reminder';
 import { createRouter } from './router';
 import { ChromeStorageStore } from './store';
 
@@ -10,7 +11,14 @@ import { ChromeStorageStore } from './store';
 const store = new ChromeStorageStore();
 const coach = new Coach(store);
 const log = (...a: unknown[]) => console.warn(...a);
-const router = createRouter({ coach, store, area: chrome.storage.local, sidePanel: chrome.sidePanel, log });
+const router = createRouter({
+  coach,
+  store,
+  area: chrome.storage.local,
+  sidePanel: chrome.sidePanel,
+  onSettingsChanged: (settings) => scheduleReminder(settings, chrome.alarms),
+  log,
+});
 
 chrome.runtime.onMessage.addListener((msg: unknown, sender, sendResponse) => {
   if (!isMessage(msg)) return false;
@@ -28,11 +36,36 @@ const setupMenus = () =>
     log('LangCoach: context menu setup failed', e),
   );
 
+const syncReminder = () =>
+  router
+    .handle({ type: 'getSettings' })
+    .then((r) => (r.ok ? scheduleReminder(r.data, chrome.alarms) : undefined))
+    .catch((e) => log('LangCoach: reminder schedule failed', e));
+
 chrome.runtime.onInstalled.addListener(() => {
   void chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true });
   void setupMenus();
+  void syncReminder();
 });
-chrome.runtime.onStartup.addListener(() => void setupMenus());
+chrome.runtime.onStartup.addListener(() => {
+  void setupMenus();
+  void syncReminder();
+});
 
 const onMenuClick = createMenuClickHandler({ coach, tabs: chrome.tabs, log });
 chrome.contextMenus.onClicked.addListener((info, tab) => void onMenuClick(info, tab));
+
+const onAlarm = createReminderAlarmHandler({
+  coach,
+  notifications: chrome.notifications,
+  t: (k) => chrome.i18n.getMessage(k),
+  iconUrl: chrome.runtime.getURL('icons/128.png'),
+});
+chrome.alarms.onAlarm.addListener((alarm) => void onAlarm(alarm));
+
+const onNotificationClick = createReminderClickHandler({
+  sidePanel: chrome.sidePanel,
+  tabs: chrome.tabs,
+  notifications: chrome.notifications,
+});
+chrome.notifications.onClicked.addListener((id) => void onNotificationClick(id));
