@@ -1,12 +1,9 @@
+import './zod-config'; // must stay first: disables zod's eval probe before core builds its schemas
 import { Coach } from '@langcoach/core/browser';
-import { z } from 'zod';
 import { isMessage } from '../shared/messages';
 import { isAllowed } from './policy';
 import { createRouter } from './router';
 import { ChromeStorageStore } from './store';
-
-// MV3 CSP forbids eval/new Function: stop zod from probing for it.
-z.config({ jitless: true });
 
 // The background service worker is the single writer to storage.
 const store = new ChromeStorageStore();
