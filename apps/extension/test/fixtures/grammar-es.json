@@ -1,0 +1,58 @@
+{
+  "relevantGrammar": [
+    {
+      "topic": "The conditional tense for polite requests",
+      "description": "Spanish uses the conditional (e.g. \"querría\", \"podría\") to soften requests and sound polite, much like \"would\" or \"could\" in English.",
+      "examples": [
+        {
+          "sentence": "Querría un café con leche, por favor.",
+          "transliteration": "",
+          "translation": "I would like a coffee with milk, please.",
+          "explanation": "\"Querría\" is the conditional of \"querer\" and is more polite than \"quiero\"."
+        },
+        {
+          "sentence": "¿Podría traerme la cuenta?",
+          "transliteration": "",
+          "translation": "Could you bring me the bill?",
+          "explanation": "\"Podría\" (conditional of \"poder\") turns a direct request into a courteous one."
+        }
+      ]
+    },
+    {
+      "topic": "Indirect object pronouns",
+      "description": "The pronouns me, te, le, nos, os, les mark who receives or benefits from an action, and they go before the conjugated verb.",
+      "examples": [
+        {
+          "sentence": "¿Me trae un cruasán?",
+          "transliteration": "",
+          "translation": "Can you bring me a croissant?",
+          "explanation": "\"Me\" is the indirect object: the croissant is brought to me."
+        },
+        {
+          "sentence": "Le pido un cortado al camarero.",
+          "transliteration": "",
+          "translation": "I order an espresso with milk from the waiter.",
+          "explanation": "\"Le\" refers to the waiter and is doubled by \"al camarero\"."
+        }
+      ]
+    },
+    {
+      "topic": "The verb poner in service contexts",
+      "description": "In cafes and bars, \"poner\" means to serve or give; \"¿Me pone...?\" is a very common way to order.",
+      "examples": [
+        {
+          "sentence": "¿Me pone un café solo?",
+          "transliteration": "",
+          "translation": "Could I have a black coffee?",
+          "explanation": "Literally \"will you put me a black coffee?\", idiomatic for ordering."
+        },
+        {
+          "sentence": "Póngame una taza de té, por favor.",
+          "transliteration": "",
+          "translation": "Give me a cup of tea, please.",
+          "explanation": "\"Póngame\" is the formal imperative of \"poner\" plus \"me\"."
+        }
+      ]
+    }
+  ]
+}

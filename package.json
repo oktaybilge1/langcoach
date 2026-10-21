@@ -7,12 +7,12 @@
     "node": ">=20"
   },
   "workspaces": [
-    "packages/*"
+    "packages/*", "apps/*"
   ],
   "scripts": {
     "build": "npm run build --workspaces --if-present",
     "test": "vitest run",
-    "typecheck": "tsc -p packages/core && tsc -p packages/mcp"
+    "typecheck": "tsc -p packages/core && tsc -p packages/mcp && tsc -p apps/extension"
   },
   "devDependencies": {
     "@types/node": "^26.6.5",
