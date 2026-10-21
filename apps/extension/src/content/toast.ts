@@ -112,7 +112,8 @@ export function createToaster(doc: Document = document, duration = TOAST_MS): To
     hide();
     const h = doc.createElement('div');
     h.setAttribute('data-langcoach-toast', '');
-    const r = h.attachShadow({ mode: 'closed' });
+    const mode = typeof __E2E__ !== 'undefined' && __E2E__ ? 'open' : 'closed';
+    const r = h.attachShadow({ mode });
     const style = doc.createElement('style');
     style.textContent = CSS;
     const box = doc.createElement('div');
