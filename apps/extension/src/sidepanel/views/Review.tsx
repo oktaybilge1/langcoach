@@ -14,14 +14,38 @@ export interface ReviewProps {
   t: TranslateFn;
   send: PanelSend;
   onRefresh: () => Promise<void>;
+  initialMode?: ReviewMode;
 }
 
-export function Review({ snapshot, uiLocale, t, send, onRefresh }: ReviewProps) {
+export type ReviewMode = 'list' | 'cards';
+
+export function Review({ snapshot, uiLocale, t, send, onRefresh, initialMode }: ReviewProps) {
+  const [mode, setModeState] = useState<ReviewMode>(() => {
+    if (initialMode) return initialMode;
+    if (typeof localStorage !== 'undefined') {
+      const saved = localStorage.getItem('langcoach:reviewMode');
+      if (saved === 'list' || saved === 'cards') return saved;
+    }
+    return 'cards';
+  });
+
+  function setMode(next: ReviewMode) {
+    setModeState(next);
+    try {
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem('langcoach:reviewMode', next);
+      }
+    } catch {
+      /* ignore */
+    }
+  }
+
   const [cards, setCards] = useState<ReviewCard[]>([]);
   const [index, setIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [editing, setEditing] = useState(false);
+  const [search, setSearch] = useState('');
+  const [editingCardId, setEditingCardId] = useState<string | null>(null);
   const [draftTranslation, setDraftTranslation] = useState('');
   const [reviewedCount, setReviewedCount] = useState(0);
   const completedSessionRef = useRef(false);
@@ -29,10 +53,16 @@ export function Review({ snapshot, uiLocale, t, send, onRefresh }: ReviewProps) 
   const targetLang = resolveLanguage(snapshot.profile?.targetLanguage ?? '');
   const card = cards[index];
 
+  // All cards from snapshot state, falling back to due cards
+  const allCards: ReviewCard[] =
+    snapshot.state?.cards && snapshot.state.cards.length > 0
+      ? snapshot.state.cards
+      : cards;
+
   useEffect(() => {
     let active = true;
     setLoading(true);
-    send({ type: 'getDue', limit: 50 })
+    send({ type: 'getDue', limit: 100 })
       .then((due) => {
         if (!active) return;
         setCards(due);
@@ -60,7 +90,7 @@ export function Review({ snapshot, uiLocale, t, send, onRefresh }: ReviewProps) 
     await send({ type: 'review', cardId: card.id, rating });
     const nextCount = reviewedCount + 1;
     setReviewedCount(nextCount);
-    setEditing(false);
+    setEditingCardId(null);
 
     if (index + 1 >= cards.length) {
       setCards([]);
@@ -74,8 +104,26 @@ export function Review({ snapshot, uiLocale, t, send, onRefresh }: ReviewProps) 
     }
   }
 
+  async function handleMarkLearnedFromList(cardId: string) {
+    await send({ type: 'review', cardId, rating: 3 });
+    await finishSession(1);
+    await onRefresh();
+  }
+
+  async function handleSaveTranslation(cardId: string) {
+    const updated = await send({
+      type: 'updateCard',
+      cardId,
+      patch: { translation: draftTranslation },
+    });
+    setCards((prev) => prev.map((c) => (c.id === updated.id ? updated : c)));
+    setEditingCardId(null);
+    await onRefresh();
+  }
+
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
+      if (mode !== 'cards') return;
       const tag = (e.target as HTMLElement | null)?.tagName;
       if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
       if (!card) return;
@@ -91,34 +139,23 @@ export function Review({ snapshot, uiLocale, t, send, onRefresh }: ReviewProps) 
     };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [card, flipped, index, cards, reviewedCount]);
+  }, [mode, card, flipped, index, cards, reviewedCount]);
 
   const canSpeak =
     typeof window !== 'undefined' &&
     'speechSynthesis' in window &&
     typeof window.speechSynthesis?.speak === 'function';
 
-  function handleSpeak() {
-    if (!canSpeak || !card) return;
+  function handleSpeak(term: string) {
+    if (!canSpeak || !term) return;
     try {
-      const u = new SpeechSynthesisUtterance(card.term);
+      const u = new SpeechSynthesisUtterance(term);
       if (targetLang.bcp47 !== 'und') u.lang = targetLang.bcp47;
       window.speechSynthesis.cancel();
       window.speechSynthesis.speak(u);
     } catch {
       /* ignore speech errors */
     }
-  }
-
-  async function handleSaveTranslation() {
-    if (!card) return;
-    const updated = await send({
-      type: 'updateCard',
-      cardId: card.id,
-      patch: { translation: draftTranslation },
-    });
-    setCards((prev) => prev.map((c) => (c.id === updated.id ? updated : c)));
-    setEditing(false);
   }
 
   if (loading) {
@@ -129,121 +166,274 @@ export function Review({ snapshot, uiLocale, t, send, onRefresh }: ReviewProps) 
     );
   }
 
-  const remaining = Math.max(0, cards.length - index);
+  const filteredList = allCards
+    .slice()
+    .reverse()
+    .filter((c) => {
+      if (!search.trim()) return true;
+      const q = search.toLowerCase();
+      return (
+        c.term.toLowerCase().includes(q) ||
+        (c.translation && c.translation.toLowerCase().includes(q))
+      );
+    });
 
-  if (!card) {
-    return (
-      <section class="card" data-testid="review-empty">
-        <h1>{t('reviewEmptyTitle')}</h1>
-        <p class="muted" style={{ marginBottom: '12px' }}>
-          {t('reviewEmptyBody')}
-        </p>
-        <button
-          type="button"
-          class="primary"
-          onClick={() => openExperimentUrl(deeplink(toSiteLang(uiLocale), 'tiny_lesson'))}
-        >
-          {t('btnOpenLll')}
-        </button>
-      </section>
-    );
-  }
+  const remainingDue = Math.max(0, cards.length - index);
 
   return (
     <div class="form-grid">
       <div class="today-summary">
         <h1>{t('reviewHeading')}</h1>
         <span class="pill" data-testid="review-due-count">
-          {t('reviewDueBadge', String(remaining))}
+          {t('reviewDueBadge', String(remainingDue))}
         </span>
       </div>
 
-      <section class="card flashcard">
-        <div
-          class="card-term"
-          data-testid="card-term"
-          dir="auto"
-          lang={targetLang.bcp47 !== 'und' ? targetLang.bcp47 : undefined}
+      <div class="segmented-control" role="tablist">
+        <button
+          type="button"
+          data-testid="mode-list"
+          class={`segmented-btn ${mode === 'list' ? 'active' : ''}`}
+          onClick={() => setMode('list')}
         >
-          {card.term}
-        </div>
-        {card.pronunciation && <div class="card-pron">{card.pronunciation}</div>}
-        {canSpeak && (
-          <div>
-            <button type="button" onClick={handleSpeak} aria-label={t('btnListen')}>
-              🔊 {t('btnListen')}
-            </button>
-          </div>
-        )}
+          📋 {t('tabModeList')} ({allCards.length})
+        </button>
+        <button
+          type="button"
+          data-testid="mode-cards"
+          class={`segmented-btn ${mode === 'cards' ? 'active' : ''}`}
+          onClick={() => setMode('cards')}
+        >
+          🎴 {t('tabModeCards')} ({remainingDue})
+        </button>
+      </div>
 
-        {!flipped ? (
+      {mode === 'list' ? (
+        <section class="card vocab-section">
+          {allCards.length > 5 && (
+            <div style={{ marginBottom: '12px' }}>
+              <input
+                type="text"
+                placeholder={t('searchPlaceholder')}
+                value={search}
+                onInput={(e) => setSearch((e.currentTarget as HTMLInputElement).value)}
+                style={{ width: '100%' }}
+              />
+            </div>
+          )}
+
+          {filteredList.length === 0 ? (
+            <div data-testid="review-empty">
+              <p class="muted">{t('reviewEmptyBody')}</p>
+              <button
+                type="button"
+                class="primary"
+                onClick={() => openExperimentUrl(deeplink(toSiteLang(uiLocale), 'tiny_lesson'))}
+              >
+                {t('btnOpenLll')}
+              </button>
+            </div>
+          ) : (
+            <div class="vocab-list">
+              {filteredList.map((c) => {
+                const isEditing = editingCardId === c.id;
+                return (
+                  <div key={c.id} class="vocab-item">
+                    <div class="vocab-row">
+                      <div class="vocab-term-group">
+                        <span
+                          class="vocab-term"
+                          dir="auto"
+                          lang={targetLang.bcp47 !== 'und' ? targetLang.bcp47 : undefined}
+                        >
+                          {c.term}
+                        </span>
+                        {c.pronunciation && <span class="card-pron">{c.pronunciation}</span>}
+                        {canSpeak && (
+                          <button
+                            type="button"
+                            class="icon-btn"
+                            title={t('btnListen')}
+                            onClick={() => handleSpeak(c.term)}
+                          >
+                            🔊
+                          </button>
+                        )}
+                      </div>
+                      <span class={`status-tag ${c.srs.reps > 0 ? 'learned' : 'new'}`}>
+                        {c.srs.reps > 0 ? `✓ ${t('statusLearned')}` : t('statusNew')}
+                      </span>
+                    </div>
+
+                    {isEditing ? (
+                      <div class="field-row" style={{ marginTop: '8px' }}>
+                        <input
+                          type="text"
+                          value={draftTranslation}
+                          placeholder={t('placeholderTranslation')}
+                          onInput={(e) => setDraftTranslation((e.currentTarget as HTMLInputElement).value)}
+                          autoFocus
+                        />
+                        <button
+                          type="button"
+                          class="primary"
+                          onClick={() => handleSaveTranslation(c.id)}
+                        >
+                          {t('btnSaveCard')}
+                        </button>
+                        <button type="button" onClick={() => setEditingCardId(null)}>
+                          {t('btnCancel')}
+                        </button>
+                      </div>
+                    ) : (
+                      <div class="vocab-trans-row">
+                        <span class="vocab-trans" dir="auto">
+                          {c.translation || <em class="muted">{t('noTranslation')}</em>}
+                        </span>
+                        <button
+                          type="button"
+                          class="btn-subtle"
+                          onClick={() => {
+                            setEditingCardId(c.id);
+                            setDraftTranslation(c.translation);
+                          }}
+                        >
+                          ✏️ {t('btnEditCard')}
+                        </button>
+                      </div>
+                    )}
+
+                    {c.example && (
+                      <div
+                        class="vocab-example muted"
+                        dir="auto"
+                        lang={targetLang.bcp47 !== 'und' ? targetLang.bcp47 : undefined}
+                      >
+                        “{c.example}”
+                      </div>
+                    )}
+
+                    <div class="vocab-footer">
+                      <button
+                        type="button"
+                        class="btn-sm"
+                        onClick={() => handleMarkLearnedFromList(c.id)}
+                      >
+                        ✅ {t('btnMarkLearned')}
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </section>
+      ) : !card ? (
+        <section class="card" data-testid="review-empty">
+          <h1>{t('reviewEmptyTitle')}</h1>
+          <p class="muted" style={{ marginBottom: '12px' }}>
+            {t('reviewEmptyBody')}
+          </p>
           <button
             type="button"
             class="primary"
-            data-testid="review-show"
-            onClick={() => setFlipped(true)}
+            onClick={() => openExperimentUrl(deeplink(toSiteLang(uiLocale), 'tiny_lesson'))}
           >
-            {t('btnShowAnswer')}
+            {t('btnOpenLll')}
           </button>
-        ) : (
-          <div class="card-back">
-            {editing || card.translation === '' ? (
-              <div class="field-row">
-                <input
-                  type="text"
-                  data-testid="edit-translation-input"
-                  placeholder={t('placeholderTranslation')}
-                  value={draftTranslation}
-                  onInput={(e) => setDraftTranslation((e.currentTarget as HTMLInputElement).value)}
-                />
-                <button type="button" data-testid="save-translation-btn" onClick={handleSaveTranslation}>
-                  {t('btnSaveCard')}
-                </button>
-              </div>
-            ) : (
-              <div class="today-summary">
-                <div data-testid="card-translation" dir="auto" style={{ fontWeight: 600, fontSize: '16px' }}>
-                  {card.translation}
-                </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setDraftTranslation(card.translation);
-                    setEditing(true);
-                  }}
-                >
-                  {t('btnEditCard')}
-                </button>
-              </div>
-            )}
-
-            {card.example && (
-              <div
-                class="muted"
-                dir="auto"
-                lang={targetLang.bcp47 !== 'und' ? targetLang.bcp47 : undefined}
-              >
-                {card.example}
-              </div>
-            )}
-
-            <div class="rating-grid">
-              <button type="button" data-testid="rate-1" onClick={() => handleRate(1)}>
-                1 · {t('rateAgain')}
-              </button>
-              <button type="button" data-testid="rate-2" onClick={() => handleRate(2)}>
-                2 · {t('rateHard')}
-              </button>
-              <button type="button" class="primary" data-testid="rate-3" onClick={() => handleRate(3)}>
-                3 · {t('rateGood')}
-              </button>
-              <button type="button" data-testid="rate-4" onClick={() => handleRate(4)}>
-                4 · {t('rateEasy')}
+        </section>
+      ) : (
+        <section class="card flashcard">
+          <div
+            class="card-term"
+            data-testid="card-term"
+            dir="auto"
+            lang={targetLang.bcp47 !== 'und' ? targetLang.bcp47 : undefined}
+          >
+            {card.term}
+          </div>
+          {card.pronunciation && <div class="card-pron">{card.pronunciation}</div>}
+          {canSpeak && (
+            <div>
+              <button type="button" onClick={() => handleSpeak(card.term)} aria-label={t('btnListen')}>
+                🔊 {t('btnListen')}
               </button>
             </div>
-          </div>
-        )}
-      </section>
+          )}
+
+          {!flipped ? (
+            <button
+              type="button"
+              class="primary"
+              data-testid="review-show"
+              onClick={() => setFlipped(true)}
+            >
+              {t('btnShowAnswer')}
+            </button>
+          ) : (
+            <div class="card-back">
+              {editingCardId === card.id || card.translation === '' ? (
+                <div class="field-row">
+                  <input
+                    type="text"
+                    data-testid="edit-translation-input"
+                    placeholder={t('placeholderTranslation')}
+                    value={draftTranslation}
+                    onInput={(e) => setDraftTranslation((e.currentTarget as HTMLInputElement).value)}
+                  />
+                  <button
+                    type="button"
+                    data-testid="save-translation-btn"
+                    onClick={() => handleSaveTranslation(card.id)}
+                  >
+                    {t('btnSaveCard')}
+                  </button>
+                </div>
+              ) : (
+                <div class="today-summary">
+                  <div data-testid="card-translation" dir="auto" style={{ fontWeight: 600, fontSize: '16px' }}>
+                    {card.translation}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setDraftTranslation(card.translation);
+                      setEditingCardId(card.id);
+                    }}
+                  >
+                    {t('btnEditCard')}
+                  </button>
+                </div>
+              )}
+
+              {card.example && (
+                <div
+                  class="muted"
+                  dir="auto"
+                  lang={targetLang.bcp47 !== 'und' ? targetLang.bcp47 : undefined}
+                >
+                  {card.example}
+                </div>
+              )}
+
+              <div class="rating-grid">
+                <button type="button" data-testid="rate-1" onClick={() => handleRate(1)}>
+                  1 · {t('rateAgain')}
+                </button>
+                <button type="button" data-testid="rate-2" onClick={() => handleRate(2)}>
+                  2 · {t('rateHard')}
+                </button>
+                <button type="button" class="primary" data-testid="rate-3" onClick={() => handleRate(3)}>
+                  3 · {t('rateGood')}
+                </button>
+                <button type="button" data-testid="rate-4" onClick={() => handleRate(4)}>
+                  4 · {t('rateEasy')}
+                </button>
+              </div>
+            </div>
+          )}
+        </section>
+      )}
 
       {reviewedCount > 0 && (
         <button

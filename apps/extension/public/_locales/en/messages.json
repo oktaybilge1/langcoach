@@ -10,7 +10,9 @@
   "toastSaved": {
     "message": "✓ $COUNT$ words saved to LangCoach",
     "placeholders": {
-      "count": { "content": "$1" }
+      "count": {
+        "content": "$1"
+      }
     }
   },
   "toastAlready": {
@@ -28,7 +30,9 @@
   "toastSaveN": {
     "message": "Save $COUNT$ words",
     "placeholders": {
-      "count": { "content": "$1" }
+      "count": {
+        "content": "$1"
+      }
     }
   },
   "toastSavedManual": {
@@ -37,112 +41,340 @@
   "toastXp": {
     "message": "+$XP$ XP",
     "placeholders": {
-      "xp": { "content": "$1" }
+      "xp": {
+        "content": "$1"
+      }
     }
   },
   "menuSave": {
     "message": "Save to LangCoach"
   },
-  "tabToday": { "message": "Today" },
-  "tabReview": { "message": "Review" },
-  "tabPlan": { "message": "Plan" },
-  "tabProgress": { "message": "Progress" },
-  "tabSettings": { "message": "Settings" },
-  "loading": { "message": "Loading..." },
-  "onboardTitle": { "message": "Set up your language coach" },
-  "onboardSubtitle": { "message": "Personalize your weekly plan and spaced-repetition deck." },
-  "fieldTargetLang": { "message": "Language I'm learning" },
-  "fieldNativeLang": { "message": "My native language" },
-  "fieldLevel": { "message": "Current level" },
-  "levelUnsure": { "message": "Not sure (start at A2)" },
-  "fieldGoal": { "message": "Main goal" },
-  "goalTravel": { "message": "Travel" },
-  "goalWork": { "message": "Work" },
-  "goalStudy": { "message": "Study" },
-  "goalMoving": { "message": "Moving abroad" },
-  "goalFamily": { "message": "Family & friends" },
-  "goalFun": { "message": "Fun & culture" },
-  "fieldMinutes": { "message": "Minutes per day" },
-  "fieldDays": { "message": "Days per week" },
-  "fieldCamera": { "message": "I have a camera (include Word Cam)" },
-  "btnStartPlan": { "message": "Create my plan" },
-  "todayHeading": { "message": "Today's Tasks" },
-  "todayRingLabel": { "message": "Daily goal" },
-  "todayStreak": { "message": "Day streak" },
-  "todayThemeLabel": { "message": "Suggested Tiny Lesson theme" },
-  "btnCopy": { "message": "Copy" },
-  "btnCopied": { "message": "Copied" },
-  "btnNextTheme": { "message": "Another idea" },
-  "btnOpenLll": { "message": "Open" },
-  "taskTinyLesson": { "message": "Tiny Lesson" },
-  "taskSlangHang": { "message": "Slang Hang" },
-  "taskWordCam": { "message": "Word Cam" },
-  "taskReview": { "message": "Flashcard Review" },
-  "taskQuiz": { "message": "Weekly Quiz Review" },
-  "taskStatusDone": { "message": "Done" },
-  "taskStatusTodo": { "message": "To do" },
+  "tabToday": {
+    "message": "Today"
+  },
+  "tabReview": {
+    "message": "Review"
+  },
+  "tabPlan": {
+    "message": "Plan"
+  },
+  "tabProgress": {
+    "message": "Progress"
+  },
+  "tabSettings": {
+    "message": "Settings"
+  },
+  "loading": {
+    "message": "Loading..."
+  },
+  "onboardTitle": {
+    "message": "Set up your language coach"
+  },
+  "onboardSubtitle": {
+    "message": "Personalize your weekly plan and spaced-repetition deck."
+  },
+  "fieldTargetLang": {
+    "message": "Language I'm learning"
+  },
+  "fieldNativeLang": {
+    "message": "My native language"
+  },
+  "fieldLevel": {
+    "message": "Current level"
+  },
+  "levelUnsure": {
+    "message": "Not sure (start at A2)"
+  },
+  "fieldGoal": {
+    "message": "Main goal"
+  },
+  "goalTravel": {
+    "message": "Travel"
+  },
+  "goalWork": {
+    "message": "Work"
+  },
+  "goalStudy": {
+    "message": "Study"
+  },
+  "goalMoving": {
+    "message": "Moving abroad"
+  },
+  "goalFamily": {
+    "message": "Family & friends"
+  },
+  "goalFun": {
+    "message": "Fun & culture"
+  },
+  "fieldMinutes": {
+    "message": "Minutes per day"
+  },
+  "fieldDays": {
+    "message": "Days per week"
+  },
+  "fieldCamera": {
+    "message": "I have a camera (include Word Cam)"
+  },
+  "btnStartPlan": {
+    "message": "Create my plan"
+  },
+  "todayHeading": {
+    "message": "Today's Tasks"
+  },
+  "todayRingLabel": {
+    "message": "Daily goal"
+  },
+  "todayStreak": {
+    "message": "Day streak"
+  },
+  "todayThemeLabel": {
+    "message": "Suggested Tiny Lesson theme"
+  },
+  "btnCopy": {
+    "message": "Copy"
+  },
+  "btnCopied": {
+    "message": "Copied"
+  },
+  "btnNextTheme": {
+    "message": "Another idea"
+  },
+  "btnOpenLll": {
+    "message": "Open"
+  },
+  "taskTinyLesson": {
+    "message": "Tiny Lesson"
+  },
+  "taskSlangHang": {
+    "message": "Slang Hang"
+  },
+  "taskWordCam": {
+    "message": "Word Cam"
+  },
+  "taskReview": {
+    "message": "Flashcard Review"
+  },
+  "taskQuiz": {
+    "message": "Weekly Quiz Review"
+  },
+  "taskStatusDone": {
+    "message": "Done"
+  },
+  "taskStatusTodo": {
+    "message": "To do"
+  },
   "minutesShort": {
     "message": "$MIN$ min",
-    "placeholders": { "min": { "content": "$1" } }
+    "placeholders": {
+      "min": {
+        "content": "$1"
+      }
+    }
   },
-  "todayNoTasks": { "message": "No tasks scheduled for today. Do any lesson or review to build your streak!" },
-  "lastCaptureHeading": { "message": "Last captured lesson" },
-  "grammarHeading": { "message": "Recent grammar notes" },
-  "reviewHeading": { "message": "Spaced-Repetition Review" },
+  "todayNoTasks": {
+    "message": "No tasks scheduled for today. Do any lesson or review to build your streak!"
+  },
+  "lastCaptureHeading": {
+    "message": "Last captured lesson"
+  },
+  "grammarHeading": {
+    "message": "Recent grammar notes"
+  },
+  "reviewHeading": {
+    "message": "Spaced-Repetition Review"
+  },
   "reviewDueBadge": {
     "message": "$COUNT$ due",
-    "placeholders": { "count": { "content": "$1" } }
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
   },
-  "reviewEmptyTitle": { "message": "All caught up for now!" },
-  "reviewEmptyBody": { "message": "Do a lesson on Little Language Lessons to add new words to your deck." },
-  "btnShowAnswer": { "message": "Show answer" },
-  "btnListen": { "message": "Listen" },
-  "rateAgain": { "message": "Again" },
-  "rateHard": { "message": "Hard" },
-  "rateGood": { "message": "Good" },
-  "rateEasy": { "message": "Easy" },
-  "btnEditCard": { "message": "Edit translation" },
-  "btnSaveCard": { "message": "Save" },
-  "placeholderTranslation": { "message": "Add translation..." },
-  "btnFinishReview": { "message": "Finish session" },
-  "planHeading": { "message": "Weekly Plan" },
-  "planTheme": { "message": "Theme" },
-  "planEmpty": { "message": "No plan for this week yet." },
-  "progressHeading": { "message": "Your Progress" },
-  "statStreak": { "message": "Day Streak" },
-  "statTotalXp": { "message": "Total XP" },
-  "statLevel": { "message": "Level" },
-  "statWordsLearned": { "message": "Words Learned" },
-  "statDueCount": { "message": "Cards Due" },
-  "statWeeklyGoal": { "message": "Weekly Study Days" },
-  "achievementsHeading": { "message": "Achievements" },
-  "ach_first_lesson": { "message": "First Step (1 lesson)" },
-  "ach_streak_3": { "message": "3-Day Streak" },
-  "ach_streak_7": { "message": "7-Day Streak" },
-  "ach_streak_30": { "message": "30-Day Streak" },
-  "ach_cards_50": { "message": "50 Words Collected" },
-  "ach_cards_100": { "message": "100 Words Collected" },
-  "ach_cards_500": { "message": "500 Words Collected" },
-  "ach_reviews_100": { "message": "100 Card Reviews" },
-  "settingsHeading": { "message": "Settings" },
-  "settingsProfileSection": { "message": "Learning Profile" },
-  "btnSaveProfile": { "message": "Save profile" },
-  "settingsPrefsSection": { "message": "Preferences" },
-  "fieldAutoSave": { "message": "Auto-save lessons on Little Language Lessons" },
-  "fieldReminder": { "message": "Daily study reminder time" },
-  "reminderOff": { "message": "Off" },
-  "fieldUiLang": { "message": "Interface language" },
-  "uiLangAuto": { "message": "Auto (browser)" },
-  "settingsDataSection": { "message": "Your Data" },
-  "btnExport": { "message": "Export JSON backup" },
-  "btnImport": { "message": "Import JSON backup" },
-  "btnReset": { "message": "Reset all data" },
-  "btnResetConfirm1": { "message": "Click again to confirm reset" },
-  "btnResetConfirm2": { "message": "Confirm permanent reset" },
-  "settingsAboutSection": { "message": "About LangCoach" },
-  "aboutDisclaimer": { "message": "LangCoach is an independent open-source project and is not affiliated with, endorsed by, or sponsored by Google." },
-  "aboutGithub": { "message": "GitHub Repository" },
-  "aboutSupport": { "message": "Support the project" },
-  "reminderTitle": { "message": "Time for your language practice!" },
-  "reminderBody": { "message": "Your 5-minute lesson on LangCoach is waiting to keep your streak alive." }
+  "reviewEmptyTitle": {
+    "message": "All caught up for now!"
+  },
+  "reviewEmptyBody": {
+    "message": "Do a lesson on Little Language Lessons to add new words to your deck."
+  },
+  "btnShowAnswer": {
+    "message": "Show answer"
+  },
+  "btnListen": {
+    "message": "Listen"
+  },
+  "rateAgain": {
+    "message": "Again"
+  },
+  "rateHard": {
+    "message": "Hard"
+  },
+  "rateGood": {
+    "message": "Good"
+  },
+  "rateEasy": {
+    "message": "Easy"
+  },
+  "btnEditCard": {
+    "message": "Edit translation"
+  },
+  "btnSaveCard": {
+    "message": "Save"
+  },
+  "placeholderTranslation": {
+    "message": "Add translation..."
+  },
+  "btnFinishReview": {
+    "message": "Finish session"
+  },
+  "planHeading": {
+    "message": "Weekly Plan"
+  },
+  "planTheme": {
+    "message": "Theme"
+  },
+  "planEmpty": {
+    "message": "No plan for this week yet."
+  },
+  "progressHeading": {
+    "message": "Your Progress"
+  },
+  "statStreak": {
+    "message": "Day Streak"
+  },
+  "statTotalXp": {
+    "message": "Total XP"
+  },
+  "statLevel": {
+    "message": "Level"
+  },
+  "statWordsLearned": {
+    "message": "Words Learned"
+  },
+  "statDueCount": {
+    "message": "Cards Due"
+  },
+  "statWeeklyGoal": {
+    "message": "Weekly Study Days"
+  },
+  "achievementsHeading": {
+    "message": "Achievements"
+  },
+  "ach_first_lesson": {
+    "message": "First Step (1 lesson)"
+  },
+  "ach_streak_3": {
+    "message": "3-Day Streak"
+  },
+  "ach_streak_7": {
+    "message": "7-Day Streak"
+  },
+  "ach_streak_30": {
+    "message": "30-Day Streak"
+  },
+  "ach_cards_50": {
+    "message": "50 Words Collected"
+  },
+  "ach_cards_100": {
+    "message": "100 Words Collected"
+  },
+  "ach_cards_500": {
+    "message": "500 Words Collected"
+  },
+  "ach_reviews_100": {
+    "message": "100 Card Reviews"
+  },
+  "settingsHeading": {
+    "message": "Settings"
+  },
+  "settingsProfileSection": {
+    "message": "Learning Profile"
+  },
+  "btnSaveProfile": {
+    "message": "Save profile"
+  },
+  "settingsPrefsSection": {
+    "message": "Preferences"
+  },
+  "fieldAutoSave": {
+    "message": "Auto-save lessons on Little Language Lessons"
+  },
+  "fieldReminder": {
+    "message": "Daily study reminder time"
+  },
+  "reminderOff": {
+    "message": "Off"
+  },
+  "fieldUiLang": {
+    "message": "Interface language"
+  },
+  "uiLangAuto": {
+    "message": "Auto (browser)"
+  },
+  "settingsDataSection": {
+    "message": "Your Data"
+  },
+  "btnExport": {
+    "message": "Export JSON backup"
+  },
+  "btnImport": {
+    "message": "Import JSON backup"
+  },
+  "btnReset": {
+    "message": "Reset all data"
+  },
+  "btnResetConfirm1": {
+    "message": "Click again to confirm reset"
+  },
+  "btnResetConfirm2": {
+    "message": "Confirm permanent reset"
+  },
+  "settingsAboutSection": {
+    "message": "About LangCoach"
+  },
+  "aboutDisclaimer": {
+    "message": "LangCoach is an independent open-source project and is not affiliated with, endorsed by, or sponsored by Google."
+  },
+  "aboutGithub": {
+    "message": "GitHub Repository"
+  },
+  "aboutSupport": {
+    "message": "Support the project"
+  },
+  "reminderTitle": {
+    "message": "Time for your language practice!"
+  },
+  "reminderBody": {
+    "message": "Your 5-minute lesson on LangCoach is waiting to keep your streak alive."
+  },
+  "btnFillTheme": {
+    "message": "Fill page"
+  },
+  "btnFilled": {
+    "message": "Filled!"
+  },
+  "tabModeList": {
+    "message": "Word List"
+  },
+  "tabModeCards": {
+    "message": "Cards"
+  },
+  "searchPlaceholder": {
+    "message": "Search words or translation..."
+  },
+  "btnMarkLearned": {
+    "message": "Learned (+5 XP)"
+  },
+  "statusLearned": {
+    "message": "Learned"
+  },
+  "statusNew": {
+    "message": "New"
+  },
+  "btnCancel": {
+    "message": "Cancel"
+  },
+  "noTranslation": {
+    "message": "No translation yet (click edit)"
+  }
 }

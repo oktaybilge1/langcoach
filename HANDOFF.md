@@ -91,6 +91,23 @@ Claude Code oturum sınırına takıldıktan sonra Antigravity tarafından tamam
    - Güncellenen dosyalar: `README.md`, `README.tr.md` (Chrome uzantısı birinci kapı, Claude Code MCP ikinci kapı), `.github/workflows/ci.yml` (`extension-e2e` işi ve ZIP artifact yüklemesi eklendi), `AGENTS.md`.
    - Son durum: **32 Vitest dosyası (292 birim/entegrasyon testi) + 5 Playwright E2E testi + TypeScript typecheck + üretim build + ZIP paketleme tamamen yeşil.**
 
+6. **Kullanıcı Canlı Testi Sonrası UI/UX ve Dayanıklılık İyileştirmeleri (2026-10-21):**
+   - **Google Labs 50 Harf Sınırı Düzeltmesi:**
+     - Kullanıcı canlı testinde 'su kaçıran mutfak lavabosu için tesisatçı çağırmak' (51 karakter) temasını denerken Google'ın giriş kutusundaki 50/50 sınırına takıldığı ve Next.js'in çöktüğü gözlemlendi.
+     - `apps/extension/src/lib/themes.ts` içindeki 5 dilde (`en`, `tr`, `es`, `fr`, `pt_BR`) 360 temanın tamamı strictly **<= 40 karakter** olacak şekilde kısaltıldı.
+     - `apps/extension/test/themes.test.ts` içine tüm temaların `<= 45` karakter olduğunu garanti eden test eklendi.
+   - **Tek Tıkla Kutuya Yazdırma (`fillTheme`):**
+     - `apps/extension/src/content/isolated.ts` içine `fillTheme` mesaj dinleyicisi eklendi.
+     - `Today.tsx` içine `[Kutuya Yaz]` butonu konuldu; kullanıcı kopyala-yapıştır yapmadan tek tıkla Google'ın giriş kutusuna temayı otomatik doldurur.
+   - **Sekme Yeniden Kullanımı (`openExperimentUrl`):**
+     - Google Labs Next.js doğrudan yeni sekmede açıldığında `next-intl` bağlam eksikliğinden çökebiliyordu. `openExperimentUrl` fonksiyonu mevcut açık `labs.google/lll` sekmesini güncelleyecek şekilde geliştirildi.
+   - **Doğrudan Kelime Listesi (Sözlük Görünümü):**
+     - Kullanıcı geri bildirimi: *"tek tek cevabı göster iyi kötü seç falan sevmedim, kelimeler listelensin işte direkt"*.
+     - `Review.tsx` içine `[ 📋 Kelime Listesi ]` ve `[ 🎴 Kart Modu ]` seçenekleri eklendi, kullanıcının tercihi `localStorage`'da saklanıyor.
+     - Liste görünümünde: arama kutusu, kelime, telaffuz dinleme (🔊), satır içi Türkçe çeviri düzenleme (✏️ [Düzenle]), ve tek tıkla [✅ Öğrendim (+5 XP)] butonu yer alıyor.
+   - **Kullanıcının Ürün Vizyonu ("Google bile keşke böyle çıkarsaydık demeli"):**
+     - Sonraki adımlar için yol haritası: Otomatik Türkçe çeviri katmanı, interaktif mini quiz/eşleştirme alıştırmaları, sayfa içi zenginleştirme butonları ve Web Speech mikrofon telaffuz değerlendirmesi.
+
 ## 4. Yarım kalan iş (buradan devam et)
 Son düzeltmeler (F1–F10, N1–N4) yapıldı ve bağımsız değerlendiriciden geçti. Kalanlar:
 1. CI'ın GitHub Actions'ta (Windows/macOS/Linux + pack-smoke) geçtiğini doğrula; kırılırsa düzelt.

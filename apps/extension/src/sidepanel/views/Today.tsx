@@ -46,7 +46,18 @@ export function taskIcon(type: TaskType): string {
 }
 
 export function openExperimentUrl(url: string): void {
-  if (typeof chrome !== 'undefined' && chrome.tabs?.create) {
+  if (typeof chrome !== 'undefined' && chrome.tabs?.query && chrome.tabs?.update) {
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      const activeTab = tabs[0];
+      if (activeTab?.id && activeTab.url && activeTab.url.includes('labs.google/lll')) {
+        void chrome.tabs.update(activeTab.id, { url });
+        return;
+      }
+      if (typeof chrome.tabs?.create === 'function') {
+        void chrome.tabs.create({ url });
+      }
+    });
+  } else if (typeof chrome !== 'undefined' && chrome.tabs?.create) {
     void chrome.tabs.create({ url });
   } else if (typeof window !== 'undefined') {
     window.open(url, '_blank', 'noopener');
@@ -56,6 +67,7 @@ export function openExperimentUrl(url: string): void {
 export function Today({ snapshot, uiLocale, t, send, onRefresh, onOpenReview }: TodayProps) {
   const [seed, setSeed] = useState(0);
   const [copied, setCopied] = useState(false);
+  const [filled, setFilled] = useState(false);
 
   const profile = snapshot.profile!;
   const tasks = snapshot.today?.tasks ?? [];
@@ -72,6 +84,19 @@ export function Today({ snapshot, uiLocale, t, send, onRefresh, onOpenReview }: 
     }
     const url = deeplink(toSiteLang(uiLocale), task.type);
     openExperimentUrl(url);
+  }
+
+  async function handleFillTheme() {
+    if (typeof chrome !== 'undefined' && chrome.tabs?.query && chrome.tabs?.sendMessage) {
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        const activeTab = tabs[0];
+        if (activeTab?.id) {
+          chrome.tabs.sendMessage(activeTab.id, { type: 'fillTheme', theme: currentTheme }).catch(() => {});
+          setFilled(true);
+          setTimeout(() => setFilled(false), 1800);
+        }
+      });
+    }
   }
 
   async function handleCopyTheme() {
@@ -145,6 +170,9 @@ export function Today({ snapshot, uiLocale, t, send, onRefresh, onOpenReview }: 
           “{currentTheme}”
         </p>
         <div class="theme-actions">
+          <button type="button" class="primary" onClick={handleFillTheme}>
+            {filled ? `✓ ${t('btnFilled')}` : t('btnFillTheme')}
+          </button>
           <button type="button" onClick={handleCopyTheme}>
             {copied ? t('btnCopied') : t('btnCopy')}
           </button>
@@ -153,7 +181,6 @@ export function Today({ snapshot, uiLocale, t, send, onRefresh, onOpenReview }: 
           </button>
           <button
             type="button"
-            class="primary"
             onClick={() => openExperimentUrl(deeplink(toSiteLang(uiLocale), 'tiny_lesson'))}
           >
             {t('btnOpenLll')}

@@ -124,7 +124,25 @@ export function startIsolated(deps: IsolatedDeps): { nonce: string } {
   });
 
   deps.onMessage.addListener((msg, sender) => {
-    if (sender?.id !== deps.runtimeId || !isObj(msg) || msg.type !== 'toast') return;
+    if (sender?.id !== deps.runtimeId || !isObj(msg)) return;
+    if (msg.type === 'fillTheme' && typeof msg.theme === 'string') {
+      try {
+        const input = win.document.querySelector<HTMLInputElement | HTMLTextAreaElement>(
+          'input[placeholder*="purpose" i], input[placeholder*="theme" i], input[type="text"], textarea',
+        );
+        if (input) {
+          input.focus();
+          const clean = msg.theme.slice(0, 45);
+          input.value = clean;
+          input.dispatchEvent(new Event('input', { bubbles: true }));
+          input.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+      } catch {
+        /* ignore */
+      }
+      return;
+    }
+    if (msg.type !== 'toast') return;
     if (msg.variant === 'manual') toaster.show({ text: t('toastSavedManual'), actions: [openAction()] });
     else if (msg.variant === 'already') toaster.show({ text: t('toastAlready'), actions: [openAction()] });
   });

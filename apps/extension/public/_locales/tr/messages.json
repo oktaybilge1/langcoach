@@ -10,7 +10,9 @@
   "toastSaved": {
     "message": "✓ $COUNT$ kelime LangCoach'a kaydedildi",
     "placeholders": {
-      "count": { "content": "$1" }
+      "count": {
+        "content": "$1"
+      }
     }
   },
   "toastAlready": {
@@ -28,7 +30,9 @@
   "toastSaveN": {
     "message": "$COUNT$ kelimeyi kaydet",
     "placeholders": {
-      "count": { "content": "$1" }
+      "count": {
+        "content": "$1"
+      }
     }
   },
   "toastSavedManual": {
@@ -37,112 +41,340 @@
   "toastXp": {
     "message": "+$XP$ XP",
     "placeholders": {
-      "xp": { "content": "$1" }
+      "xp": {
+        "content": "$1"
+      }
     }
   },
   "menuSave": {
     "message": "LangCoach'a kaydet"
   },
-  "tabToday": { "message": "Bugün" },
-  "tabReview": { "message": "Tekrar" },
-  "tabPlan": { "message": "Plan" },
-  "tabProgress": { "message": "İlerleme" },
-  "tabSettings": { "message": "Ayarlar" },
-  "loading": { "message": "Yükleniyor..." },
-  "onboardTitle": { "message": "Dil koçunu hazırla" },
-  "onboardSubtitle": { "message": "Haftalık planını ve kelime tekrar desteni kişiselleştir." },
-  "fieldTargetLang": { "message": "Öğrendiğim dil" },
-  "fieldNativeLang": { "message": "Ana dilim" },
-  "fieldLevel": { "message": "Mevcut seviye" },
-  "levelUnsure": { "message": "Emin değilim (A2 ile başla)" },
-  "fieldGoal": { "message": "Ana hedef" },
-  "goalTravel": { "message": "Seyahat" },
-  "goalWork": { "message": "İş" },
-  "goalStudy": { "message": "Eğitim" },
-  "goalMoving": { "message": "Yurt dışına taşınma" },
-  "goalFamily": { "message": "Aile ve arkadaşlar" },
-  "goalFun": { "message": "Eğlence ve kültür" },
-  "fieldMinutes": { "message": "Günlük dakika" },
-  "fieldDays": { "message": "Haftalık gün" },
-  "fieldCamera": { "message": "Kameram var (Word Cam ekle)" },
-  "btnStartPlan": { "message": "Planımı oluştur" },
-  "todayHeading": { "message": "Bugünün Görevleri" },
-  "todayRingLabel": { "message": "Günlük hedef" },
-  "todayStreak": { "message": "Günlük seri" },
-  "todayThemeLabel": { "message": "Önerilen Tiny Lesson konusu" },
-  "btnCopy": { "message": "Kopyala" },
-  "btnCopied": { "message": "Kopyalandı" },
-  "btnNextTheme": { "message": "Başka fikir" },
-  "btnOpenLll": { "message": "Aç" },
-  "taskTinyLesson": { "message": "Tiny Lesson" },
-  "taskSlangHang": { "message": "Slang Hang" },
-  "taskWordCam": { "message": "Word Cam" },
-  "taskReview": { "message": "Kelime Tekrarı" },
-  "taskQuiz": { "message": "Haftalık Mini Sınav" },
-  "taskStatusDone": { "message": "Tamam" },
-  "taskStatusTodo": { "message": "Bekliyor" },
+  "tabToday": {
+    "message": "Bugün"
+  },
+  "tabReview": {
+    "message": "Tekrar"
+  },
+  "tabPlan": {
+    "message": "Plan"
+  },
+  "tabProgress": {
+    "message": "İlerleme"
+  },
+  "tabSettings": {
+    "message": "Ayarlar"
+  },
+  "loading": {
+    "message": "Yükleniyor..."
+  },
+  "onboardTitle": {
+    "message": "Dil koçunu hazırla"
+  },
+  "onboardSubtitle": {
+    "message": "Haftalık planını ve kelime tekrar desteni kişiselleştir."
+  },
+  "fieldTargetLang": {
+    "message": "Öğrendiğim dil"
+  },
+  "fieldNativeLang": {
+    "message": "Ana dilim"
+  },
+  "fieldLevel": {
+    "message": "Mevcut seviye"
+  },
+  "levelUnsure": {
+    "message": "Emin değilim (A2 ile başla)"
+  },
+  "fieldGoal": {
+    "message": "Ana hedef"
+  },
+  "goalTravel": {
+    "message": "Seyahat"
+  },
+  "goalWork": {
+    "message": "İş"
+  },
+  "goalStudy": {
+    "message": "Eğitim"
+  },
+  "goalMoving": {
+    "message": "Yurt dışına taşınma"
+  },
+  "goalFamily": {
+    "message": "Aile ve arkadaşlar"
+  },
+  "goalFun": {
+    "message": "Eğlence ve kültür"
+  },
+  "fieldMinutes": {
+    "message": "Günlük dakika"
+  },
+  "fieldDays": {
+    "message": "Haftalık gün"
+  },
+  "fieldCamera": {
+    "message": "Kameram var (Word Cam ekle)"
+  },
+  "btnStartPlan": {
+    "message": "Planımı oluştur"
+  },
+  "todayHeading": {
+    "message": "Bugünün Görevleri"
+  },
+  "todayRingLabel": {
+    "message": "Günlük hedef"
+  },
+  "todayStreak": {
+    "message": "Günlük seri"
+  },
+  "todayThemeLabel": {
+    "message": "Önerilen Tiny Lesson konusu"
+  },
+  "btnCopy": {
+    "message": "Kopyala"
+  },
+  "btnCopied": {
+    "message": "Kopyalandı"
+  },
+  "btnNextTheme": {
+    "message": "Başka fikir"
+  },
+  "btnOpenLll": {
+    "message": "Aç"
+  },
+  "taskTinyLesson": {
+    "message": "Tiny Lesson"
+  },
+  "taskSlangHang": {
+    "message": "Slang Hang"
+  },
+  "taskWordCam": {
+    "message": "Word Cam"
+  },
+  "taskReview": {
+    "message": "Kelime Tekrarı"
+  },
+  "taskQuiz": {
+    "message": "Haftalık Mini Sınav"
+  },
+  "taskStatusDone": {
+    "message": "Tamam"
+  },
+  "taskStatusTodo": {
+    "message": "Bekliyor"
+  },
   "minutesShort": {
     "message": "$MIN$ dk",
-    "placeholders": { "min": { "content": "$1" } }
+    "placeholders": {
+      "min": {
+        "content": "$1"
+      }
+    }
   },
-  "todayNoTasks": { "message": "Bugün için planlanmış görev yok. Serini korumak için bir ders veya tekrar yap!" },
-  "lastCaptureHeading": { "message": "Son kaydedilen ders" },
-  "grammarHeading": { "message": "Son dilbilgisi notları" },
-  "reviewHeading": { "message": "Aralıklı Kelime Tekrarı" },
+  "todayNoTasks": {
+    "message": "Bugün için planlanmış görev yok. Serini korumak için bir ders veya tekrar yap!"
+  },
+  "lastCaptureHeading": {
+    "message": "Son kaydedilen ders"
+  },
+  "grammarHeading": {
+    "message": "Son dilbilgisi notları"
+  },
+  "reviewHeading": {
+    "message": "Aralıklı Kelime Tekrarı"
+  },
   "reviewDueBadge": {
     "message": "$COUNT$ bekliyor",
-    "placeholders": { "count": { "content": "$1" } }
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
   },
-  "reviewEmptyTitle": { "message": "Şimdilik tüm tekrarlar bitti!" },
-  "reviewEmptyBody": { "message": "Destene yeni kelimeler eklemek için Little Language Lessons'ta bir ders yap." },
-  "btnShowAnswer": { "message": "Cevabı göster" },
-  "btnListen": { "message": "Dinle" },
-  "rateAgain": { "message": "Tekrar" },
-  "rateHard": { "message": "Zor" },
-  "rateGood": { "message": "İyi" },
-  "rateEasy": { "message": "Kolay" },
-  "btnEditCard": { "message": "Çeviriyi düzenle" },
-  "btnSaveCard": { "message": "Kaydet" },
-  "placeholderTranslation": { "message": "Çeviri ekle..." },
-  "btnFinishReview": { "message": "Oturumu bitir" },
-  "planHeading": { "message": "Haftalık Plan" },
-  "planTheme": { "message": "Konu" },
-  "planEmpty": { "message": "Bu hafta için henüz plan yok." },
-  "progressHeading": { "message": "İlerlemen" },
-  "statStreak": { "message": "Günlük Seri" },
-  "statTotalXp": { "message": "Toplam XP" },
-  "statLevel": { "message": "Seviye" },
-  "statWordsLearned": { "message": "Öğrenilen Kelime" },
-  "statDueCount": { "message": "Bekleyen Kart" },
-  "statWeeklyGoal": { "message": "Haftalık Çalışma Günü" },
-  "achievementsHeading": { "message": "Başarımlar" },
-  "ach_first_lesson": { "message": "İlk Adım (1 ders)" },
-  "ach_streak_3": { "message": "3 Günlük Seri" },
-  "ach_streak_7": { "message": "7 Günlük Seri" },
-  "ach_streak_30": { "message": "30 Günlük Seri" },
-  "ach_cards_50": { "message": "50 Kelimeye Ulaşıldı" },
-  "ach_cards_100": { "message": "100 Kelimeye Ulaşıldı" },
-  "ach_cards_500": { "message": "500 Kelimeye Ulaşıldı" },
-  "ach_reviews_100": { "message": "100 Kart Tekrarı" },
-  "settingsHeading": { "message": "Ayarlar" },
-  "settingsProfileSection": { "message": "Öğrenme Profili" },
-  "btnSaveProfile": { "message": "Profili kaydet" },
-  "settingsPrefsSection": { "message": "Tercihler" },
-  "fieldAutoSave": { "message": "Little Language Lessons derslerini otomatik kaydet" },
-  "fieldReminder": { "message": "Günlük çalışma hatırlatma saati" },
-  "reminderOff": { "message": "Kapalı" },
-  "fieldUiLang": { "message": "Arayüz dili" },
-  "uiLangAuto": { "message": "Otomatik (tarayıcı)" },
-  "settingsDataSection": { "message": "Verilerin" },
-  "btnExport": { "message": "JSON yedeği dışa aktar" },
-  "btnImport": { "message": "JSON yedeği içe aktar" },
-  "btnReset": { "message": "Tüm verileri sıfırla" },
-  "btnResetConfirm1": { "message": "Sıfırlamayı onaylamak için tekrar tıkla" },
-  "btnResetConfirm2": { "message": "Kalıcı sıfırlamayı onayla" },
-  "settingsAboutSection": { "message": "LangCoach Hakkında" },
-  "aboutDisclaimer": { "message": "LangCoach bağımsız bir açık kaynak projesidir; Google ile bağlantılı değildir, Google tarafından desteklenmez veya finanse edilmez." },
-  "aboutGithub": { "message": "GitHub Deposu" },
-  "aboutSupport": { "message": "Projeyi destekle" },
-  "reminderTitle": { "message": "Dil pratiği zamanı!" },
-  "reminderBody": { "message": "Serini korumak için 5 dakikalık LangCoach dersin seni bekliyor." }
+  "reviewEmptyTitle": {
+    "message": "Şimdilik tüm tekrarlar bitti!"
+  },
+  "reviewEmptyBody": {
+    "message": "Destene yeni kelimeler eklemek için Little Language Lessons'ta bir ders yap."
+  },
+  "btnShowAnswer": {
+    "message": "Cevabı göster"
+  },
+  "btnListen": {
+    "message": "Dinle"
+  },
+  "rateAgain": {
+    "message": "Tekrar"
+  },
+  "rateHard": {
+    "message": "Zor"
+  },
+  "rateGood": {
+    "message": "İyi"
+  },
+  "rateEasy": {
+    "message": "Kolay"
+  },
+  "btnEditCard": {
+    "message": "Çeviriyi düzenle"
+  },
+  "btnSaveCard": {
+    "message": "Kaydet"
+  },
+  "placeholderTranslation": {
+    "message": "Çeviri ekle..."
+  },
+  "btnFinishReview": {
+    "message": "Oturumu bitir"
+  },
+  "planHeading": {
+    "message": "Haftalık Plan"
+  },
+  "planTheme": {
+    "message": "Konu"
+  },
+  "planEmpty": {
+    "message": "Bu hafta için henüz plan yok."
+  },
+  "progressHeading": {
+    "message": "İlerlemen"
+  },
+  "statStreak": {
+    "message": "Günlük Seri"
+  },
+  "statTotalXp": {
+    "message": "Toplam XP"
+  },
+  "statLevel": {
+    "message": "Seviye"
+  },
+  "statWordsLearned": {
+    "message": "Öğrenilen Kelime"
+  },
+  "statDueCount": {
+    "message": "Bekleyen Kart"
+  },
+  "statWeeklyGoal": {
+    "message": "Haftalık Çalışma Günü"
+  },
+  "achievementsHeading": {
+    "message": "Başarımlar"
+  },
+  "ach_first_lesson": {
+    "message": "İlk Adım (1 ders)"
+  },
+  "ach_streak_3": {
+    "message": "3 Günlük Seri"
+  },
+  "ach_streak_7": {
+    "message": "7 Günlük Seri"
+  },
+  "ach_streak_30": {
+    "message": "30 Günlük Seri"
+  },
+  "ach_cards_50": {
+    "message": "50 Kelimeye Ulaşıldı"
+  },
+  "ach_cards_100": {
+    "message": "100 Kelimeye Ulaşıldı"
+  },
+  "ach_cards_500": {
+    "message": "500 Kelimeye Ulaşıldı"
+  },
+  "ach_reviews_100": {
+    "message": "100 Kart Tekrarı"
+  },
+  "settingsHeading": {
+    "message": "Ayarlar"
+  },
+  "settingsProfileSection": {
+    "message": "Öğrenme Profili"
+  },
+  "btnSaveProfile": {
+    "message": "Profili kaydet"
+  },
+  "settingsPrefsSection": {
+    "message": "Tercihler"
+  },
+  "fieldAutoSave": {
+    "message": "Little Language Lessons derslerini otomatik kaydet"
+  },
+  "fieldReminder": {
+    "message": "Günlük çalışma hatırlatma saati"
+  },
+  "reminderOff": {
+    "message": "Kapalı"
+  },
+  "fieldUiLang": {
+    "message": "Arayüz dili"
+  },
+  "uiLangAuto": {
+    "message": "Otomatik (tarayıcı)"
+  },
+  "settingsDataSection": {
+    "message": "Verilerin"
+  },
+  "btnExport": {
+    "message": "JSON yedeği dışa aktar"
+  },
+  "btnImport": {
+    "message": "JSON yedeği içe aktar"
+  },
+  "btnReset": {
+    "message": "Tüm verileri sıfırla"
+  },
+  "btnResetConfirm1": {
+    "message": "Sıfırlamayı onaylamak için tekrar tıkla"
+  },
+  "btnResetConfirm2": {
+    "message": "Kalıcı sıfırlamayı onayla"
+  },
+  "settingsAboutSection": {
+    "message": "LangCoach Hakkında"
+  },
+  "aboutDisclaimer": {
+    "message": "LangCoach bağımsız bir açık kaynak projesidir; Google ile bağlantılı değildir, Google tarafından desteklenmez veya finanse edilmez."
+  },
+  "aboutGithub": {
+    "message": "GitHub Deposu"
+  },
+  "aboutSupport": {
+    "message": "Projeyi destekle"
+  },
+  "reminderTitle": {
+    "message": "Dil pratiği zamanı!"
+  },
+  "reminderBody": {
+    "message": "Serini korumak için 5 dakikalık LangCoach dersin seni bekliyor."
+  },
+  "btnFillTheme": {
+    "message": "Kutuya yaz"
+  },
+  "btnFilled": {
+    "message": "Yazıldı!"
+  },
+  "tabModeList": {
+    "message": "Kelime Listesi"
+  },
+  "tabModeCards": {
+    "message": "Kart Modu"
+  },
+  "searchPlaceholder": {
+    "message": "Kelime veya çeviri ara..."
+  },
+  "btnMarkLearned": {
+    "message": "Öğrendim (+5 XP)"
+  },
+  "statusLearned": {
+    "message": "Öğrenildi"
+  },
+  "statusNew": {
+    "message": "Yeni"
+  },
+  "btnCancel": {
+    "message": "İptal"
+  },
+  "noTranslation": {
+    "message": "Henüz çeviri yok (düzenleye tıkla)"
+  }
 }
