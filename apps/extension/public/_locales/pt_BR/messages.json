@@ -6,5 +6,41 @@
   "extDescription": {
     "message": "Sequências, plano diário e revisão com repetição espaçada para o Little Language Lessons (Google Labs). Sem afiliação com o Google.",
     "description": "Extension description (max 132 chars)"
+  },
+  "toastSaved": {
+    "message": "✓ $COUNT$ palavras salvas no LangCoach",
+    "placeholders": {
+      "count": { "content": "$1" }
+    }
+  },
+  "toastAlready": {
+    "message": "Já está no seu baralho"
+  },
+  "toastUndo": {
+    "message": "Desfazer"
+  },
+  "toastOpen": {
+    "message": "Abrir"
+  },
+  "toastRemoved": {
+    "message": "Removido"
+  },
+  "toastSaveN": {
+    "message": "Salvar $COUNT$ palavras",
+    "placeholders": {
+      "count": { "content": "$1" }
+    }
+  },
+  "toastSavedManual": {
+    "message": "✓ Salvo no LangCoach"
+  },
+  "toastXp": {
+    "message": "+$XP$ XP",
+    "placeholders": {
+      "xp": { "content": "$1" }
+    }
+  },
+  "menuSave": {
+    "message": "Salvar no LangCoach"
   }
 }

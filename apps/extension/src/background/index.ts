@@ -1,6 +1,7 @@
 import './zod-config'; // must stay first: disables zod's eval probe before core builds its schemas
 import { Coach } from '@langcoach/core/browser';
 import { isMessage } from '../shared/messages';
+import { createMenuClickHandler, registerMenus } from './menu';
 import { isAllowed } from './policy';
 import { createRouter } from './router';
 import { ChromeStorageStore } from './store';
@@ -8,7 +9,8 @@ import { ChromeStorageStore } from './store';
 // The background service worker is the single writer to storage.
 const store = new ChromeStorageStore();
 const coach = new Coach(store);
-const router = createRouter({ coach, store, area: chrome.storage.local });
+const log = (...a: unknown[]) => console.warn(...a);
+const router = createRouter({ coach, store, area: chrome.storage.local, sidePanel: chrome.sidePanel, log });
 
 chrome.runtime.onMessage.addListener((msg: unknown, sender, sendResponse) => {
   if (!isMessage(msg)) return false;
@@ -16,10 +18,21 @@ chrome.runtime.onMessage.addListener((msg: unknown, sender, sendResponse) => {
     sendResponse({ ok: false, error: { name: 'Forbidden', message: 'Sender not allowed', code: 'forbidden' } });
     return false;
   }
-  void router.handle(msg).then(sendResponse);
+  // router.handle runs synchronously up to the first await, so openPanel keeps the user gesture.
+  void router.handle(msg, { tabId: sender.tab?.id }).then(sendResponse);
   return true; // respond asynchronously
 });
 
+const setupMenus = () =>
+  registerMenus(chrome.contextMenus, (k) => chrome.i18n.getMessage(k), __E2E__).catch((e) =>
+    log('LangCoach: context menu setup failed', e),
+  );
+
 chrome.runtime.onInstalled.addListener(() => {
   void chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true });
+  void setupMenus();
 });
+chrome.runtime.onStartup.addListener(() => void setupMenus());
+
+const onMenuClick = createMenuClickHandler({ coach, tabs: chrome.tabs, log });
+chrome.contextMenus.onClicked.addListener((info, tab) => void onMenuClick(info, tab));

@@ -14,11 +14,11 @@ describe('isAllowed', () => {
     }
   });
   it('lets content scripts on labs.google/lll use capture/undo/saveManual only', () => {
-    for (const t of ['capture', 'undo', 'saveManual']) expect(allow(t, lll)).toBe(true);
+    for (const t of ['capture', 'undo', 'saveManual', 'openPanel']) expect(allow(t, lll)).toBe(true);
     for (const t of ['reset', 'importData', 'getSnapshot', 'setSettings']) expect(allow(t, lll)).toBe(false);
   });
   it('keeps capture/undo/saveManual away from extension pages', () => {
-    for (const t of ['capture', 'undo', 'saveManual']) expect(allow(t, page)).toBe(false);
+    for (const t of ['capture', 'undo', 'saveManual', 'openPanel']) expect(allow(t, page)).toBe(false);
   });
   it('rejects foreign ids, tabless content senders, other sites and lookalikes', () => {
     expect(allow('reset', { ...page, id: 'evil' })).toBe(false);

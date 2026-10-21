@@ -5,7 +5,7 @@ export interface SenderLike {
 }
 
 /** Messages only content scripts on the lesson site may send. */
-const CONTENT_TYPES: ReadonlySet<string> = new Set(['capture', 'undo', 'saveManual']);
+const CONTENT_TYPES: ReadonlySet<string> = new Set(['capture', 'undo', 'saveManual', 'openPanel']);
 /** Messages only extension pages (side panel) may send. */
 const PAGE_TYPES: ReadonlySet<string> = new Set([
   'getSnapshot',

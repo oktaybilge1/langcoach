@@ -17,10 +17,11 @@ import {
   type Settings,
   type Snapshot,
 } from '../shared/messages';
+import { LAST_CAPTURE_KEY, createCaptureService, type CaptureContext } from './capture';
 import type { StorageAreaLike } from './store';
 
+export { LAST_CAPTURE_KEY, PENDING_GRAMMAR_KEY } from './capture';
 export const SETTINGS_KEY = 'langcoach:settings';
-export const LAST_CAPTURE_KEY = 'langcoach:lastCapture';
 
 export interface RouterDeps {
   coach: Coach;
@@ -28,6 +29,10 @@ export interface RouterDeps {
   /** Storage area for settings and the last-capture marker (never the learning state). */
   area: StorageAreaLike;
   clock?: () => Date;
+  /** chrome.sidePanel (injected in tests). Must be called synchronously inside the message handler. */
+  sidePanel?: { open(options: { tabId: number }): Promise<void> };
+  /** Extension-console logger; defaults to console.warn. */
+  log?: (...args: unknown[]) => void;
 }
 
 export function toErrorInfo(e: unknown): ErrorInfo {
@@ -56,9 +61,13 @@ export function validateMessage(m: Record<string, unknown>): void {
     case 'capture':
       if (!CAPTURE_KINDS.includes(m.kind as string)) bad('kind is not a known capture kind');
       if (typeof m.pageUrl !== 'string') bad('pageUrl must be a string');
+      if (m.force !== undefined && typeof m.force !== 'boolean') bad('force must be a boolean');
       break;
     case 'undo':
-      id(m.lessonId, 'lessonId');
+      if (!Array.isArray(m.lessonIds) || m.lessonIds.length < 1 || m.lessonIds.length > 100) {
+        bad('lessonIds must be an array of 1 to 100 ids');
+      }
+      (m.lessonIds as unknown[]).forEach((x, i) => id(x, `lessonIds[${i}]`));
       break;
     case 'setProfile':
       if (!isObj(m.profile)) bad('profile must be an object');
@@ -144,8 +153,27 @@ export function createRouter(deps: RouterDeps) {
       uiLanguage:
         typeof st.uiLanguage === 'string' && st.uiLanguage !== '' ? st.uiLanguage : DEFAULT_SETTINGS.uiLanguage,
       hasCamera: typeof st.hasCamera === 'boolean' ? st.hasCamera : DEFAULT_SETTINGS.hasCamera,
+      ...(typeof st.pendingTargetLanguage === 'string' && st.pendingTargetLanguage !== ''
+        ? { pendingTargetLanguage: st.pendingTargetLanguage }
+        : {}),
     };
   }
+
+  const log = deps.log ?? ((...a: unknown[]) => console.warn(...a));
+  const captures = createCaptureService({
+    coach,
+    store,
+    area,
+    clock,
+    log,
+    getAutoSave: async () => (await readSettings()).autoSave,
+    notePendingTarget: (targetLanguage) =>
+      serialized(async () => {
+        const cur = await readSettings();
+        if (cur.pendingTargetLanguage) return;
+        await area.set({ [SETTINGS_KEY]: { ...cur, pendingTargetLanguage: targetLanguage } });
+      }),
+  });
 
   async function snapshot(): Promise<Snapshot> {
     const [state, progress, lc] = await Promise.all([store.load(), coach.progress(), area.get(LAST_CAPTURE_KEY)]);
@@ -165,13 +193,18 @@ export function createRouter(deps: RouterDeps) {
     };
   }
 
-  const handlers: { [K in MessageType]: (m: { type: K } & MessageMap[K]['request']) => Promise<ResponseOf<K>> } = {
-    // Task 5 fills in capture and undo (parse, saveLesson, plan auto-complete, lastCapture marker).
-    capture: async () => {
-      throw new Error('capture is not implemented yet');
-    },
-    undo: async () => {
-      throw new Error('undo is not implemented yet');
+  const handlers: {
+    [K in MessageType]: (m: { type: K } & MessageMap[K]['request'], ctx: CaptureContext) => Promise<ResponseOf<K>>;
+  } = {
+    capture: (m, ctx) =>
+      captures.capture({ kind: m.kind, request: m.request, response: m.response, pageUrl: m.pageUrl, force: m.force }, ctx),
+    undo: (m) => captures.undo(m.lessonIds),
+    // No await before open(): Chrome only allows sidePanel.open() while the user gesture is still active.
+    openPanel: async (_m, ctx) => {
+      if (ctx.tabId === undefined) throw new InvalidDataError('openPanel must come from a tab');
+      const sp = deps.sidePanel ?? chrome.sidePanel;
+      await sp.open({ tabId: ctx.tabId });
+      return null;
     },
     getSnapshot: () => snapshot(),
     setProfile: (m) => coach.setProfile(m.profile),
@@ -210,11 +243,15 @@ export function createRouter(deps: RouterDeps) {
   };
 
   return {
-    async handle<K extends MessageType>(msg: { type: K } & MessageMap[K]['request']): Promise<Response<ResponseOf<K>>> {
+    /** `ctx.tabId` is the sender tab (content-script messages). */
+    async handle<K extends MessageType>(
+      msg: { type: K } & MessageMap[K]['request'],
+      ctx: CaptureContext = {},
+    ): Promise<Response<ResponseOf<K>>> {
       try {
         validateMessage(msg as unknown as Record<string, unknown>);
-        const h = handlers[msg.type] as (m: Message) => Promise<ResponseOf<K>>;
-        return { ok: true, data: await h(msg as Message) };
+        const h = handlers[msg.type] as (m: Message, c: CaptureContext) => Promise<ResponseOf<K>>;
+        return { ok: true, data: await h(msg as Message, ctx) };
       } catch (e) {
         return { ok: false, error: toErrorInfo(e) };
       }

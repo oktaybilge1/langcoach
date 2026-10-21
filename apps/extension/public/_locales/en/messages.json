@@ -6,5 +6,41 @@
   "extDescription": {
     "message": "Streaks, daily plan and spaced-repetition review for Little Language Lessons (Google Labs). Not affiliated with Google.",
     "description": "Extension description (max 132 chars)"
+  },
+  "toastSaved": {
+    "message": "✓ $COUNT$ words saved to LangCoach",
+    "placeholders": {
+      "count": { "content": "$1" }
+    }
+  },
+  "toastAlready": {
+    "message": "Already in your deck"
+  },
+  "toastUndo": {
+    "message": "Undo"
+  },
+  "toastOpen": {
+    "message": "Open"
+  },
+  "toastRemoved": {
+    "message": "Removed"
+  },
+  "toastSaveN": {
+    "message": "Save $COUNT$ words",
+    "placeholders": {
+      "count": { "content": "$1" }
+    }
+  },
+  "toastSavedManual": {
+    "message": "✓ Saved to LangCoach"
+  },
+  "toastXp": {
+    "message": "+$XP$ XP",
+    "placeholders": {
+      "xp": { "content": "$1" }
+    }
+  },
+  "menuSave": {
+    "message": "Save to LangCoach"
   }
 }

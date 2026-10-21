@@ -19,7 +19,7 @@ function setup() {
   let n = 0;
   const coach = new Coach(store, () => NOW, () => `id${++n}`);
   const area = fakeArea();
-  const router = createRouter({ coach, store, area, clock: () => NOW });
+  const router = createRouter({ coach, store, area, clock: () => NOW, log: () => {} });
   const call = <T>(m: Message) => router.handle(m) as Promise<{ ok: boolean; data?: T; error?: { name: string } }>;
   return { call, area };
 }
@@ -134,10 +134,10 @@ describe('background router', () => {
     expect(r).toMatchObject({ ok: false, error: { code: 'invalid' } });
   });
 
-  it('accepts a valid capture payload (reaches the Task 5 stub, not the validator)', async () => {
+  it('accepts a valid capture payload with an unknown shape and ignores it', async () => {
     const { call } = setup();
     const r = await call({ type: 'capture', kind: 'terms', request: {}, response: { a: 1 }, pageUrl: 'https://labs.google/lll/x' });
-    expect(r.error).not.toMatchObject({ code: 'invalid' });
+    expect(r).toEqual({ ok: true, data: null });
   });
 
   it('isMessage guards unknown input', () => {

@@ -10,17 +10,20 @@ export interface Settings {
   /** UI language code, or 'auto' to follow the browser. */
   uiLanguage: string;
   hasCamera: boolean;
+  /** Target language (LLL API name) seen in the first capture before onboarding; prefills onboarding. */
+  pendingTargetLanguage?: string;
 }
 
 export const DEFAULT_SETTINGS: Settings = { autoSave: true, reminderTime: null, uiLanguage: 'auto', hasCamera: false };
 
+/** Persisted marker of the most recent saved capture (key `langcoach:lastCapture`); Undo is checked against it. */
 export interface LastCapture {
-  lessonId: string;
-  at: string;
-  kind: CaptureKind;
-  situation: string;
+  lessonIds: string[];
   newCards: number;
-  duplicates: string[];
+  duplicates: number;
+  /** ISO time of the capture. */
+  at: string;
+  tabId: number | null;
 }
 
 export interface Snapshot {
@@ -32,19 +35,28 @@ export interface Snapshot {
   lastCapture: LastCapture | null;
 }
 
-export interface CaptureResult {
-  lessonId: string;
-  newCards: number;
-  duplicates: string[];
+/** Outcome of a `capture` message (null data = unknown shape, ignored). */
+export type CaptureResult =
+  | { status: 'saved'; lessonIds: string[]; newCards: number; duplicates: number; xp: number }
+  /** autoSave is off: nothing saved; the page may re-send the capture with `force: true`. */
+  | { status: 'pending'; count: number }
+  /** Grammar topics attached to their lesson or held until the lesson arrives; no toast. */
+  | { status: 'grammar' };
+
+/** Background → content script (chrome.tabs.sendMessage), e.g. after a context-menu save. */
+export interface ToastMessage {
+  type: 'toast';
+  variant: 'manual' | 'already';
 }
 
 /** Request payload and response data for every message the background handles. */
 export interface MessageMap {
   capture: {
-    request: { kind: CaptureKind; request: unknown; response: unknown; pageUrl: string };
+    request: { kind: CaptureKind; request: unknown; response: unknown; pageUrl: string; force?: boolean };
     response: CaptureResult | null;
   };
-  undo: { request: { lessonId: string }; response: { removedCards: number } };
+  undo: { request: { lessonIds: string[] }; response: { removedCards: number } };
+  openPanel: { request: Record<never, never>; response: null };
   getSnapshot: { request: Record<never, never>; response: Snapshot };
   setProfile: { request: { profile: ProfileInput }; response: Profile };
   getDue: { request: { limit: number }; response: ReviewCard[] };
@@ -86,6 +98,7 @@ export type Response<T> = { ok: true; data: T } | { ok: false; error: ErrorInfo 
 export const MESSAGE_TYPES: readonly MessageType[] = [
   'capture',
   'undo',
+  'openPanel',
   'getSnapshot',
   'setProfile',
   'getDue',

@@ -6,5 +6,41 @@
   "extDescription": {
     "message": "Little Language Lessons (Google Labs) için seriler, günlük plan ve aralıklı tekrar. Google ile bağlantılı değildir.",
     "description": "Extension description (max 132 chars)"
+  },
+  "toastSaved": {
+    "message": "✓ $COUNT$ kelime LangCoach'a kaydedildi",
+    "placeholders": {
+      "count": { "content": "$1" }
+    }
+  },
+  "toastAlready": {
+    "message": "Zaten destende"
+  },
+  "toastUndo": {
+    "message": "Geri al"
+  },
+  "toastOpen": {
+    "message": "Aç"
+  },
+  "toastRemoved": {
+    "message": "Silindi"
+  },
+  "toastSaveN": {
+    "message": "$COUNT$ kelimeyi kaydet",
+    "placeholders": {
+      "count": { "content": "$1" }
+    }
+  },
+  "toastSavedManual": {
+    "message": "✓ LangCoach'a kaydedildi"
+  },
+  "toastXp": {
+    "message": "+$XP$ XP",
+    "placeholders": {
+      "xp": { "content": "$1" }
+    }
+  },
+  "menuSave": {
+    "message": "LangCoach'a kaydet"
   }
 }
