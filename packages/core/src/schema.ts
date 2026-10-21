@@ -3,7 +3,7 @@ import { InvalidDataError } from './errors.js';
 import type { State } from './types.js';
 
 const cefr = z.enum(['A1', 'A2', 'B1', 'B2', 'C1', 'C2']);
-const taskType = z.enum(['tiny_lesson', 'slang_hang', 'review', 'quiz']);
+const taskType = z.enum(['tiny_lesson', 'slang_hang', 'review', 'quiz', 'word_cam']);
 
 // Every object is "loose": keys this version does not know about are kept, so data written by a
 // newer LangCoach survives a load → save by this one.
@@ -24,13 +24,36 @@ const lessonItem = obj({
   translation: z.string(),
   example: z.string(),
   note: z.string().optional(),
+  pronunciation: z.string().optional(),
+});
+
+const grammarExample = obj({
+  sentence: z.string(),
+  translation: z.string(),
+  transliteration: z.string().optional(),
+  explanation: z.string().optional(),
+});
+
+const grammarPoint = obj({
+  topic: z.string(),
+  description: z.string(),
+  examples: z.array(grammarExample),
+});
+
+const lessonSource = obj({
+  app: z.literal('lll'),
+  targetLanguage: z.string(),
+  sourceLanguage: z.string(),
+  purpose: z.string().optional(),
 });
 
 const lesson = obj({
   id: z.string(),
-  kind: z.enum(['tiny_lesson', 'slang_hang']),
+  kind: z.enum(['tiny_lesson', 'slang_hang', 'word_cam']),
   situation: z.string(),
   items: z.array(lessonItem),
+  grammar: z.array(grammarPoint).optional(),
+  source: lessonSource.optional(),
   createdAt: z.string(),
 });
 
@@ -48,6 +71,7 @@ const reviewCard = obj({
   term: z.string(),
   translation: z.string(),
   example: z.string(),
+  pronunciation: z.string().optional(),
   srs,
 });
 

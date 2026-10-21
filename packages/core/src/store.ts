@@ -4,26 +4,11 @@ import { homedir } from 'node:os';
 import { basename, dirname, join, resolve } from 'node:path';
 import { CorruptDataError } from './errors.js';
 import { parseState } from './schema.js';
+import { Mutex, type Store, type TransactionFn } from './store-memory.js';
 import { emptyState, type State } from './types.js';
 
 export { CorruptDataError } from './errors.js';
-
-/** What a transaction body returns: a new `state` to save (omit to save nothing) and a `result`. */
-export type TransactionOutcome<T> = { state?: State; result: T };
-export type TransactionFn<T> = (state: State) => Promise<TransactionOutcome<T>> | TransactionOutcome<T>;
-
-export interface Store {
-  load(): Promise<State>;
-  save(s: State): Promise<void>;
-  backup(): Promise<string | null>;
-  /** load → fn → save (only if fn returns `state`), all under one lock. */
-  transaction<T>(fn: TransactionFn<T>): Promise<T>;
-  /**
-   * Under the same lock: back up the current file as raw bytes (even if it is corrupt or
-   * invalid), then save `next`. Never loads, so it can restore over a broken data file.
-   */
-  replace(next: State): Promise<string | null>;
-}
+export { MemoryStore, type Store, type TransactionFn, type TransactionOutcome } from './store-memory.js';
 
 export interface JsonFileStoreOptions {
   /** Give up waiting for the cross-process lock after this long (default 5000 ms). */
@@ -37,16 +22,6 @@ const stamp = () =>
 const code = (e: unknown) => (e as NodeJS.ErrnoException)?.code;
 const isNotFound = (e: unknown) => code(e) === 'ENOENT';
 const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
-
-/** Promise-chain mutex: runs tasks one at a time, in call order. */
-class Mutex {
-  private tail: Promise<unknown> = Promise.resolve();
-  run<T>(task: () => Promise<T>): Promise<T> {
-    const next = this.tail.then(task, task);
-    this.tail = next.catch(() => undefined);
-    return next;
-  }
-}
 
 // One in-process mutex per data file, shared by every JsonFileStore on that path.
 const fileMutexes = new Map<string, Mutex>();
@@ -266,34 +241,6 @@ async function renameWithRetry(from: string, to: string): Promise<void> {
       await sleep(delay);
       delay = Math.min(delay * 2, 100);
     }
-  }
-}
-
-export class MemoryStore implements Store {
-  private state: State = emptyState();
-  private readonly mutex = new Mutex();
-
-  async load(): Promise<State> {
-    return structuredClone(this.state);
-  }
-  async save(s: State): Promise<void> {
-    this.state = structuredClone(s);
-  }
-  async backup(): Promise<string | null> {
-    return null;
-  }
-  transaction<T>(fn: TransactionFn<T>): Promise<T> {
-    return this.mutex.run(async () => {
-      const out = await fn(await this.load());
-      if (out.state !== undefined) await this.save(out.state);
-      return out.result;
-    });
-  }
-  replace(next: State): Promise<string | null> {
-    return this.mutex.run(async () => {
-      await this.save(next);
-      return null;
-    });
   }
 }
 

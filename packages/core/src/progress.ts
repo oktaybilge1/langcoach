@@ -5,6 +5,7 @@ const BASE_XP: Record<TaskType, number> = {
   slang_hang: 20,
   quiz: 30,
   review: 10,
+  word_cam: 20,
 };
 
 /** XP for completing a task; reviews earn 1 extra XP per card reviewed. */

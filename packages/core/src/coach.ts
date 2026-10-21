@@ -1,11 +1,10 @@
-import { randomUUID } from 'node:crypto';
 import { isoWeek, toLocalDate } from './dates.js';
 import { InvalidDataError, NoProfileError, NotFoundError, ThemeRequiredError } from './errors.js';
 import { buildWeekPlan } from './planner.js';
 import { streak, weeklyGoal, xpFor } from './progress.js';
 import { parseState } from './schema.js';
 import { isDue, newSrs, reviewSrs, type Rating } from './srs.js';
-import type { Store } from './store.js';
+import type { Store } from './store-memory.js';
 import type { Cefr, Lesson, LessonItem, PlanTask, Profile, ReviewCard, State, WeekPlan } from './types.js';
 
 const LEVELS: readonly Cefr[] = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
@@ -27,7 +26,7 @@ export class Coach {
   constructor(
     private readonly store: Store,
     private readonly clock: () => Date = () => new Date(),
-    private readonly newId: () => string = () => randomUUID(),
+    private readonly newId: () => string = () => globalThis.crypto.randomUUID(),
   ) {}
 
   async setProfile(input: Omit<Profile, 'createdAt'>): Promise<Profile> {

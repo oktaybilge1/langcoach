@@ -1,5 +1,5 @@
 export type Cefr = 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
-export type TaskType = 'tiny_lesson' | 'slang_hang' | 'review' | 'quiz';
+export type TaskType = 'tiny_lesson' | 'slang_hang' | 'review' | 'quiz' | 'word_cam';
 
 export interface Profile {
   nativeLanguage: string;
@@ -16,13 +16,36 @@ export interface LessonItem {
   translation: string;
   example: string;
   note?: string;
+  pronunciation?: string;
+}
+
+export interface GrammarExample {
+  sentence: string;
+  translation: string;
+  transliteration?: string;
+  explanation?: string;
+}
+
+export interface GrammarPoint {
+  topic: string;
+  description: string;
+  examples: GrammarExample[];
+}
+
+export interface LessonSource {
+  app: 'lll';
+  targetLanguage: string;
+  sourceLanguage: string;
+  purpose?: string;
 }
 
 export interface Lesson {
   id: string;
-  kind: 'tiny_lesson' | 'slang_hang';
+  kind: 'tiny_lesson' | 'slang_hang' | 'word_cam';
   situation: string;
   items: LessonItem[];
+  grammar?: GrammarPoint[];
+  source?: LessonSource;
   createdAt: string;
 }
 
@@ -46,6 +69,7 @@ export interface ReviewCard {
   term: string;
   translation: string;
   example: string;
+  pronunciation?: string;
   srs: SrsState;
 }
 
