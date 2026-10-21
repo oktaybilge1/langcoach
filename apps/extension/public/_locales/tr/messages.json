@@ -1,0 +1,10 @@
+{
+  "extName": {
+    "message": "LangCoach",
+    "description": "Extension name"
+  },
+  "extDescription": {
+    "message": "Little Language Lessons (Google Labs) için seriler, günlük plan ve aralıklı tekrar. Google ile bağlantılı değildir.",
+    "description": "Extension description (max 132 chars)"
+  }
+}

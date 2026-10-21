@@ -1,0 +1,10 @@
+{
+  "extName": {
+    "message": "LangCoach",
+    "description": "Extension name"
+  },
+  "extDescription": {
+    "message": "Sequências, plano diário e revisão com repetição espaçada para o Little Language Lessons (Google Labs). Sem afiliação com o Google.",
+    "description": "Extension description (max 132 chars)"
+  }
+}
