@@ -35,7 +35,6 @@ describe('Coach', () => {
     const calls = [
       () => coach.weekPlan('x'),
       () => coach.today(),
-      () => coach.saveLesson(lesson('a')),
       () => coach.completeTask('t'),
       () => coach.dueReviews(),
       () => coach.submitReview('c', 3),

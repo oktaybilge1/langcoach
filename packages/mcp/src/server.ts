@@ -72,7 +72,7 @@ export function createServer(coach: Coach): McpServer {
       description:
         'Save a lesson you have written, BEFORE teaching it. Each item becomes a spaced-repetition review card (duplicates are skipped). Returns the lesson id to pass to complete_task.',
       inputSchema: {
-        kind: z.enum(['tiny_lesson', 'slang_hang']),
+        kind: z.enum(['tiny_lesson', 'slang_hang', 'word_cam']),
         situation: nonEmpty,
         items: z
           .array(
@@ -81,6 +81,7 @@ export function createServer(coach: Coach): McpServer {
               translation: nonEmpty,
               example: z.string(),
               note: z.string().optional(),
+              pronunciation: z.string().optional(),
             }),
           )
           .min(1)

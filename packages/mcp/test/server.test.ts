@@ -92,6 +92,17 @@ describe('langcoach MCP server', () => {
     expect(progress.totalXp).toBe(20);
   });
 
+  test('save_lesson accepts word_cam with pronunciation', async () => {
+    const { call } = await setup();
+    const r = await call('save_lesson', {
+      kind: 'word_cam',
+      situation: 'Kitchen',
+      items: [{ term: 'kawa', translation: 'coffee', example: '', pronunciation: 'KA-va' }],
+    });
+    expect(r.isError).toBe(false);
+    expect(JSON.parse(r.text).lesson.kind).toBe('word_cam');
+  });
+
   test('submit_review with rating 5 is rejected and the server keeps working', async () => {
     const { client, call } = await setup();
     let rejected = false;

@@ -5,10 +5,25 @@ import { streak, weeklyGoal, xpFor } from './progress.js';
 import { parseState } from './schema.js';
 import { isDue, newSrs, reviewSrs, type Rating } from './srs.js';
 import type { Store } from './store-memory.js';
-import type { Cefr, Lesson, LessonItem, PlanTask, Profile, ReviewCard, State, WeekPlan } from './types.js';
+import {
+  emptyState,
+  type Cefr,
+  type GrammarPoint,
+  type Lesson,
+  type LessonItem,
+  type LessonSource,
+  type PlanTask,
+  type Profile,
+  type ReviewCard,
+  type State,
+  type TaskType,
+  type WeekPlan,
+} from './types.js';
 
 const LEVELS: readonly Cefr[] = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
-const KINDS = ['tiny_lesson', 'slang_hang'] as const;
+const KINDS = ['tiny_lesson', 'slang_hang', 'word_cam'] as const;
+const TASK_TYPES: readonly TaskType[] = ['tiny_lesson', 'slang_hang', 'review', 'quiz', 'word_cam'];
+const MANUAL_SITUATION = 'Saved manually';
 
 const blank = (v: unknown) => typeof v !== 'string' || v.trim() === '';
 const dupKey = (term: string) => term.trim().toLocaleLowerCase();
@@ -83,10 +98,12 @@ export class Coach {
   }
 
   async saveLesson(input: {
-    kind: 'tiny_lesson' | 'slang_hang';
+    kind: 'tiny_lesson' | 'slang_hang' | 'word_cam';
     situation: string;
     items: LessonItem[];
-  }): Promise<{ lesson: Lesson; newCards: number; duplicates: string[] }> {
+    grammar?: GrammarPoint[];
+    source?: LessonSource;
+  }): Promise<{ lesson: Lesson; newCards: number; duplicates: string[]; newCardIds: string[] }> {
     if (!KINDS.includes(input.kind)) throw new InvalidDataError(`kind must be one of ${KINDS.join(', ')}`);
     if (blank(input.situation)) throw new InvalidDataError('situation must be a non-empty string');
     if (!Array.isArray(input.items) || input.items.length < 1 || input.items.length > 50) {
@@ -99,10 +116,18 @@ export class Coach {
       if (it.note !== undefined && typeof it.note !== 'string') {
         throw new InvalidDataError(`items[${i}].note must be a string`);
       }
+      if (it.pronunciation !== undefined && typeof it.pronunciation !== 'string') {
+        throw new InvalidDataError(`items[${i}].pronunciation must be a string`);
+      }
     });
+    if (input.grammar !== undefined && !Array.isArray(input.grammar)) {
+      throw new InvalidDataError('grammar must be an array');
+    }
+    if (input.source !== undefined && (input.source === null || typeof input.source !== 'object')) {
+      throw new InvalidDataError('source must be an object');
+    }
 
     return this.store.transaction((s) => {
-      requireProfile(s);
       const now = this.clock();
       const lesson: Lesson = {
         id: this.newId(),
@@ -111,13 +136,16 @@ export class Coach {
         items: input.items.map((it) => {
           const item: LessonItem = { term: it.term, translation: it.translation, example: it.example };
           if (it.note !== undefined) item.note = it.note;
+          if (it.pronunciation !== undefined) item.pronunciation = it.pronunciation;
           return item;
         }),
         createdAt: now.toISOString(),
       };
+      if (input.grammar !== undefined) lesson.grammar = input.grammar;
+      if (input.source !== undefined) lesson.source = input.source;
       const seen = new Set(s.cards.map((c) => dupKey(c.term)));
       const duplicates: string[] = [];
-      let newCards = 0;
+      const newCardIds: string[] = [];
       for (const it of lesson.items) {
         const key = dupKey(it.term);
         if (seen.has(key)) {
@@ -125,19 +153,133 @@ export class Coach {
           continue;
         }
         seen.add(key);
-        s.cards.push({
+        const card: ReviewCard = {
           id: this.newId(),
           lessonId: lesson.id,
           term: it.term,
           translation: it.translation,
           example: it.example,
           srs: newSrs(now),
-        });
-        newCards++;
+        };
+        if (it.pronunciation !== undefined) card.pronunciation = it.pronunciation;
+        s.cards.push(card);
+        newCardIds.push(card.id);
       }
       s.lessons.push(lesson);
-      return { state: s, result: { lesson, newCards, duplicates } };
+      return { state: s, result: { lesson, newCards: newCardIds.length, duplicates, newCardIds } };
     });
+  }
+
+  /** Remove a lesson and its never-reviewed cards; reviewed cards are kept. */
+  async undoLesson(lessonId: string): Promise<{ removedCards: number }> {
+    return this.store.transaction((s) => {
+      const idx = s.lessons.findIndex((l) => l.id === lessonId);
+      if (idx < 0) throw new NotFoundError('Lesson', lessonId);
+      const before = s.cards.length;
+      s.cards = s.cards.filter((c) => !(c.lessonId === lessonId && c.srs.reps === 0));
+      s.lessons.splice(idx, 1);
+      return { state: s, result: { removedCards: before - s.cards.length } };
+    });
+  }
+
+  async saveManualCard(input: {
+    term: string;
+    translation?: string;
+    example?: string;
+    pronunciation?: string;
+  }): Promise<{ card: ReviewCard | null; duplicate: boolean }> {
+    if (!input || blank(input.term)) throw new InvalidDataError('term must be a non-empty string');
+    for (const f of ['translation', 'example', 'pronunciation'] as const) {
+      if (input[f] !== undefined && typeof input[f] !== 'string') throw new InvalidDataError(`${f} must be a string`);
+    }
+    return this.store.transaction<{ card: ReviewCard | null; duplicate: boolean }>((s) => {
+      if (s.cards.some((c) => dupKey(c.term) === dupKey(input.term))) {
+        return { result: { card: null, duplicate: true } };
+      }
+      const now = this.clock();
+      const day = toLocalDate(now);
+      let lesson = s.lessons.find(
+        (l) =>
+          l.kind === 'tiny_lesson' && l.situation === MANUAL_SITUATION && toLocalDate(new Date(l.createdAt)) === day,
+      );
+      if (!lesson) {
+        lesson = {
+          id: this.newId(),
+          kind: 'tiny_lesson',
+          situation: MANUAL_SITUATION,
+          items: [],
+          createdAt: now.toISOString(),
+        };
+        s.lessons.push(lesson);
+      }
+      const item: LessonItem = { term: input.term, translation: input.translation ?? '', example: input.example ?? '' };
+      if (input.pronunciation !== undefined) item.pronunciation = input.pronunciation;
+      lesson.items.push(item);
+      const card: ReviewCard = {
+        id: this.newId(),
+        lessonId: lesson.id,
+        term: item.term,
+        translation: item.translation,
+        example: item.example,
+        srs: newSrs(now),
+      };
+      if (item.pronunciation !== undefined) card.pronunciation = item.pronunciation;
+      s.cards.push(card);
+      return { state: s, result: { card, duplicate: false } };
+    });
+  }
+
+  async updateCard(cardId: string, patch: { translation?: string; example?: string }): Promise<ReviewCard> {
+    for (const f of ['translation', 'example'] as const) {
+      if (patch?.[f] !== undefined && typeof patch[f] !== 'string') throw new InvalidDataError(`${f} must be a string`);
+    }
+    return this.store.transaction((s) => {
+      const card = s.cards.find((c) => c.id === cardId);
+      if (!card) throw new NotFoundError('Card', cardId);
+      if (patch.translation !== undefined) card.translation = patch.translation;
+      if (patch.example !== undefined) card.example = patch.example;
+      return { state: s, result: card };
+    });
+  }
+
+  /**
+   * Complete today's first matching todo task, or log unplanned practice (XP + streak).
+   * Works without a profile (then it only logs).
+   */
+  async autoComplete(
+    type: TaskType,
+    opts: { lessonId?: string; cardsReviewed?: number } = {},
+  ): Promise<{ task: PlanTask | null; xpAwarded: number }> {
+    if (!TASK_TYPES.includes(type)) throw new InvalidDataError(`type must be one of ${TASK_TYPES.join(', ')}`);
+    const cardsReviewed = opts.cardsReviewed;
+    if (cardsReviewed !== undefined && !intIn(cardsReviewed, 0, Number.MAX_SAFE_INTEGER)) {
+      throw new InvalidDataError('cardsReviewed must be an integer >= 0');
+    }
+    if (opts.lessonId !== undefined && typeof opts.lessonId !== 'string') {
+      throw new InvalidDataError('lessonId must be a string');
+    }
+    return this.store.transaction<{ task: PlanTask | null; xpAwarded: number }>((s) => {
+      const now = this.clock();
+      const date = toLocalDate(now);
+      const xp = xpFor(type, cardsReviewed);
+      const task = s.profile
+        ? s.plans[isoWeek(now)]?.tasks.find((t) => t.type === type && t.date === date && t.status === 'todo')
+        : undefined;
+      if (task) {
+        task.status = 'done';
+        task.completedAt = now.toISOString();
+        if (opts.lessonId !== undefined) task.lessonId = opts.lessonId;
+        s.log.push({ at: now.toISOString(), date, taskId: task.id, type, xp });
+        return { state: s, result: { task, xpAwarded: xp } };
+      }
+      s.log.push({ at: now.toISOString(), date, taskId: 'unplanned', type, xp });
+      return { state: s, result: { task: null, xpAwarded: xp } };
+    });
+  }
+
+  /** Reset everything. The store backs up the previous data file first. */
+  async deleteAll(): Promise<void> {
+    await this.store.replace(emptyState());
   }
 
   async completeTask(
