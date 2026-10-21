@@ -23,13 +23,13 @@ Requires [Node.js](https://nodejs.org) 20+ and [Claude Code](https://docs.anthro
 macOS / Linux / WSL:
 
 ```bash
-claude mcp add --scope user langcoach -- npx -y langcoach
+claude mcp add --scope user langcoach "--" npx -y langcoach
 ```
 
 Windows (native PowerShell/CMD, not WSL):
 
 ```bash
-claude mcp add --scope user langcoach -- cmd /c npx -y langcoach
+claude mcp add --scope user langcoach "--" cmd /c npx -y langcoach
 ```
 
 **No API key needed.** Your own Claude subscription writes the lessons.

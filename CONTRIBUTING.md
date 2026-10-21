@@ -32,10 +32,10 @@ All three must pass before you open a PR; CI runs them on Linux, Windows and mac
 To try your build in Claude Code:
 
 ```bash
-claude mcp add langcoach -- node /absolute/path/to/langcoach/packages/mcp/dist/index.js
+claude mcp add langcoach "--" node /absolute/path/to/langcoach/packages/mcp/dist/index.js
 ```
 
-On native Windows (not WSL), use forward slashes in the path, for example `node C:/Users/you/langcoach/packages/mcp/dist/index.js`. For the published package, Claude Code on native Windows needs `npx` wrapped: `claude mcp add langcoach -- cmd /c npx -y langcoach`.
+On native Windows (not WSL), use forward slashes in the path, for example `node C:/Users/you/langcoach/packages/mcp/dist/index.js`. For the published package, Claude Code on native Windows needs `npx` wrapped: `claude mcp add langcoach "--" cmd /c npx -y langcoach`.
 
 To check what `npm pack` would ship, run the same smoke test as CI:
 

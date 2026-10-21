@@ -35,13 +35,13 @@ Open a terminal (macOS: Terminal; Linux: your terminal; Windows: PowerShell or C
 ### macOS, Linux and WSL
 
 ```bash
-claude mcp add --scope user langcoach -- npx -y langcoach
+claude mcp add --scope user langcoach "--" npx -y langcoach
 ```
 
 ### Windows (native PowerShell or CMD, not WSL)
 
 ```powershell
-claude mcp add --scope user langcoach -- cmd /c npx -y langcoach
+claude mcp add --scope user langcoach "--" cmd /c npx -y langcoach
 ```
 
 On native Windows Claude Code cannot start `npx` directly, so it is wrapped in `cmd /c`. If you use WSL, follow the macOS/Linux command inside WSL.
@@ -72,7 +72,7 @@ In one file: `~/.langcoach/data.json`. On Windows that is `C:\Users\<you>\.langc
 To use another folder, set `LANGCOACH_HOME` when adding the server:
 
 ```bash
-claude mcp add --scope user langcoach -e LANGCOACH_HOME=/path/to/folder -- npx -y langcoach
+claude mcp add --scope user langcoach -e LANGCOACH_HOME=/path/to/folder "--" npx -y langcoach
 ```
 
 To back up or move your data, ask Claude to run the `export_data` tool, and `import_data` to restore it.
@@ -85,7 +85,7 @@ To back up or move your data, ask Claude to run the `export_data` tool, and `imp
 
   ```bash
   claude mcp remove langcoach
-  claude mcp add --scope user langcoach -- npx -y langcoach
+  claude mcp add --scope user langcoach "--" npx -y langcoach
   ```
 
   (Windows native: use the `cmd /c` form.)
@@ -106,7 +106,8 @@ Add `--scope user` if you added it with that flag. Optionally delete the data fo
 | Problem | Fix |
 | --- | --- |
 | `node` not found, or version is below 20 | Install the LTS version from https://nodejs.org, then close and reopen the terminal and run `node -v` again. |
-| Windows: `spawn npx ENOENT`, or the server fails to start | Use the `cmd /c` form: `claude mcp add --scope user langcoach -- cmd /c npx -y langcoach` |
+| Windows: `spawn npx ENOENT`, or the server fails to start | Use the `cmd /c` form: `claude mcp add --scope user langcoach "--" cmd /c npx -y langcoach` |
+| Windows PowerShell: `error: unknown option` when adding | PowerShell drops a bare `--`. Keep the quotes: `"--"` (works in PowerShell and CMD). |
 | `claude mcp list` shows `langcoach` as failed | Run `npx -y langcoach` in a terminal. It should wait silently (it speaks MCP over stdin); press Ctrl+C to stop. If it prints an error instead, that is the cause. |
 | npm registry blocked or corporate proxy | Configure npm to use your proxy (see https://docs.npmjs.com/cli/configuring-npm/npmrc), then retry. |
 | "data folder is not writable" | Fix permissions on `~/.langcoach`, or set `LANGCOACH_HOME` to a folder you can write to. |
@@ -122,7 +123,7 @@ git clone https://github.com/oktaybilge1/langcoach.git
 cd langcoach
 npm install
 npm run build
-claude mcp add --scope user langcoach -- node /absolute/path/to/langcoach/packages/mcp/dist/index.js
+claude mcp add --scope user langcoach "--" node /absolute/path/to/langcoach/packages/mcp/dist/index.js
 ```
 
 On Windows use forward slashes, for example `C:/Users/you/langcoach/packages/mcp/dist/index.js`.

@@ -35,13 +35,13 @@ Bir terminal aç (macOS: Terminal; Linux: terminalin; Windows: PowerShell ya da 
 ### macOS, Linux ve WSL
 
 ```bash
-claude mcp add --scope user langcoach -- npx -y langcoach
+claude mcp add --scope user langcoach "--" npx -y langcoach
 ```
 
 ### Windows (yerel PowerShell ya da CMD, WSL değil)
 
 ```powershell
-claude mcp add --scope user langcoach -- cmd /c npx -y langcoach
+claude mcp add --scope user langcoach "--" cmd /c npx -y langcoach
 ```
 
 Yerel Windows'ta Claude Code `npx` komutunu doğrudan başlatamaz, bu yüzden `cmd /c` ile sarmalanır. WSL kullanıyorsan WSL içinde macOS/Linux komutunu çalıştır.
@@ -72,7 +72,7 @@ Tek bir dosyada: `~/.langcoach/data.json`. Windows'ta bu `C:\Users\<sen>\.langco
 Başka bir klasör kullanmak için sunucuyu eklerken `LANGCOACH_HOME` ayarla:
 
 ```bash
-claude mcp add --scope user langcoach -e LANGCOACH_HOME=/klasor/yolu -- npx -y langcoach
+claude mcp add --scope user langcoach -e LANGCOACH_HOME=/klasor/yolu "--" npx -y langcoach
 ```
 
 Yedek almak ya da taşımak için Claude'dan `export_data` aracını çalıştırmasını iste; geri yüklemek için `import_data` kullanılır.
@@ -85,7 +85,7 @@ Yedek almak ya da taşımak için Claude'dan `export_data` aracını çalıştı
 
   ```bash
   claude mcp remove langcoach
-  claude mcp add --scope user langcoach -- npx -y langcoach
+  claude mcp add --scope user langcoach "--" npx -y langcoach
   ```
 
   (Yerel Windows: `cmd /c` biçimini kullan.)
@@ -106,7 +106,8 @@ claude mcp remove langcoach
 | Sorun | Çözüm |
 | --- | --- |
 | `node` bulunamıyor ya da sürüm 20'nin altında | https://nodejs.org adresinden LTS sürümünü kur, terminali kapatıp yeniden aç ve `node -v` komutunu tekrar çalıştır. |
-| Windows: `spawn npx ENOENT` ya da sunucu başlamıyor | `cmd /c` biçimini kullan: `claude mcp add --scope user langcoach -- cmd /c npx -y langcoach` |
+| Windows: `spawn npx ENOENT` ya da sunucu başlamıyor | `cmd /c` biçimini kullan: `claude mcp add --scope user langcoach "--" cmd /c npx -y langcoach` |
+| Windows PowerShell: eklerken `error: unknown option` | PowerShell tırnaksız `--` işaretini siler. Tırnaklı yaz: `"--"` (PowerShell ve CMD'de çalışır). |
 | `claude mcp list` içinde `langcoach` başarısız (failed) görünüyor | Terminalde `npx -y langcoach` çalıştır. Sessizce beklemesi gerekir (stdin üzerinden MCP konuşur); durdurmak için Ctrl+C bas. Bunun yerine hata yazarsa nedeni odur. |
 | npm kayıt sunucusu engelli ya da kurumsal proxy | npm'i proxy'ne göre ayarla (bkz. https://docs.npmjs.com/cli/configuring-npm/npmrc), sonra tekrar dene. |
 | "data folder is not writable" | `~/.langcoach` üzerindeki izinleri düzelt ya da `LANGCOACH_HOME` ile yazabildiğin bir klasör göster. |
@@ -122,7 +123,7 @@ git clone https://github.com/oktaybilge1/langcoach.git
 cd langcoach
 npm install
 npm run build
-claude mcp add --scope user langcoach -- node /mutlak/yol/langcoach/packages/mcp/dist/index.js
+claude mcp add --scope user langcoach "--" node /mutlak/yol/langcoach/packages/mcp/dist/index.js
 ```
 
 Windows'ta ileri eğik çizgi kullan, örneğin `C:/Users/sen/langcoach/packages/mcp/dist/index.js`.

@@ -12,9 +12,9 @@ Checklist, in order:
 2. **Claude Code**: run `claude --version`. If missing, point the user to https://docs.anthropic.com/en/docs/claude-code.
 3. **Detect OS and shell**: native Windows (PowerShell/CMD), or macOS / Linux / WSL.
 4. **Register the server** (user scope, so it works in any folder):
-   - macOS, Linux, WSL: `claude mcp add --scope user langcoach -- npx -y langcoach`
-   - Windows native (not WSL): `claude mcp add --scope user langcoach -- cmd /c npx -y langcoach`
-   - If the package is not on npm yet (the command cannot fetch it), use the from-source path: `git clone https://github.com/oktaybilge1/langcoach.git`, `npm install`, `npm run build`, then `claude mcp add --scope user langcoach -- node /absolute/path/to/langcoach/packages/mcp/dist/index.js` (Windows: forward slashes, e.g. `C:/Users/you/langcoach/packages/mcp/dist/index.js`).
+   - macOS, Linux, WSL: `claude mcp add --scope user langcoach "--" npx -y langcoach`
+   - Windows native (not WSL): `claude mcp add --scope user langcoach "--" cmd /c npx -y langcoach`
+   - If the package is not on npm yet (the command cannot fetch it), use the from-source path: `git clone https://github.com/oktaybilge1/langcoach.git`, `npm install`, `npm run build`, then `claude mcp add --scope user langcoach "--" node /absolute/path/to/langcoach/packages/mcp/dist/index.js` (Windows: forward slashes, e.g. `C:/Users/you/langcoach/packages/mcp/dist/index.js`).
 5. **Verify**: run `claude mcp list` and confirm `langcoach` is shown as connected. If it failed, run `npx -y langcoach` (it should wait silently; stop with Ctrl+C) and read any error. See the troubleshooting table in https://github.com/oktaybilge1/langcoach/blob/main/docs/INSTALL.md
 6. **Tell the user** to restart Claude Code or start a new session, then run `/mcp__langcoach__tutor` (or say "Let's start my language lesson with langcoach").
 7. **Never** ask for or store API keys. None are needed in Claude Code mode.

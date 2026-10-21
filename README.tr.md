@@ -23,13 +23,13 @@ Yapay zekâ ile dil dersleri harika, ama çoğu sohbet kapanınca seni unutuyor.
 macOS / Linux / WSL:
 
 ```bash
-claude mcp add --scope user langcoach -- npx -y langcoach
+claude mcp add --scope user langcoach "--" npx -y langcoach
 ```
 
 Windows (yerel PowerShell/CMD, WSL değil):
 
 ```bash
-claude mcp add --scope user langcoach -- cmd /c npx -y langcoach
+claude mcp add --scope user langcoach "--" cmd /c npx -y langcoach
 ```
 
 **API anahtarı gerekmez.** Dersleri kendi Claude aboneliğin yazar.
