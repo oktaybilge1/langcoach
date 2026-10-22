@@ -314,6 +314,17 @@ export function Settings({ snapshot, settings, t, send, onRefresh }: SettingsPro
           <span>{t('fieldAutoSave')}</span>
         </label>
 
+        <label class="field-row" for="pref-native-page">
+          <input
+            id="pref-native-page"
+            data-testid="pref-native-page"
+            type="checkbox"
+            checked={settings.showNativeOnPage}
+            onChange={(e) => updateSetting({ showNativeOnPage: (e.currentTarget as HTMLInputElement).checked })}
+          />
+          <span>{t('fieldShowNativeOnPage')}</span>
+        </label>
+
         <label class="field-row" for="pref-camera">
           <input
             id="pref-camera"

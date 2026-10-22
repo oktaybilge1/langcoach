@@ -19,6 +19,7 @@ const defaultSettings: Settings = {
   reminderTime: null,
   uiLanguage: 'en',
   hasCamera: false,
+  showNativeOnPage: true,
   pendingTargetLanguage: 'European Spanish',
 };
 

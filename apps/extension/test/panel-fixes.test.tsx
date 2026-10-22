@@ -15,7 +15,7 @@ const flush = async () => {
   });
 };
 
-const settingsFor = (uiLanguage = 'en'): Settings => ({ autoSave: true, reminderTime: null, uiLanguage, hasCamera: false });
+const settingsFor = (uiLanguage = 'en'): Settings => ({ autoSave: true, reminderTime: null, uiLanguage, hasCamera: false, showNativeOnPage: true });
 
 const profile = {
   nativeLanguage: 'English',

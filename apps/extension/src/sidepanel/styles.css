@@ -465,6 +465,30 @@ button:focus-visible, select:focus-visible, input:focus-visible {
   color: var(--text);
 }
 
+.vocab-meanings,
+.card-meanings {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.vocab-native {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.vocab-trans.secondary {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.native-banner progress {
+  width: 100%;
+}
+
 .btn-subtle {
   background: transparent;
   border: none;

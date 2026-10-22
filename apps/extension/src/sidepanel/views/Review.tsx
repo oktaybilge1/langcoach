@@ -7,6 +7,7 @@ import type { Snapshot } from '../../shared/messages';
 import type { PanelSend } from '../App';
 import type { TranslateFn } from '../i18n';
 import { openExperimentUrl } from '../tabs';
+import type { NativeTranslations } from '../useNativeTranslations';
 
 export interface ReviewProps {
   snapshot: Snapshot;
@@ -15,11 +16,14 @@ export interface ReviewProps {
   send: PanelSend;
   onRefresh: () => Promise<void>;
   initialMode?: ReviewMode;
+  native?: NativeTranslations;
 }
 
 export type ReviewMode = 'list' | 'cards';
 
-export function Review({ snapshot, uiLocale, t, send, onRefresh, initialMode }: ReviewProps) {
+export function Review({ snapshot, uiLocale, t, send, onRefresh, initialMode, native }: ReviewProps) {
+  const nativeOf = (id: string): string | undefined => native?.nativeOf(id);
+  const nativeLang = native?.target ?? undefined;
   const [mode, setModeState] = useState<ReviewMode>(() => {
     if (initialMode) return initialMode;
     if (typeof localStorage !== 'undefined') {
@@ -189,7 +193,8 @@ export function Review({ snapshot, uiLocale, t, send, onRefresh, initialMode }: 
       const q = search.toLowerCase();
       return (
         c.term.toLowerCase().includes(q) ||
-        (c.translation && c.translation.toLowerCase().includes(q))
+        (c.translation && c.translation.toLowerCase().includes(q)) ||
+        (nativeOf(c.id) ?? '').toLowerCase().includes(q)
       );
     });
 
@@ -310,9 +315,16 @@ export function Review({ snapshot, uiLocale, t, send, onRefresh, initialMode }: 
                       </div>
                     ) : (
                       <div class="vocab-trans-row">
-                        <span class="vocab-trans" dir="auto">
-                          {c.translation || <em class="muted">{t('noTranslation')}</em>}
-                        </span>
+                        <div class="vocab-meanings">
+                          {nativeOf(c.id) && (
+                            <span class="vocab-native" data-testid="vocab-native" dir="auto" lang={nativeLang}>
+                              {nativeOf(c.id)}
+                            </span>
+                          )}
+                          <span class={`vocab-trans ${nativeOf(c.id) ? 'secondary' : ''}`} dir="auto">
+                            {c.translation || <em class="muted">{t('noTranslation')}</em>}
+                          </span>
+                        </div>
                         <button
                           type="button"
                           class="btn-subtle"
@@ -405,8 +417,25 @@ export function Review({ snapshot, uiLocale, t, send, onRefresh, initialMode }: 
                 </div>
               ) : (
                 <div class="today-summary">
-                  <div data-testid="card-translation" dir="auto" style={{ fontWeight: 600, fontSize: '16px' }}>
-                    {card.translation}
+                  <div class="card-meanings">
+                    {nativeOf(card.id) && (
+                      <div
+                        data-testid="card-native"
+                        dir="auto"
+                        lang={nativeLang}
+                        style={{ fontWeight: 600, fontSize: '16px' }}
+                      >
+                        {nativeOf(card.id)}
+                      </div>
+                    )}
+                    <div
+                      data-testid="card-translation"
+                      dir="auto"
+                      class={nativeOf(card.id) ? 'muted' : undefined}
+                      style={nativeOf(card.id) ? { fontSize: '13px' } : { fontWeight: 600, fontSize: '16px' }}
+                    >
+                      {card.translation}
+                    </div>
                   </div>
                   <button
                     type="button"

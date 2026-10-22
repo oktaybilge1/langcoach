@@ -8,7 +8,9 @@ import {
   type Settings as SettingsType,
   type Snapshot,
 } from '../shared/messages';
+import type { TranslatorCache } from '../lib/translate';
 import { createTranslator } from './i18n';
+import { panelTranslator, useNativeTranslations } from './useNativeTranslations';
 import { Onboarding } from './views/Onboarding';
 import { Plan } from './views/Plan';
 import { Progress } from './views/Progress';
@@ -22,6 +24,8 @@ export type TabId = 'today' | 'review' | 'plan' | 'progress' | 'settings';
 export interface AppProps {
   send?: PanelSend;
   initialTab?: TabId;
+  /** On-device translator (tests inject a fake; defaults to the global Translator API). */
+  translator?: TranslatorCache;
 }
 
 type LoadError = { kind: 'corrupt'; message: string; preservedAt?: string } | { kind: 'generic'; message: string };
@@ -36,7 +40,7 @@ export function toLoadError(e: unknown): LoadError {
   return { kind: 'generic', message };
 }
 
-export function App({ send = defaultSend, initialTab = 'today' }: AppProps) {
+export function App({ send = defaultSend, initialTab = 'today', translator = panelTranslator }: AppProps) {
   const [tab, setTab] = useState<TabId>(initialTab);
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
   const [settings, setSettings] = useState<SettingsType>(DEFAULT_SETTINGS);
@@ -68,6 +72,7 @@ export function App({ send = defaultSend, initialTab = 'today' }: AppProps) {
   }, [refresh]);
 
   const { locale, t } = createTranslator(settings.uiLanguage);
+  const native = useNativeTranslations(snapshot, send, translator);
 
   useEffect(() => {
     if (typeof document !== 'undefined') document.documentElement.lang = locale === 'pt_BR' ? 'pt-BR' : locale;
@@ -200,9 +205,10 @@ export function App({ send = defaultSend, initialTab = 'today' }: AppProps) {
             send={send}
             onRefresh={refresh}
             onOpenReview={() => setTab('review')}
+            native={native}
           />
         ) : tab === 'review' ? (
-          <Review snapshot={snapshot} uiLocale={locale} t={t} send={send} onRefresh={refresh} />
+          <Review snapshot={snapshot} uiLocale={locale} t={t} send={send} onRefresh={refresh} native={native} />
         ) : tab === 'plan' ? (
           <Plan snapshot={snapshot} t={t} />
         ) : tab === 'progress' ? (

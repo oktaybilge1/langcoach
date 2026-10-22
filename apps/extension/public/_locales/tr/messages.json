@@ -445,5 +445,58 @@
         "content": "$1"
       }
     }
+  },
+  "nativeBannerTitle": {
+    "message": "Kendi dilinde anlamlar"
+  },
+  "nativeDownloadBtn": {
+    "message": "Çevirileri indir (tek seferlik, cihazında)"
+  },
+  "nativeDownloadBody": {
+    "message": "$COUNT$ kelime $LANG$ olarak da gösterilebilir. Chrome bunları bu cihazda çevirir; hiçbir yere bir şey gönderilmez.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      },
+      "lang": {
+        "content": "$2"
+      }
+    }
+  },
+  "nativeDownloading": {
+    "message": "Çeviriler indiriliyor… %$PERCENT$",
+    "placeholders": {
+      "percent": {
+        "content": "$1"
+      }
+    }
+  },
+  "nativeDownloadingWait": {
+    "message": "Chrome çevirileri indiriyor. Hazır olunca burada görünecek."
+  },
+  "nativeTranslating": {
+    "message": "$COUNT$ kelime $LANG$ diline çevriliyor…",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      },
+      "lang": {
+        "content": "$2"
+      }
+    }
+  },
+  "nativeUnavailable": {
+    "message": "Tarayıcın henüz $SOURCE$→$TARGET$ çevirisini cihazda yapamıyor; İngilizce gösteriliyor.",
+    "placeholders": {
+      "source": {
+        "content": "$1"
+      },
+      "target": {
+        "content": "$2"
+      }
+    }
+  },
+  "fieldShowNativeOnPage": {
+    "message": "Sayfada kendi dilimi göster"
   }
 }

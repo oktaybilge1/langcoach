@@ -52,6 +52,8 @@ export function toErrorInfo(e: unknown): ErrorInfo {
   return { name: 'Error', message: String(e) };
 }
 
+const MAX_NATIVE_ENTRIES = 500;
+const MAX_NATIVE_CHARS = 500;
 const CAPTURE_KINDS = ['terms', 'grammar', 'conversation', 'object-descriptors'];
 const MAX_JSON = 20 * 1024 * 1024;
 const bad = (m: string): never => {
@@ -118,6 +120,18 @@ export function validateMessage(m: Record<string, unknown>): void {
     case 'setSettings':
       if (!isObj(m.settings)) bad('settings must be an object');
       break;
+    case 'setNativeTranslations':
+      if (!Array.isArray(m.entries) || m.entries.length > MAX_NATIVE_ENTRIES) {
+        bad(`entries must be an array of at most ${MAX_NATIVE_ENTRIES} items`);
+      }
+      (m.entries as unknown[]).forEach((e, i) => {
+        if (!isObj(e)) bad(`entries[${i}] must be an object`);
+        id((e as Record<string, unknown>).cardId, `entries[${i}].cardId`);
+        const text = (e as Record<string, unknown>).text;
+        const len = typeof text === 'string' ? text.trim().length : 0;
+        if (len < 1 || len > MAX_NATIVE_CHARS) bad(`entries[${i}].text must be 1 to ${MAX_NATIVE_CHARS} characters`);
+      });
+      break;
   }
 }
 
@@ -145,6 +159,10 @@ function mergeSettings(current: Settings, patch: Partial<Settings>): Settings {
     if (typeof patch.hasCamera !== 'boolean') throw new InvalidDataError('hasCamera must be a boolean');
     next.hasCamera = patch.hasCamera;
   }
+  if (patch.showNativeOnPage !== undefined) {
+    if (typeof patch.showNativeOnPage !== 'boolean') throw new InvalidDataError('showNativeOnPage must be a boolean');
+    next.showNativeOnPage = patch.showNativeOnPage;
+  }
   return next;
 }
 
@@ -171,6 +189,8 @@ export function createRouter(deps: RouterDeps) {
       uiLanguage:
         typeof st.uiLanguage === 'string' && st.uiLanguage !== '' ? st.uiLanguage : DEFAULT_SETTINGS.uiLanguage,
       hasCamera: typeof st.hasCamera === 'boolean' ? st.hasCamera : DEFAULT_SETTINGS.hasCamera,
+      showNativeOnPage:
+        typeof st.showNativeOnPage === 'boolean' ? st.showNativeOnPage : DEFAULT_SETTINGS.showNativeOnPage,
       ...(typeof st.pendingTargetLanguage === 'string' && st.pendingTargetLanguage !== ''
         ? { pendingTargetLanguage: st.pendingTargetLanguage }
         : {}),
@@ -185,6 +205,7 @@ export function createRouter(deps: RouterDeps) {
     clock,
     log,
     getAutoSave: async () => (await readSettings()).autoSave,
+    getShowNativeOnPage: async () => (await readSettings()).showNativeOnPage,
     notePendingTarget: (targetLanguage) =>
       serialized(async () => {
         const cur = await readSettings();
@@ -293,6 +314,7 @@ export function createRouter(deps: RouterDeps) {
         if (deps.onSettingsChanged) await deps.onSettingsChanged(next);
         return next;
       }),
+    setNativeTranslations: (m) => coach.setNativeTranslations(m.entries),
   };
 
   return {

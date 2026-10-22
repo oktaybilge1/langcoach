@@ -7,7 +7,8 @@ import {
   type Store,
 } from '@langcoach/core/browser';
 import { parseCapture, type ParsedCapture } from '../lib/parse';
-import type { CaptureResult, LastCapture, MessageMap } from '../shared/messages';
+import { translationPair } from '../lib/translate';
+import type { CaptureResult, LastCapture, MessageMap, NativeCaptureHint, NativePair } from '../shared/messages';
 import type { StorageAreaLike } from './store';
 
 export const LAST_CAPTURE_KEY = 'langcoach:lastCapture';
@@ -39,6 +40,8 @@ export interface CaptureDeps {
   area: StorageAreaLike;
   clock: () => Date;
   getAutoSave: () => Promise<boolean>;
+  /** settings.showNativeOnPage (default true). */
+  getShowNativeOnPage?: () => Promise<boolean>;
   /** Sets settings.pendingTargetLanguage unless one is already stored (serialized with other settings writes). */
   notePendingTarget: (targetLanguage: string) => Promise<void>;
   /** Extension-console logger (never the page). */
@@ -72,6 +75,42 @@ function serializer() {
 export function createCaptureService(deps: CaptureDeps) {
   const { coach, store, area, clock, log } = deps;
   const run = serializer();
+
+  /** The translation pair for this capture, or null (no profile, unknown/same native language). */
+  async function nativePair(p: ParsedCapture): Promise<NativePair | null> {
+    try {
+      const s = await store.load();
+      const pair = translationPair(p.sourceLanguage, s.profile?.nativeLanguage);
+      if (!pair) return null;
+      const overlay = deps.getShowNativeOnPage ? await deps.getShowNativeOnPage() : true;
+      return { ...pair, overlay };
+    } catch (e) {
+      log('LangCoach: native translation hint failed', e);
+      return null;
+    }
+  }
+
+  /** Card id, term and English meaning of every item of the capture (new or already in the deck). */
+  async function nativeHint(p: ParsedCapture): Promise<NativeCaptureHint | undefined> {
+    const pair = await nativePair(p);
+    if (!pair) return undefined;
+    const s = await store.load();
+    const byKey = new Map(s.cards.map((c) => [c.term.trim().toLocaleLowerCase(), c]));
+    const seen = new Set<string>();
+    const items: NativeCaptureHint['items'] = [];
+    for (const it of p.items) {
+      const card = byKey.get(it.term.trim().toLocaleLowerCase());
+      if (!card || seen.has(card.id)) continue;
+      seen.add(card.id);
+      items.push({
+        cardId: card.id,
+        term: card.term,
+        meaning: card.translation,
+        ...(card.nativeTranslation ? { native: card.nativeTranslation } : {}),
+      });
+    }
+    return items.length ? { ...pair, items: items.slice(0, MAX_CAPTURE_ITEMS) } : undefined;
+  }
 
   /** Pending grammar entries that have not expired. */
   async function readPending(now: number): Promise<{ map: Record<string, PendingGrammar>; pruned: boolean }> {
@@ -116,12 +155,20 @@ export function createCaptureService(deps: CaptureDeps) {
       const lc = asLastCapture((await area.get(LAST_CAPTURE_KEY))[LAST_CAPTURE_KEY]);
       const id = lc?.lessonIds.includes(match.id) ? lc.lessonIds[0]! : match.id;
       await coach.attachGrammar(id, grammar);
-      return { status: 'grammar' };
+      return grammarResult(p);
     }
     const { map } = await readPending(now);
     map[pairKey(p.targetLanguage, p.purpose)] = { grammar, at: new Date(now).toISOString() };
     await writePending(map);
-    return { status: 'grammar' };
+    return grammarResult(p);
+  }
+
+  async function grammarResult(p: ParsedCapture): Promise<CaptureResult> {
+    const pair = await nativePair(p);
+    const examples = [
+      ...new Set((p.grammar ?? []).flatMap((g) => g.examples.map((x) => x.translation.trim()).filter(Boolean))),
+    ].slice(0, 100);
+    return pair && pair.overlay && examples.length ? { status: 'grammar', native: { ...pair, examples } } : { status: 'grammar' };
   }
 
   async function saveItems(p: ParsedCapture, ctx: CaptureContext): Promise<CaptureResult> {
@@ -192,7 +239,13 @@ export function createCaptureService(deps: CaptureDeps) {
       tabId: ctx.tabId ?? null,
     };
     await area.set({ [LAST_CAPTURE_KEY]: lc });
-    return { status: 'saved', lessonIds, newCards, duplicates, xp };
+    let native: NativeCaptureHint | undefined;
+    try {
+      native = await nativeHint(p);
+    } catch (e) {
+      log('LangCoach: native translation hint failed', e); // the capture itself is saved
+    }
+    return { status: 'saved', lessonIds, newCards, duplicates, xp, ...(native ? { native } : {}) };
   }
 
   return {

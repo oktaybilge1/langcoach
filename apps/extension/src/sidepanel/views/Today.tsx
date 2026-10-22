@@ -5,7 +5,9 @@ import { suggestThemes, type Goal, type UiLocale } from '../../lib/themes';
 import type { Snapshot } from '../../shared/messages';
 import type { PanelSend } from '../App';
 import type { TranslateFn } from '../i18n';
+import { NativeBanner } from '../NativeBanner';
 import { openExperimentUrl, requestFill } from '../tabs';
+import type { NativeTranslations } from '../useNativeTranslations';
 
 /** Same window as the background's undo check (capture.ts UNDO_WINDOW_MS). */
 const UNDO_WINDOW_MS = 10 * 60_000;
@@ -17,6 +19,7 @@ export interface TodayProps {
   send: PanelSend;
   onRefresh: () => Promise<void>;
   onOpenReview: () => void;
+  native?: NativeTranslations;
 }
 
 export function taskTypeLabel(type: TaskType, t: TranslateFn): string {
@@ -49,7 +52,7 @@ export function taskIcon(type: TaskType): string {
   }
 }
 
-export function Today({ snapshot, uiLocale, t, send, onRefresh, onOpenReview }: TodayProps) {
+export function Today({ snapshot, uiLocale, t, send, onRefresh, onOpenReview, native }: TodayProps) {
   const [seed, setSeed] = useState(0);
   const [copied, setCopied] = useState(false);
   const [filled, setFilled] = useState(false);
@@ -142,6 +145,8 @@ export function Today({ snapshot, uiLocale, t, send, onRefresh, onOpenReview }: 
           {doneCount}/{totalCount}
         </div>
       </section>
+
+      {native && <NativeBanner native={native} t={t} uiLocale={uiLocale} />}
 
       <section class="card">
         {tasks.length === 0 ? (

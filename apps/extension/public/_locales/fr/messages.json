@@ -445,5 +445,58 @@
         "content": "$1"
       }
     }
+  },
+  "nativeBannerTitle": {
+    "message": "Sens dans ta langue"
+  },
+  "nativeDownloadBtn": {
+    "message": "Télécharger les traductions (une fois, sur l’appareil)"
+  },
+  "nativeDownloadBody": {
+    "message": "$COUNT$ mots peuvent aussi s’afficher en $LANG$. Chrome les traduit sur cet appareil ; rien n’est envoyé.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      },
+      "lang": {
+        "content": "$2"
+      }
+    }
+  },
+  "nativeDownloading": {
+    "message": "Téléchargement des traductions… $PERCENT$ %",
+    "placeholders": {
+      "percent": {
+        "content": "$1"
+      }
+    }
+  },
+  "nativeDownloadingWait": {
+    "message": "Chrome télécharge les traductions. Elles apparaîtront ici une fois prêtes."
+  },
+  "nativeTranslating": {
+    "message": "Traduction de $COUNT$ mots en $LANG$…",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      },
+      "lang": {
+        "content": "$2"
+      }
+    }
+  },
+  "nativeUnavailable": {
+    "message": "Ton navigateur ne peut pas encore traduire $SOURCE$→$TARGET$ sur l’appareil ; affichage en anglais.",
+    "placeholders": {
+      "source": {
+        "content": "$1"
+      },
+      "target": {
+        "content": "$2"
+      }
+    }
+  },
+  "fieldShowNativeOnPage": {
+    "message": "Afficher ma langue sur la page"
   }
 }

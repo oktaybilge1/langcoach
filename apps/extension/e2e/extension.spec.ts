@@ -205,3 +205,74 @@ test('11-13. export/import round-trip, API shape change graceful no-op, and remi
     await cleanup();
   }
 });
+
+/** Stubs Chrome's on-device Translator in every page of the context (main world + the e2e marker the
+ * isolated content script reads, since init scripts cannot reach that world). */
+const TRANSLATOR_STUB = `(() => {
+  const PREFIX = '[tr] ';
+  const translator = { translate: async (text) => PREFIX + text, destroy() {} };
+  globalThis.Translator = {
+    availability: async () => 'available',
+    create: async () => translator,
+  };
+  const mark = () => document.documentElement && document.documentElement.setAttribute('data-langcoach-e2e-translate', PREFIX);
+  mark();
+  if (!document.documentElement) document.addEventListener('readystatechange', mark, { once: true });
+})();`;
+
+test('14. native translations: capture -> stored on cards -> line on the LLL page (survives re-render) -> panel shows Turkish first', async () => {
+  const { context, extensionId, cleanup } = await launchWithExtension();
+  try {
+    await context.addInitScript({ content: TRANSLATOR_STUB });
+
+    const panel = await context.newPage();
+    await panel.goto(`chrome-extension://${extensionId}/sidepanel.html`);
+    await panel.getByTestId('onboard-target').selectOption('Spanish (Spain)');
+    await panel.getByTestId('onboard-native').selectOption('Turkish');
+    await panel.getByTestId('onboard-submit').click();
+    await expect(panel.getByTestId('tab-today')).toBeVisible();
+
+    const page = await context.newPage();
+    const errors: string[] = [];
+    page.on('pageerror', (e) => errors.push(e.message));
+    await page.goto(`${mock.url}/lll/en/experiments/tiny-lesson`);
+    await page.locator('#btn-terms-es').click();
+    await expect(page.locator('[data-langcoach-toast]')).toContainText('✓ 20 words saved to LangCoach');
+
+    // Overlay: a small Turkish line right under LLL's own "coffee" meaning; LLL's text is untouched.
+    const coffee = page.locator('.lll-meaning', { hasText: /^coffee$/ });
+    await expect(coffee).toHaveText('coffee');
+    const line = coffee.locator('xpath=following-sibling::*[1]');
+    await expect(line).toHaveText('[tr] coffee');
+    await expect(line).toHaveAttribute('lang', 'tr');
+    await expect(page.locator('[data-langcoach-native]')).toHaveCount(20);
+
+    // LLL re-renders the cards: the lines come back.
+    await page.locator('#btn-rerender').click();
+    await expect(page.locator('[data-langcoach-native]')).toHaveCount(20);
+
+    // Stored on the cards (by the content script, through the background).
+    await expect
+      .poll(async () => {
+        const snap = await panel.evaluate(() => chrome.runtime.sendMessage({ type: 'getSnapshot' }));
+        return (snap.data.state.cards as { nativeTranslation?: string }[]).filter((c) => c.nativeTranslation).length;
+      })
+      .toBe(20);
+
+    // Panel: native meaning first, English beneath.
+    await panel.reload();
+    await panel.getByTestId('tab-review').click();
+    await panel.getByTestId('mode-list').click();
+    const natives = panel.getByTestId('vocab-native');
+    await expect(natives).toHaveCount(20);
+    await expect(panel.getByText('[tr] coffee', { exact: true })).toBeVisible();
+
+    // Settings toggle removes the lines from the open LLL page.
+    await panel.getByTestId('tab-settings').click();
+    await panel.getByTestId('pref-native-page').uncheck();
+    await expect(page.locator('[data-langcoach-native]')).toHaveCount(0);
+    expect(errors).toEqual([]);
+  } finally {
+    await cleanup();
+  }
+});

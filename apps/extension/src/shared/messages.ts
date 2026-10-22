@@ -12,9 +12,17 @@ export interface Settings {
   hasCamera: boolean;
   /** Target language (LLL API name) seen in the first capture before onboarding; prefills onboarding. */
   pendingTargetLanguage?: string;
+  /** Show the on-device native translation under LLL's own meanings on the lesson page. */
+  showNativeOnPage: boolean;
 }
 
-export const DEFAULT_SETTINGS: Settings = { autoSave: true, reminderTime: null, uiLanguage: 'auto', hasCamera: false };
+export const DEFAULT_SETTINGS: Settings = {
+  autoSave: true,
+  reminderTime: null,
+  uiLanguage: 'auto',
+  hasCamera: false,
+  showNativeOnPage: true,
+};
 
 /** Persisted marker of the most recent saved capture (key `langcoach:lastCapture`); Undo is checked against it. */
 export interface LastCapture {
@@ -37,13 +45,32 @@ export interface Snapshot {
   state?: State;
 }
 
+/** Translator pair (BCP-47 base codes) plus whether the page overlay is on; absent = translation off. */
+export interface NativePair {
+  source: string;
+  target: string;
+  overlay: boolean;
+}
+
+/** Cards of a saved capture (new and already-known), for capture-time translation in the content script. */
+export interface NativeCaptureHint extends NativePair {
+  items: { cardId: string; term: string; meaning: string; native?: string }[];
+}
+
 /** Outcome of a `capture` message (null data = unknown shape, ignored). */
 export type CaptureResult =
-  | { status: 'saved'; lessonIds: string[]; newCards: number; duplicates: number; xp: number }
+  | {
+      status: 'saved';
+      lessonIds: string[];
+      newCards: number;
+      duplicates: number;
+      xp: number;
+      native?: NativeCaptureHint;
+    }
   /** autoSave is off: nothing saved; the page may re-send the capture with `force: true`. */
   | { status: 'pending'; count: number }
   /** Grammar topics attached to their lesson or held until the lesson arrives; no toast. */
-  | { status: 'grammar' };
+  | { status: 'grammar'; native?: NativePair & { examples: string[] } };
 
 /** Background → content script (chrome.tabs.sendMessage), e.g. after a context-menu save. */
 export interface ToastMessage {
@@ -81,6 +108,10 @@ export interface MessageMap {
   reset: { request: Record<never, never>; response: null };
   getSettings: { request: Record<never, never>; response: Settings };
   setSettings: { request: { settings: Partial<Settings> }; response: Settings };
+  setNativeTranslations: {
+    request: { entries: { cardId: string; text: string }[] };
+    response: { updated: number };
+  };
 }
 
 export type MessageType = keyof MessageMap;
@@ -119,6 +150,7 @@ export const MESSAGE_TYPES: readonly MessageType[] = [
   'reset',
   'getSettings',
   'setSettings',
+  'setNativeTranslations',
 ];
 
 export const isMessage = (v: unknown): v is Message =>

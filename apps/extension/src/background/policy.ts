@@ -5,7 +5,13 @@ export interface SenderLike {
 }
 
 /** Messages content scripts on the lesson site may send. */
-const CONTENT_TYPES: ReadonlySet<string> = new Set(['capture', 'undo', 'saveManual', 'openPanel']);
+const CONTENT_TYPES: ReadonlySet<string> = new Set([
+  'capture',
+  'undo',
+  'saveManual',
+  'openPanel',
+  'setNativeTranslations',
+]);
 /** Messages extension pages (side panel) may send. */
 const PAGE_TYPES: ReadonlySet<string> = new Set([
   'getSnapshot',
@@ -22,6 +28,7 @@ const PAGE_TYPES: ReadonlySet<string> = new Set([
   'reset',
   'getSettings',
   'setSettings',
+  'setNativeTranslations',
 ]);
 
 const LLL_PREFIX = 'https://labs.google/lll/';
