@@ -10,13 +10,58 @@ export interface IsolatedDeps {
   win: Window;
   runtimeId: string;
   sendMessage: (msg: unknown) => Promise<unknown>;
-  onMessage: { addListener(fn: (msg: unknown, sender: { id?: string }) => void): void };
+  onMessage: {
+    addListener(fn: (msg: unknown, sender: { id?: string }, sendResponse: (response: unknown) => void) => void): void;
+  };
   /** chrome.i18n.getMessage */
   t: (key: string, substitutions?: string | string[]) => string;
   toaster?: Toaster;
 }
 
 const isObj = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null && !Array.isArray(v);
+
+/** LLL caps the Tiny Lesson purpose at 50 characters. */
+export const PURPOSE_MAX = 50;
+const TINY_LESSON_PATH = /^\/lll\/[a-z]{2}(?:[-_][a-z]{2,4})?\/experiments\/tiny-lesson\/?$/i;
+/** Placeholder hints of the purpose field in LLL's 4 UI languages (en, es, fr, pt); fallback only. */
+const PLACEHOLDER_HINT = /purpose|situation|situación|propósito|objectif|décri|situação|objetivo|descreva/i;
+const TEXT_TYPES = ['text', 'search', ''];
+
+function isTextInput(el: Element): el is HTMLInputElement {
+  return el.tagName === 'INPUT' && TEXT_TYPES.includes((el.getAttribute('type') ?? '').toLowerCase());
+}
+
+/** The Tiny Lesson purpose field, or null; never just "the first input on the page". */
+function findPurposeField(doc: Document): HTMLInputElement | HTMLTextAreaElement | null {
+  const inForm = [...doc.querySelectorAll('form input')].filter(isTextInput);
+  const byMax = inForm.find((el) => el.maxLength === PURPOSE_MAX);
+  if (byMax) return byMax;
+  const candidates = [...doc.querySelectorAll('input, textarea')].filter(
+    (el): el is HTMLInputElement | HTMLTextAreaElement => el.tagName === 'TEXTAREA' || isTextInput(el),
+  );
+  return candidates.find((el) => PLACEHOLDER_HINT.test(el.placeholder ?? '')) ?? null;
+}
+
+/**
+ * Writes `theme` into the Tiny Lesson purpose field so that React registers it: the value goes through the
+ * native prototype setter (bypassing React's value tracker) followed by a bubbling `input` event.
+ * Returns false (and changes nothing) outside the Tiny Lesson page or when the field is not found.
+ */
+export function fillPurposeField(win: Window, theme: string): boolean {
+  const w = win as Window & typeof globalThis;
+  if (!TINY_LESSON_PATH.test(win.location.pathname)) return false;
+  const el = findPurposeField(win.document);
+  if (!el) return false;
+  const limit = el.maxLength > 0 ? Math.min(el.maxLength, PURPOSE_MAX) : PURPOSE_MAX;
+  const value = [...theme].slice(0, limit).join('');
+  const proto = el.tagName === 'TEXTAREA' ? w.HTMLTextAreaElement.prototype : w.HTMLInputElement.prototype;
+  const setter = Object.getOwnPropertyDescriptor(proto, 'value')?.set;
+  if (!setter) return false;
+  el.focus();
+  setter.call(el, value);
+  el.dispatchEvent(new w.Event('input', { bubbles: true }));
+  return true;
+}
 
 function randomNonce(win: Window): string {
   const b = new Uint8Array(16);
@@ -123,23 +168,16 @@ export function startIsolated(deps: IsolatedDeps): { nonce: string } {
     }
   });
 
-  deps.onMessage.addListener((msg, sender) => {
+  deps.onMessage.addListener((msg, sender, sendResponse) => {
     if (sender?.id !== deps.runtimeId || !isObj(msg)) return;
     if (msg.type === 'fillTheme' && typeof msg.theme === 'string') {
+      let filled = false;
       try {
-        const input = win.document.querySelector<HTMLInputElement | HTMLTextAreaElement>(
-          'input[placeholder*="purpose" i], input[placeholder*="theme" i], input[type="text"], textarea',
-        );
-        if (input) {
-          input.focus();
-          const clean = msg.theme.slice(0, 45);
-          input.value = clean;
-          input.dispatchEvent(new Event('input', { bubbles: true }));
-          input.dispatchEvent(new Event('change', { bubbles: true }));
-        }
+        filled = fillPurposeField(win, msg.theme);
       } catch {
-        /* ignore */
+        /* never break the page */
       }
+      sendResponse?.({ filled });
       return;
     }
     if (msg.type !== 'toast') return;

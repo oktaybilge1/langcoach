@@ -24,7 +24,7 @@ function setupIsolated(reply: (msg: Record<string, unknown>) => unknown = () => 
     sent.push(rec);
     return reply(rec);
   });
-  let onMsg: ((m: unknown, sender: { id?: string }) => void) | undefined;
+  let onMsg: ((m: unknown, sender: { id?: string }, sendResponse: (r: unknown) => void) => void) | undefined;
   const tt = fakeToaster();
   const iso = startIsolated({
     win: window,
@@ -38,7 +38,7 @@ function setupIsolated(reply: (msg: Record<string, unknown>) => unknown = () => 
     window.dispatchEvent(new MessageEvent('message', { data, origin: location.origin, source: window, ...init }));
   const capture = (extra: Record<string, unknown> = {}) =>
     post({ source: 'langcoach-capture', nonce: iso.nonce, kind: 'terms', request: req, response: { a: 1 }, url: TERMS, ...extra });
-  return { iso, sent, sendMessage, tt, post, capture, bg: (m: unknown, id = 'ext-id') => onMsg!(m, { id }) };
+  return { iso, sent, sendMessage, tt, post, capture, bg: (m: unknown, id = 'ext-id') => onMsg!(m, { id }, () => {}) };
 }
 
 beforeEach(() => {
