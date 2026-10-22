@@ -128,8 +128,8 @@ export interface State {
   streakFreezes?: number;
   /** Dates protected by a consumed freeze (last 60 kept). */
   freezeUsedDates?: string[];
-  /** Idempotency markers for earned freezes: `<streak start date>#<streak length>` (last 60 kept). */
-  freezeAwards?: string[];
+  /** Freeze rewards of the current streak: its start date and the highest 7-day milestone rewarded. */
+  freezeAward?: { start: string; highestMilestone: number };
   /** Recorded practice sessions (last 500 kept). */
   sessions?: PracticeSession[];
 }

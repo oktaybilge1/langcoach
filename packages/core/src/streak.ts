@@ -91,26 +91,28 @@ export function applyFreezes(
     }
   }
 
-  // 2. One freeze per 7-day milestone of the current streak, each rewarded once.
-  const awards = [...(state.freezeAwards ?? [])];
-  const known = new Set(awards);
-  let newAwards = 0;
+  // 2. One freeze per 7-day milestone of the current streak. The marker tracks only the current
+  //    streak (its start date and the highest milestone rewarded), so it never grows or re-awards.
   const { length, start } = streakFrom(counted, today);
-  if (start !== null) {
-    for (let m = FREEZE_EVERY_DAYS; m <= length; m += FREEZE_EVERY_DAYS) {
-      const key = `${start}#${m}`;
-      if (known.has(key)) continue;
-      known.add(key);
-      awards.push(key);
-      newAwards++;
-      if (held < MAX_STREAK_FREEZES) held++;
-    }
-  }
+  const reached = Math.floor(length / FREEZE_EVERY_DAYS) * FREEZE_EVERY_DAYS;
+  const prev = state.freezeAward;
+  const rewarded = prev !== undefined && prev.start === start ? prev.highestMilestone : 0;
+  const newAwards = start !== null && reached > rewarded ? (reached - rewarded) / FREEZE_EVERY_DAYS : 0;
+  held = Math.min(Math.max(held, MAX_STREAK_FREEZES), held + newAwards);
   const earned = Math.max(0, held - (startHeld - consumed.length));
 
   if (consumed.length === 0 && newAwards === 0) return { state, consumed, earned: 0 };
   const next: State = { ...state, streakFreezes: held };
-  if (consumed.length > 0) next.freezeUsedDates = used.slice(-KEEP_FREEZE_DATES);
-  if (newAwards > 0) next.freezeAwards = awards.slice(-KEEP_FREEZE_DATES);
+  if (consumed.length > 0) next.freezeUsedDates = trimUsed(used, start);
+  if (newAwards > 0) next.freezeAward = { start: start!, highestMilestone: reached };
   return { state: next, consumed, earned };
+}
+
+/** Keep at most 60 freeze dates, but never drop one inside the current streak (≥ its start). */
+function trimUsed(used: string[], start: string | null): string[] {
+  if (start === null) return used.slice(-KEEP_FREEZE_DATES);
+  const current = used.filter((d) => d >= start);
+  const older = used.filter((d) => d < start);
+  const room = Math.max(0, KEEP_FREEZE_DATES - current.length);
+  return [...(room > 0 ? older.slice(-room) : []), ...current];
 }

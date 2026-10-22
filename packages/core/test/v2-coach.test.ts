@@ -56,6 +56,7 @@ describe('schema accepts and validates v2 fields', () => {
     ['mastered', (s: any) => (s.cards[0].mastered = 1)],
     ['streakFreezes', (s: any) => (s.streakFreezes = -1)],
     ['freezeUsedDates', (s: any) => (s.freezeUsedDates = [3])],
+    ['freezeAward', (s: any) => (s.freezeAward = { start: '2026-10-01', highestMilestone: -7 })],
     ['sessions', (s: any) => (s.sessions = [{ id: 's' }])],
   ])('rejects invalid %s', async (field, mutate) => {
     const s = JSON.parse(JSON.stringify(await state()));

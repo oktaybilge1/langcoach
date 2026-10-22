@@ -132,12 +132,84 @@ describe('applyFreezes', () => {
     expect(r2.state).toEqual(r1.state);
   });
 
-  test('daily calls give the same result as one late call (midnight crossing)', () => {
+  test('gap fully covered by freezes held: daily calls and one late call agree', () => {
     const s = stateWith([e(day(-3), 20)], { streakFreezes: 2 });
     const a = applyFreezes(applyFreezes(s, day(-1), 20).state, TODAY, 20);
     const b = applyFreezes(s, TODAY, 20);
     expect(a.state.freezeUsedDates).toEqual(b.state.freezeUsedDates);
     expect(a.state.streakFreezes).toBe(b.state.streakFreezes);
+  });
+
+  test('documented divergence: 3-day gap with 2 freezes, daily rollovers vs one late rollover', () => {
+    const s = stateWith([e(day(-4), 20)], { streakFreezes: 2 }); // missed day-3, day-2, day-1
+    // Daily: each day's gap is 1, so a freeze is used on day-2 and day-1; on TODAY the gap
+    // (day-1) is larger than the 0 freezes left, so the streak breaks with both freezes spent.
+    let daily = applyFreezes(s, day(-2)).state;
+    daily = applyFreezes(daily, day(-1)).state;
+    daily = applyFreezes(daily, TODAY).state;
+    expect(daily.freezeUsedDates).toEqual([day(-3), day(-2)]);
+    expect(daily.streakFreezes).toBe(0);
+    expect(computeStreak({ log: daily.log, today: TODAY, freezeUsedDates: daily.freezeUsedDates })).toBe(0);
+    // One late call: the 3-day gap exceeds the 2 freezes, so none are spent.
+    const late = applyFreezes(s, TODAY).state;
+    expect(late.freezeUsedDates).toBeUndefined();
+    expect(late.streakFreezes).toBe(2);
+    expect(computeStreak({ log: late.log, today: TODAY, freezeUsedDates: [] })).toBe(0);
+  });
+
+  test('milestones are tracked per current streak: no re-award on very long streaks (> 427 days)', () => {
+    const log: LogEntry[] = [];
+    let s = stateWith(log);
+    let earnedTotal = 0;
+    for (let i = 0; i < 450; i++) {
+      const today = addDays('2025-01-01', i);
+      s = { ...s, log: [...s.log, e(today, 5)] };
+      const r = applyFreezes(s, today);
+      earnedTotal += r.earned;
+      s = { ...r.state, streakFreezes: 0 }; // spend held freezes so the cap never hides a re-award
+    }
+    expect(earnedTotal).toBe(Math.floor(450 / 7));
+    expect(s.freezeAward).toEqual({ start: '2025-01-01', highestMilestone: 448 });
+    // Repeated calls on the last day earn nothing more.
+    expect(applyFreezes(s, addDays('2025-01-01', 449)).earned).toBe(0);
+  });
+
+  test('a new streak resets the milestone marker', () => {
+    const s = stateWith(
+      Array.from({ length: 7 }, (_, i) => e(day(-i), 20)),
+      { freezeAward: { start: '2025-01-01', highestMilestone: 448 } },
+    );
+    const r = applyFreezes(s, TODAY);
+    expect(r.earned).toBe(1);
+    expect(r.state.freezeAward).toEqual({ start: day(-6), highestMilestone: 7 });
+  });
+
+  test('freezeUsedDates trimming never drops dates inside the current streak', () => {
+    // Current streak day-121..day-2: activity on even offsets, freezes on odd ones (60 freeze days),
+    // plus 3 freeze dates from an older, broken streak. Yesterday was missed, 1 freeze held.
+    const log: LogEntry[] = [];
+    const used = ['2025-01-01', '2025-01-02', '2025-01-03'];
+    for (let k = 121; k >= 2; k--) {
+      if (k % 2 === 0) log.push(e(day(-k), 5));
+      else used.push(day(-k));
+    }
+    const s = stateWith(log, { streakFreezes: 1, freezeUsedDates: used });
+    expect(computeStreak({ log, today: day(-1), freezeUsedDates: used })).toBe(120);
+    const r = applyFreezes(s, TODAY);
+    expect(r.consumed).toEqual([day(-1)]);
+    const kept = r.state.freezeUsedDates!;
+    expect(kept).toHaveLength(61);
+    expect(kept.some((d) => d.startsWith('2025'))).toBe(false);
+    expect(computeStreak({ log, today: TODAY, freezeUsedDates: kept })).toBe(121);
+  });
+
+  test('freezeUsedDates trimming drops only dates older than the current streak start', () => {
+    const old = Array.from({ length: 70 }, (_, i) => addDays('2025-01-01', i));
+    const s = stateWith([e(day(-2), 20)], { streakFreezes: 1, freezeUsedDates: old });
+    const r = applyFreezes(s, TODAY);
+    expect(r.state.freezeUsedDates).toHaveLength(60);
+    expect(r.state.freezeUsedDates!.at(-1)).toBe(day(-1));
+    expect(r.state.freezeUsedDates![0]).toBe(old[11]);
   });
 
   test('earns 1 freeze when the streak reaches 7, once', () => {

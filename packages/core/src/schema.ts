@@ -117,7 +117,7 @@ const stateSchema = obj({
   log: z.array(logEntry),
   streakFreezes: z.number().int().min(0).optional(),
   freezeUsedDates: z.array(z.string()).optional(),
-  freezeAwards: z.array(z.string()).optional(),
+  freezeAward: obj({ start: z.string(), highestMilestone: z.number().int().min(0) }).optional(),
   sessions: z.array(practiceSession).optional(),
 });
 
