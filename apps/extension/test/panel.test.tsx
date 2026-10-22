@@ -50,7 +50,7 @@ function makeSnapshot(overrides: Partial<Snapshot> = {}): Snapshot {
       lessonIds: ['l-1'],
       newCards: 12,
       duplicates: 0,
-      at: '2026-03-04T10:00:00Z',
+      at: new Date().toISOString(), // inside the 10-minute undo window
       tabId: 1,
     },
     state: st,

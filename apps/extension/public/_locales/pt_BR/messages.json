@@ -362,9 +362,6 @@
   "searchPlaceholder": {
     "message": "Pesquisar palavra ou tradução..."
   },
-  "btnMarkLearned": {
-    "message": "Aprendido (+5 XP)"
-  },
   "statusLearned": {
     "message": "Aprendido"
   },
@@ -376,5 +373,77 @@
   },
   "noTranslation": {
     "message": "Sem tradução ainda (editar)"
+  },
+  "themeCopiedPaste": {
+    "message": "Copiado — cole na caixa"
+  },
+  "loadErrorBody": {
+    "message": "O LangCoach não conseguiu carregar seus dados: $MSG$",
+    "placeholders": {
+      "msg": {
+        "content": "$1"
+      }
+    }
+  },
+  "btnRetry": {
+    "message": "Tentar novamente"
+  },
+  "corruptTitle": {
+    "message": "Seus dados salvos estão danificados"
+  },
+  "corruptBody": {
+    "message": "O LangCoach não conseguiu ler seus dados salvos. Nada foi apagado: você pode importar um backup ou redefinir para começar do zero."
+  },
+  "corruptPreserved": {
+    "message": "Uma cópia dos dados danificados foi mantida no armazenamento do navegador com a chave: $KEY$",
+    "placeholders": {
+      "key": {
+        "content": "$1"
+      }
+    }
+  },
+  "importReplaceWarning": {
+    "message": "A importação substitui todo o seu baralho atual. Um backup dos dados atuais é mantido."
+  },
+  "importCounts": {
+    "message": "Baralho atual: $CURRENT$ cartões · Arquivo: $FILE$ cartões",
+    "placeholders": {
+      "current": {
+        "content": "$1"
+      },
+      "file": {
+        "content": "$2"
+      }
+    }
+  },
+  "btnImportReplace": {
+    "message": "Substituir"
+  },
+  "importDone": {
+    "message": "$CARDS$ cartões importados de $LESSONS$ lições.",
+    "placeholders": {
+      "cards": {
+        "content": "$1"
+      },
+      "lessons": {
+        "content": "$2"
+      }
+    }
+  },
+  "importFailed": {
+    "message": "Falha na importação: $MSG$",
+    "placeholders": {
+      "msg": {
+        "content": "$1"
+      }
+    }
+  },
+  "actionFailed": {
+    "message": "Algo deu errado: $MSG$",
+    "placeholders": {
+      "msg": {
+        "content": "$1"
+      }
+    }
   }
 }

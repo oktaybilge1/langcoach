@@ -1,10 +1,14 @@
 import type { PlanTask, TaskType } from '@langcoach/core/browser';
-import { useState } from 'preact/hooks';
+import { useEffect, useState } from 'preact/hooks';
 import { deeplink, toSiteLang } from '../../lib/deeplink';
 import { suggestThemes, type Goal, type UiLocale } from '../../lib/themes';
 import type { Snapshot } from '../../shared/messages';
 import type { PanelSend } from '../App';
 import type { TranslateFn } from '../i18n';
+import { openExperimentUrl, requestFill } from '../tabs';
+
+/** Same window as the background's undo check (capture.ts UNDO_WINDOW_MS). */
+const UNDO_WINDOW_MS = 10 * 60_000;
 
 export interface TodayProps {
   snapshot: Snapshot;
@@ -45,29 +49,23 @@ export function taskIcon(type: TaskType): string {
   }
 }
 
-export function openExperimentUrl(url: string): void {
-  if (typeof chrome !== 'undefined' && chrome.tabs?.query && chrome.tabs?.update) {
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      const activeTab = tabs[0];
-      if (activeTab?.id && activeTab.url && activeTab.url.includes('labs.google/lll')) {
-        void chrome.tabs.update(activeTab.id, { url });
-        return;
-      }
-      if (typeof chrome.tabs?.create === 'function') {
-        void chrome.tabs.create({ url });
-      }
-    });
-  } else if (typeof chrome !== 'undefined' && chrome.tabs?.create) {
-    void chrome.tabs.create({ url });
-  } else if (typeof window !== 'undefined') {
-    window.open(url, '_blank', 'noopener');
-  }
-}
-
 export function Today({ snapshot, uiLocale, t, send, onRefresh, onOpenReview }: TodayProps) {
   const [seed, setSeed] = useState(0);
   const [copied, setCopied] = useState(false);
   const [filled, setFilled] = useState(false);
+  const [pasteHint, setPasteHint] = useState(false);
+  const [actionError, setActionError] = useState<string | null>(null);
+  const [, setTick] = useState(0);
+
+  const lastCapture = snapshot.lastCapture;
+  const undoLeftMs = lastCapture ? Date.parse(lastCapture.at) + UNDO_WINDOW_MS - Date.now() : 0;
+  const canUndo = lastCapture !== null && undoLeftMs > 0;
+  // Re-render when the undo window closes so the card disappears on time.
+  useEffect(() => {
+    if (!canUndo) return;
+    const id = setTimeout(() => setTick((n) => n + 1), Math.min(undoLeftMs + 50, 2_147_000_000));
+    return () => clearTimeout(id);
+  }, [lastCapture?.at, canUndo]);
 
   const profile = snapshot.profile!;
   const tasks = snapshot.today?.tasks ?? [];
@@ -87,16 +85,22 @@ export function Today({ snapshot, uiLocale, t, send, onRefresh, onOpenReview }: 
   }
 
   async function handleFillTheme() {
-    if (typeof chrome !== 'undefined' && chrome.tabs?.query && chrome.tabs?.sendMessage) {
-      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        const activeTab = tabs[0];
-        if (activeTab?.id) {
-          chrome.tabs.sendMessage(activeTab.id, { type: 'fillTheme', theme: currentTheme }).catch(() => {});
-          setFilled(true);
-          setTimeout(() => setFilled(false), 1800);
-        }
-      });
+    const theme = currentTheme;
+    if (await requestFill(theme)) {
+      setPasteHint(false);
+      setFilled(true);
+      setTimeout(() => setFilled(false), 1800);
+      return;
     }
+    // Not on the Tiny Lesson page, or its purpose field was not found: hand the theme over via the clipboard.
+    try {
+      await navigator.clipboard?.writeText(theme);
+    } catch {
+      /* clipboard unavailable: the theme is still shown above */
+    }
+    setFilled(false);
+    setPasteHint(true);
+    setTimeout(() => setPasteHint(false), 4000);
   }
 
   async function handleCopyTheme() {
@@ -111,8 +115,13 @@ export function Today({ snapshot, uiLocale, t, send, onRefresh, onOpenReview }: 
 
   async function handleUndo() {
     if (!snapshot.lastCapture) return;
-    await send({ type: 'undo', lessonIds: snapshot.lastCapture.lessonIds });
-    await onRefresh();
+    try {
+      await send({ type: 'undo', lessonIds: snapshot.lastCapture.lessonIds });
+      setActionError(null);
+      await onRefresh();
+    } catch (e) {
+      setActionError(t('actionFailed', (e as Error).message));
+    }
   }
 
   const recentGrammar = (snapshot.state?.lessons ?? [])
@@ -170,7 +179,7 @@ export function Today({ snapshot, uiLocale, t, send, onRefresh, onOpenReview }: 
           “{currentTheme}”
         </p>
         <div class="theme-actions">
-          <button type="button" class="primary" onClick={handleFillTheme}>
+          <button type="button" class="primary" data-testid="btn-fill-theme" onClick={handleFillTheme}>
             {filled ? `✓ ${t('btnFilled')}` : t('btnFillTheme')}
           </button>
           <button type="button" onClick={handleCopyTheme}>
@@ -186,13 +195,24 @@ export function Today({ snapshot, uiLocale, t, send, onRefresh, onOpenReview }: 
             {t('btnOpenLll')}
           </button>
         </div>
+        {pasteHint && (
+          <p class="notice" role="status" data-testid="theme-paste-hint">
+            {t('themeCopiedPaste')}
+          </p>
+        )}
       </section>
 
-      {snapshot.lastCapture && (
+      {actionError && (
+        <p class="error-text" role="alert">
+          {actionError}
+        </p>
+      )}
+
+      {lastCapture && canUndo && (
         <section class="card" data-testid="today-last-capture">
           <h2>{t('lastCaptureHeading')}</h2>
           <div class="today-summary">
-            <span>{t('toastSaved', String(snapshot.lastCapture.newCards))}</span>
+            <span>{t('toastSaved', String(lastCapture.newCards))}</span>
             <button type="button" data-testid="today-undo" onClick={handleUndo}>
               {t('toastUndo')}
             </button>

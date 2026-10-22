@@ -362,9 +362,6 @@
   "searchPlaceholder": {
     "message": "Kelime veya çeviri ara..."
   },
-  "btnMarkLearned": {
-    "message": "Öğrendim (+5 XP)"
-  },
   "statusLearned": {
     "message": "Öğrenildi"
   },
@@ -376,5 +373,77 @@
   },
   "noTranslation": {
     "message": "Henüz çeviri yok (düzenleye tıkla)"
+  },
+  "themeCopiedPaste": {
+    "message": "Kopyalandı — kutuya yapıştırın"
+  },
+  "loadErrorBody": {
+    "message": "LangCoach verilerinizi yükleyemedi: $MSG$",
+    "placeholders": {
+      "msg": {
+        "content": "$1"
+      }
+    }
+  },
+  "btnRetry": {
+    "message": "Tekrar dene"
+  },
+  "corruptTitle": {
+    "message": "Kayıtlı verileriniz bozuk"
+  },
+  "corruptBody": {
+    "message": "LangCoach kayıtlı verilerinizi okuyamadı. Hiçbir şey silinmedi: bir yedek dosyasını içe aktarabilir veya sıfırlayıp baştan başlayabilirsiniz."
+  },
+  "corruptPreserved": {
+    "message": "Bozuk verilerin bir kopyası tarayıcı depolamasında şu anahtarla saklandı: $KEY$",
+    "placeholders": {
+      "key": {
+        "content": "$1"
+      }
+    }
+  },
+  "importReplaceWarning": {
+    "message": "İçe aktarma mevcut destenizin tamamını değiştirir. Mevcut verilerin bir yedeği saklanır."
+  },
+  "importCounts": {
+    "message": "Mevcut deste: $CURRENT$ kart · Dosya: $FILE$ kart",
+    "placeholders": {
+      "current": {
+        "content": "$1"
+      },
+      "file": {
+        "content": "$2"
+      }
+    }
+  },
+  "btnImportReplace": {
+    "message": "Değiştir"
+  },
+  "importDone": {
+    "message": "$LESSONS$ dersten $CARDS$ kart içe aktarıldı.",
+    "placeholders": {
+      "cards": {
+        "content": "$1"
+      },
+      "lessons": {
+        "content": "$2"
+      }
+    }
+  },
+  "importFailed": {
+    "message": "İçe aktarma başarısız: $MSG$",
+    "placeholders": {
+      "msg": {
+        "content": "$1"
+      }
+    }
+  },
+  "actionFailed": {
+    "message": "Bir sorun oluştu: $MSG$",
+    "placeholders": {
+      "msg": {
+        "content": "$1"
+      }
+    }
   }
 }

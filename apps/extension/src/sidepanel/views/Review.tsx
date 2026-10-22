@@ -6,7 +6,7 @@ import type { UiLocale } from '../../lib/themes';
 import type { Snapshot } from '../../shared/messages';
 import type { PanelSend } from '../App';
 import type { TranslateFn } from '../i18n';
-import { openExperimentUrl } from './Today';
+import { openExperimentUrl } from '../tabs';
 
 export interface ReviewProps {
   snapshot: Snapshot;
@@ -49,9 +49,17 @@ export function Review({ snapshot, uiLocale, t, send, onRefresh, initialMode }: 
   const [draftTranslation, setDraftTranslation] = useState('');
   const [reviewedCount, setReviewedCount] = useState(0);
   const completedSessionRef = useRef(false);
+  /** True while a rating is being saved: rapid 1-4 presses must not rate the same card twice. */
+  const ratingRef = useRef(false);
+  const [actionError, setActionError] = useState<string | null>(null);
 
   const targetLang = resolveLanguage(snapshot.profile?.targetLanguage ?? '');
   const card = cards[index];
+
+  // A new card starts with its own translation as the draft (never a leftover from the previous card).
+  useEffect(() => {
+    setDraftTranslation(card?.translation ?? '');
+  }, [card?.id]);
 
   // All cards from snapshot state, falling back to due cards
   const allCards: ReviewCard[] =
@@ -86,39 +94,46 @@ export function Review({ snapshot, uiLocale, t, send, onRefresh, initialMode }: 
   }
 
   async function handleRate(rating: Rating) {
-    if (!card) return;
-    await send({ type: 'review', cardId: card.id, rating });
-    const nextCount = reviewedCount + 1;
-    setReviewedCount(nextCount);
-    setEditingCardId(null);
+    if (!card || ratingRef.current) return;
+    ratingRef.current = true;
+    try {
+      await send({ type: 'review', cardId: card.id, rating });
+      const nextCount = reviewedCount + 1;
+      setReviewedCount(nextCount);
+      setEditingCardId(null);
+      setActionError(null);
 
-    if (index + 1 >= cards.length) {
-      setCards([]);
-      setIndex(0);
-      setFlipped(false);
-      await finishSession(nextCount);
-    } else {
-      setIndex(index + 1);
-      setFlipped(false);
-      await onRefresh();
+      if (index + 1 >= cards.length) {
+        setCards([]);
+        setIndex(0);
+        setFlipped(false);
+        await finishSession(nextCount);
+      } else {
+        setIndex(index + 1);
+        setFlipped(false);
+        await onRefresh();
+      }
+    } catch (e) {
+      setActionError(t('actionFailed', (e as Error).message));
+    } finally {
+      ratingRef.current = false;
     }
   }
 
-  async function handleMarkLearnedFromList(cardId: string) {
-    await send({ type: 'review', cardId, rating: 3 });
-    await finishSession(1);
-    await onRefresh();
-  }
-
   async function handleSaveTranslation(cardId: string) {
-    const updated = await send({
-      type: 'updateCard',
-      cardId,
-      patch: { translation: draftTranslation },
-    });
-    setCards((prev) => prev.map((c) => (c.id === updated.id ? updated : c)));
-    setEditingCardId(null);
-    await onRefresh();
+    try {
+      const updated = await send({
+        type: 'updateCard',
+        cardId,
+        patch: { translation: draftTranslation },
+      });
+      setCards((prev) => prev.map((c) => (c.id === updated.id ? updated : c)));
+      setEditingCardId(null);
+      setActionError(null);
+      await onRefresh();
+    } catch (e) {
+      setActionError(t('actionFailed', (e as Error).message));
+    }
   }
 
   useEffect(() => {
@@ -189,10 +204,17 @@ export function Review({ snapshot, uiLocale, t, send, onRefresh, initialMode }: 
         </span>
       </div>
 
-      <div class="segmented-control" role="tablist">
+      {actionError && (
+        <p class="error-text" role="alert" data-testid="review-error">
+          {actionError}
+        </p>
+      )}
+
+      <div class="segmented-control" role="group">
         <button
           type="button"
           data-testid="mode-list"
+          aria-pressed={mode === 'list'}
           class={`segmented-btn ${mode === 'list' ? 'active' : ''}`}
           onClick={() => setMode('list')}
         >
@@ -201,6 +223,7 @@ export function Review({ snapshot, uiLocale, t, send, onRefresh, initialMode }: 
         <button
           type="button"
           data-testid="mode-cards"
+          aria-pressed={mode === 'cards'}
           class={`segmented-btn ${mode === 'cards' ? 'active' : ''}`}
           onClick={() => setMode('cards')}
         >
@@ -313,15 +336,6 @@ export function Review({ snapshot, uiLocale, t, send, onRefresh, initialMode }: 
                       </div>
                     )}
 
-                    <div class="vocab-footer">
-                      <button
-                        type="button"
-                        class="btn-sm"
-                        onClick={() => handleMarkLearnedFromList(c.id)}
-                      >
-                        ✅ {t('btnMarkLearned')}
-                      </button>
-                    </div>
                   </div>
                 );
               })}

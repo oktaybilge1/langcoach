@@ -1,10 +1,169 @@
 import type { Cefr } from '@langcoach/core/browser';
-import { useState } from 'preact/hooks';
+import { useRef, useState } from 'preact/hooks';
 import { LLL_LANGUAGES } from '../../lib/languages';
 import { GOALS, type Goal } from '../../lib/themes';
 import type { Settings as SettingsType, Snapshot } from '../../shared/messages';
 import type { PanelSend } from '../App';
 import type { TranslateFn } from '../i18n';
+import { goalLabelText } from './Onboarding';
+
+/** Blob URLs are revoked after this delay, so the browser has time to start the download. */
+export const EXPORT_REVOKE_DELAY_MS = 60_000;
+
+export interface DataActionsProps {
+  t: TranslateFn;
+  send: PanelSend;
+  /** Cards in the current deck, or null when unknown (e.g. damaged data). */
+  currentCards: number | null;
+  /** Called after a successful import or reset. */
+  onChanged: () => Promise<void>;
+  showExport?: boolean;
+}
+
+/** Export, import (with confirmation) and the 3-step reset; shared by Settings and the recovery screen. */
+export function DataActions({ t, send, currentCards, onChanged, showExport = true }: DataActionsProps) {
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [pending, setPending] = useState<{ json: string; fileCards: number | null } | null>(null);
+  const [notice, setNotice] = useState<{ text: string; error: boolean } | null>(null);
+  const [resetStep, setResetStep] = useState<0 | 1 | 2>(0);
+  const [busy, setBusy] = useState(false);
+
+  async function handleExport() {
+    try {
+      const { json } = await send({ type: 'exportData' });
+      const blob = new Blob([json], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'langcoach-backup.json';
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(url), EXPORT_REVOKE_DELAY_MS);
+    } catch (e) {
+      setNotice({ text: t('actionFailed', (e as Error).message), error: true });
+    }
+  }
+
+  async function handleImportFile(e: Event) {
+    const input = e.currentTarget as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+    try {
+      const json = await file.text();
+      let fileCards: number | null = null;
+      try {
+        const parsed = JSON.parse(json) as { cards?: unknown } | null;
+        if (parsed && Array.isArray(parsed.cards)) fileCards = parsed.cards.length;
+      } catch {
+        /* the background reports invalid JSON when the import is confirmed */
+      }
+      setNotice(null);
+      setPending({ json, fileCards });
+    } catch (err) {
+      setNotice({ text: t('importFailed', (err as Error).message), error: true });
+    } finally {
+      input.value = ''; // the same file can be chosen again
+    }
+  }
+
+  async function confirmImport() {
+    if (!pending || busy) return;
+    setBusy(true);
+    try {
+      const r = await send({ type: 'importData', json: pending.json });
+      setPending(null);
+      setNotice({ text: t('importDone', [String(r.cards), String(r.lessons)]), error: false });
+      await onChanged();
+    } catch (e) {
+      setPending(null);
+      setNotice({ text: t('importFailed', (e as Error).message), error: true });
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function handleResetClick() {
+    if (resetStep < 2) {
+      setResetStep((s) => (s + 1) as 0 | 1 | 2);
+      return;
+    }
+    try {
+      await send({ type: 'reset' });
+      setResetStep(0);
+      await onChanged();
+    } catch (e) {
+      setResetStep(0);
+      setNotice({ text: t('actionFailed', (e as Error).message), error: true });
+    }
+  }
+
+  return (
+    <div class="form-grid">
+      <div class="theme-actions">
+        {showExport && (
+          <button type="button" data-testid="btn-export" onClick={handleExport}>
+            {t('btnExport')}
+          </button>
+        )}
+        <button type="button" data-testid="btn-import" onClick={() => fileRef.current?.click()}>
+          {t('btnImport')}
+        </button>
+        <input
+          ref={fileRef}
+          type="file"
+          data-testid="input-import"
+          accept="application/json,.json"
+          tabIndex={-1}
+          aria-hidden="true"
+          style={{ display: 'none' }}
+          onChange={handleImportFile}
+        />
+      </div>
+
+      {pending && (
+        <div class="confirm-box" role="alertdialog" aria-labelledby="import-confirm-text" data-testid="import-confirm-dialog">
+          <p id="import-confirm-text" style={{ margin: 0, fontWeight: 600 }}>
+            {t('importReplaceWarning')}
+          </p>
+          <p class="muted" style={{ margin: 0 }}>
+            {t('importCounts', [
+              currentCards === null ? '?' : String(currentCards),
+              pending.fileCards === null ? '?' : String(pending.fileCards),
+            ])}
+          </p>
+          <div class="theme-actions">
+            <button
+              type="button"
+              class="danger"
+              data-testid="import-confirm"
+              disabled={busy}
+              autoFocus
+              onClick={confirmImport}
+            >
+              {t('btnImportReplace')}
+            </button>
+            <button type="button" data-testid="import-cancel" onClick={() => setPending(null)}>
+              {t('btnCancel')}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {notice && (
+        <p
+          class={`notice ${notice.error ? 'error' : ''}`}
+          role={notice.error ? 'alert' : 'status'}
+          data-testid="data-notice"
+        >
+          {notice.text}
+        </p>
+      )}
+
+      <button type="button" class="danger" data-testid="btn-reset" onClick={handleResetClick}>
+        {resetStep === 0 ? t('btnReset') : resetStep === 1 ? t('btnResetConfirm1') : t('btnResetConfirm2')}
+      </button>
+    </div>
+  );
+}
 
 export interface SettingsProps {
   snapshot: Snapshot;
@@ -22,54 +181,40 @@ export function Settings({ snapshot, settings, t, send, onRefresh }: SettingsPro
   const [goal, setGoal] = useState<Goal>((profile?.goal as Goal) ?? 'travel');
   const [minutesPerDay, setMinutesPerDay] = useState<number>(profile?.minutesPerDay ?? 15);
   const [daysPerWeek, setDaysPerWeek] = useState<number>(profile?.daysPerWeek ?? 5);
-  const [resetStep, setResetStep] = useState<0 | 1 | 2>(0);
+  const [error, setError] = useState<string | null>(null);
 
   async function handleSaveProfile(e: Event) {
     e.preventDefault();
-    await send({
-      type: 'setProfile',
-      profile: { nativeLanguage, targetLanguage, level, goal, minutesPerDay, daysPerWeek },
-    });
-    await onRefresh();
+    try {
+      await send({
+        type: 'setProfile',
+        profile: { nativeLanguage, targetLanguage, level, goal, minutesPerDay, daysPerWeek },
+      });
+      setError(null);
+      await onRefresh();
+    } catch (err) {
+      setError(t('actionFailed', (err as Error).message));
+    }
   }
 
   async function updateSetting(patch: Partial<SettingsType>) {
-    await send({ type: 'setSettings', settings: patch });
-    await onRefresh();
-  }
-
-  async function handleExport() {
-    const { json } = await send({ type: 'exportData' });
-    const blob = new Blob([json], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'langcoach-backup.json';
-    a.click();
-    URL.revokeObjectURL(url);
-  }
-
-  async function handleImportFile(e: Event) {
-    const file = (e.currentTarget as HTMLInputElement).files?.[0];
-    if (!file) return;
-    const text = await file.text();
-    await send({ type: 'importData', json: text });
-    await onRefresh();
-  }
-
-  async function handleResetClick() {
-    if (resetStep < 2) {
-      setResetStep((s) => (s + 1) as 0 | 1 | 2);
-      return;
+    try {
+      await send({ type: 'setSettings', settings: patch });
+      setError(null);
+      await onRefresh();
+    } catch (err) {
+      setError(t('actionFailed', (err as Error).message));
     }
-    await send({ type: 'reset' });
-    setResetStep(0);
-    await onRefresh();
   }
 
   return (
     <div class="form-grid" data-testid="settings-view">
       <h1>{t('settingsHeading')}</h1>
+      {error && (
+        <p class="error-text" role="alert">
+          {error}
+        </p>
+      )}
 
       <section class="card">
         <h2>{t('settingsProfileSection')}</h2>
@@ -113,7 +258,7 @@ export function Settings({ snapshot, settings, t, send, onRefresh }: SettingsPro
             >
               {GOALS.map((g) => (
                 <option key={g} value={g}>
-                  {g}
+                  {goalLabelText(g, t)}
                 </option>
               ))}
             </select>
@@ -220,29 +365,7 @@ export function Settings({ snapshot, settings, t, send, onRefresh }: SettingsPro
 
       <section class="card form-grid">
         <h2>{t('settingsDataSection')}</h2>
-        <div class="theme-actions">
-          <button type="button" data-testid="btn-export" onClick={handleExport}>
-            {t('btnExport')}
-          </button>
-          <label class="button" style={{ cursor: 'pointer' }}>
-            <span>{t('btnImport')}</span>
-            <input
-              type="file"
-              data-testid="input-import"
-              accept="application/json,.json"
-              style={{ display: 'none' }}
-              onChange={handleImportFile}
-            />
-          </label>
-        </div>
-
-        <button type="button" class="danger" data-testid="btn-reset" onClick={handleResetClick}>
-          {resetStep === 0
-            ? t('btnReset')
-            : resetStep === 1
-              ? t('btnResetConfirm1')
-              : t('btnResetConfirm2')}
-        </button>
+        <DataActions t={t} send={send} currentCards={snapshot.state?.cards.length ?? null} onChanged={onRefresh} />
       </section>
 
       <section class="card form-grid">

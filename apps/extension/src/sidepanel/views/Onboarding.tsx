@@ -34,6 +34,23 @@ export interface OnboardingProps {
   onComplete: () => Promise<void>;
 }
 
+export function goalLabelText(g: Goal, t: TranslateFn): string {
+  switch (g) {
+    case 'travel':
+      return t('goalTravel');
+    case 'work':
+      return t('goalWork');
+    case 'study':
+      return t('goalStudy');
+    case 'moving':
+      return t('goalMoving');
+    case 'family':
+      return t('goalFamily');
+    case 'fun':
+      return t('goalFun');
+  }
+}
+
 export function Onboarding({ settings, uiLocale, t, send, onComplete }: OnboardingProps) {
   const prefilledTarget = (() => {
     if (settings.pendingTargetLanguage) {
@@ -52,22 +69,7 @@ export function Onboarding({ settings, uiLocale, t, send, onComplete }: Onboardi
   const [hasCamera, setHasCamera] = useState<boolean>(settings.hasCamera);
   const [busy, setBusy] = useState(false);
 
-  const goalLabel = (g: Goal): string => {
-    switch (g) {
-      case 'travel':
-        return t('goalTravel');
-      case 'work':
-        return t('goalWork');
-      case 'study':
-        return t('goalStudy');
-      case 'moving':
-        return t('goalMoving');
-      case 'family':
-        return t('goalFamily');
-      case 'fun':
-        return t('goalFun');
-    }
-  };
+  const goalLabel = (g: Goal) => goalLabelText(g, t);
 
   async function handleSubmit(e: Event) {
     e.preventDefault();

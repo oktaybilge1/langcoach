@@ -13,7 +13,7 @@ import { Onboarding } from './views/Onboarding';
 import { Plan } from './views/Plan';
 import { Progress } from './views/Progress';
 import { Review } from './views/Review';
-import { Settings } from './views/Settings';
+import { DataActions, Settings } from './views/Settings';
 import { Today } from './views/Today';
 
 export type PanelSend = <K extends MessageType>(msg: { type: K } & MessageMap[K]['request']) => Promise<ResponseOf<K>>;
@@ -24,17 +24,38 @@ export interface AppProps {
   initialTab?: TabId;
 }
 
+type LoadError = { kind: 'corrupt'; message: string; preservedAt?: string } | { kind: 'generic'; message: string };
+
+/** Classifies an error thrown by send() (ErrorInfo fields are copied onto the Error). */
+export function toLoadError(e: unknown): LoadError {
+  const err = (e ?? {}) as { name?: string; message?: string; preservedAt?: string };
+  const message = typeof err.message === 'string' && err.message ? err.message : String(e);
+  if (err.name === 'CorruptDataError' || typeof err.preservedAt === 'string') {
+    return { kind: 'corrupt', message, ...(err.preservedAt ? { preservedAt: err.preservedAt } : {}) };
+  }
+  return { kind: 'generic', message };
+}
+
 export function App({ send = defaultSend, initialTab = 'today' }: AppProps) {
   const [tab, setTab] = useState<TabId>(initialTab);
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
   const [settings, setSettings] = useState<SettingsType>(DEFAULT_SETTINGS);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<LoadError | null>(null);
 
   const refresh = useCallback(async () => {
-    const [st, snap] = await Promise.all([send({ type: 'getSettings' }), send({ type: 'getSnapshot' })]);
-    setSettings(st);
-    setSnapshot(snap);
-    setLoading(false);
+    try {
+      // Settings live under their own key, so they still load when the learning state is damaged.
+      const st = await send({ type: 'getSettings' }).catch(() => null);
+      if (st) setSettings(st);
+      const snap = await send({ type: 'getSnapshot' });
+      setSnapshot(snap);
+      setLoadError(null);
+    } catch (e) {
+      setLoadError(toLoadError(e));
+    } finally {
+      setLoading(false);
+    }
   }, [send]);
 
   useEffect(() => {
@@ -47,6 +68,49 @@ export function App({ send = defaultSend, initialTab = 'today' }: AppProps) {
   }, [refresh]);
 
   const { locale, t } = createTranslator(settings.uiLanguage);
+
+  useEffect(() => {
+    if (typeof document !== 'undefined') document.documentElement.lang = locale === 'pt_BR' ? 'pt-BR' : locale;
+  }, [locale]);
+
+  if (loadError?.kind === 'corrupt') {
+    return (
+      <div class="panel-shell">
+        <main class="panel-main">
+          <section class="card form-grid" data-testid="recovery-screen">
+            <h1>{t('corruptTitle')}</h1>
+            <p>{t('corruptBody')}</p>
+            {loadError.preservedAt && (
+              <p class="muted">
+                {t('corruptPreserved', '')}
+                <span class="mono" data-testid="preserved-key">
+                  {loadError.preservedAt}
+                </span>
+              </p>
+            )}
+            <DataActions t={t} send={send} currentCards={null} onChanged={refresh} showExport={false} />
+          </section>
+        </main>
+      </div>
+    );
+  }
+
+  const errorBanner = loadError && (
+    <section class="card form-grid" role="alert" data-testid="load-error">
+      <p class="error-text">{t('loadErrorBody', loadError.message)}</p>
+      <button type="button" data-testid="btn-retry" onClick={() => void refresh()}>
+        {t('btnRetry')}
+      </button>
+    </section>
+  );
+
+  if (!snapshot && errorBanner) {
+    return (
+      <div class="panel-shell">
+        <main class="panel-main">{errorBanner}</main>
+      </div>
+    );
+  }
 
   if (loading || !snapshot) {
     return (
@@ -125,6 +189,7 @@ export function App({ send = defaultSend, initialTab = 'today' }: AppProps) {
       )}
 
       <main class="panel-main">
+        {errorBanner}
         {!snapshot.profile ? (
           <Onboarding settings={settings} uiLocale={locale} t={t} send={send} onComplete={refresh} />
         ) : tab === 'today' ? (

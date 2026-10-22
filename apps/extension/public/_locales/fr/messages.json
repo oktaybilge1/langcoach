@@ -362,9 +362,6 @@
   "searchPlaceholder": {
     "message": "Rechercher un mot ou traduction..."
   },
-  "btnMarkLearned": {
-    "message": "Appris (+5 XP)"
-  },
   "statusLearned": {
     "message": "Appris"
   },
@@ -376,5 +373,77 @@
   },
   "noTranslation": {
     "message": "Pas de traduction (modifier)"
+  },
+  "themeCopiedPaste": {
+    "message": "Copié — collez-le dans le champ"
+  },
+  "loadErrorBody": {
+    "message": "LangCoach n'a pas pu charger vos données : $MSG$",
+    "placeholders": {
+      "msg": {
+        "content": "$1"
+      }
+    }
+  },
+  "btnRetry": {
+    "message": "Réessayer"
+  },
+  "corruptTitle": {
+    "message": "Vos données enregistrées sont endommagées"
+  },
+  "corruptBody": {
+    "message": "LangCoach n'a pas pu lire vos données enregistrées. Rien n'a été supprimé : vous pouvez importer une sauvegarde ou réinitialiser pour repartir de zéro."
+  },
+  "corruptPreserved": {
+    "message": "Une copie des données endommagées a été conservée dans le stockage du navigateur sous la clé : $KEY$",
+    "placeholders": {
+      "key": {
+        "content": "$1"
+      }
+    }
+  },
+  "importReplaceWarning": {
+    "message": "L'importation remplace tout votre paquet actuel. Une sauvegarde des données actuelles est conservée."
+  },
+  "importCounts": {
+    "message": "Paquet actuel : $CURRENT$ cartes · Fichier : $FILE$ cartes",
+    "placeholders": {
+      "current": {
+        "content": "$1"
+      },
+      "file": {
+        "content": "$2"
+      }
+    }
+  },
+  "btnImportReplace": {
+    "message": "Remplacer"
+  },
+  "importDone": {
+    "message": "$CARDS$ cartes importées depuis $LESSONS$ leçons.",
+    "placeholders": {
+      "cards": {
+        "content": "$1"
+      },
+      "lessons": {
+        "content": "$2"
+      }
+    }
+  },
+  "importFailed": {
+    "message": "Échec de l'importation : $MSG$",
+    "placeholders": {
+      "msg": {
+        "content": "$1"
+      }
+    }
+  },
+  "actionFailed": {
+    "message": "Une erreur s'est produite : $MSG$",
+    "placeholders": {
+      "msg": {
+        "content": "$1"
+      }
+    }
   }
 }

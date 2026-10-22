@@ -14,7 +14,7 @@ describe('suggestThemes', () => {
           expect(out, `${goal}/${level}/${lang}`).toHaveLength(3);
           for (const item of out) {
             expect(item.trim().length, `${goal}/${level}/${lang} non-empty`).toBeGreaterThan(2);
-            expect(item.length, `${goal}/${level}/${lang} within Google 50-char limit`).toBeLessThanOrEqual(45);
+            expect(item.length, `${goal}/${level}/${lang} at most 40 chars`).toBeLessThanOrEqual(40);
           }
           expect(new Set(out).size, `${goal}/${level}/${lang} distinct`).toBe(3);
         }

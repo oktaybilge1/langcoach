@@ -362,9 +362,6 @@
   "searchPlaceholder": {
     "message": "Search words or translation..."
   },
-  "btnMarkLearned": {
-    "message": "Learned (+5 XP)"
-  },
   "statusLearned": {
     "message": "Learned"
   },
@@ -376,5 +373,77 @@
   },
   "noTranslation": {
     "message": "No translation yet (click edit)"
+  },
+  "themeCopiedPaste": {
+    "message": "Copied — paste it into the box"
+  },
+  "loadErrorBody": {
+    "message": "LangCoach could not load your data: $MSG$",
+    "placeholders": {
+      "msg": {
+        "content": "$1"
+      }
+    }
+  },
+  "btnRetry": {
+    "message": "Retry"
+  },
+  "corruptTitle": {
+    "message": "Your saved data is damaged"
+  },
+  "corruptBody": {
+    "message": "LangCoach could not read your saved data. Nothing was deleted: you can import a backup file, or reset to start fresh."
+  },
+  "corruptPreserved": {
+    "message": "A copy of the damaged data was kept in browser storage under the key: $KEY$",
+    "placeholders": {
+      "key": {
+        "content": "$1"
+      }
+    }
+  },
+  "importReplaceWarning": {
+    "message": "Importing replaces your whole current deck. A backup of the current data is kept."
+  },
+  "importCounts": {
+    "message": "Current deck: $CURRENT$ cards · File: $FILE$ cards",
+    "placeholders": {
+      "current": {
+        "content": "$1"
+      },
+      "file": {
+        "content": "$2"
+      }
+    }
+  },
+  "btnImportReplace": {
+    "message": "Replace"
+  },
+  "importDone": {
+    "message": "Imported $CARDS$ cards from $LESSONS$ lessons.",
+    "placeholders": {
+      "cards": {
+        "content": "$1"
+      },
+      "lessons": {
+        "content": "$2"
+      }
+    }
+  },
+  "importFailed": {
+    "message": "Import failed: $MSG$",
+    "placeholders": {
+      "msg": {
+        "content": "$1"
+      }
+    }
+  },
+  "actionFailed": {
+    "message": "Something went wrong: $MSG$",
+    "placeholders": {
+      "msg": {
+        "content": "$1"
+      }
+    }
   }
 }
