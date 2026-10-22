@@ -6,9 +6,10 @@ import { fileURLToPath } from 'node:url';
 import { deflateRawSync } from 'node:zlib';
 
 const extRoot = fileURLToPath(new URL('..', import.meta.url));
-const distDir = join(extRoot, 'dist');
+// LANGCOACH_DIST / LANGCOACH_ZIP_OUT override the paths (tests only).
+const distDir = process.env.LANGCOACH_DIST || join(extRoot, 'dist');
 const pkg = JSON.parse(readFileSync(join(extRoot, 'package.json'), 'utf8'));
-const outPath = join(extRoot, `langcoach-extension-${pkg.version}.zip`);
+const outPath = process.env.LANGCOACH_ZIP_OUT || join(extRoot, `langcoach-extension-${pkg.version}.zip`);
 
 function walk(dir) {
   const out = [];
@@ -36,6 +37,23 @@ function crc32(buf) {
 const files = walk(distDir);
 if (!files.some((f) => relative(distDir, f).replace(/\\/g, '/') === 'manifest.json')) {
   throw new Error('dist/manifest.json not found. Run npm run build -w @langcoach/extension first.');
+}
+
+// Never package a dev/e2e build (e.g. dist left behind by npm run test:e2e): it grants localhost access.
+const manifest = JSON.parse(readFileSync(join(distDir, 'manifest.json'), 'utf8'));
+const urls = [
+  ...(manifest.host_permissions ?? []),
+  ...(manifest.content_scripts ?? []).flatMap((c) => c.matches ?? []),
+  ...(manifest.web_accessible_resources ?? []).flatMap((w) => w.matches ?? []),
+];
+const local = urls.filter((u) => /localhost|127\.0\.0\.1|\[::1\]/i.test(String(u)));
+if (local.length) {
+  console.error(
+    `Refusing to package: dist/manifest.json is a dev/e2e build (it matches ${local.join(', ')}).
+` +
+      'Run the production build first: npm run build -w @langcoach/extension',
+  );
+  process.exit(1);
 }
 
 const localParts = [];
