@@ -62,26 +62,30 @@ function findBlank(term: string, example: string): { sentence: string; answer: s
     const src = NO_SPACE_SCRIPT.test(v) ? esc : `(?<![\\p{L}\\p{M}\\p{N}])${esc}(?![\\p{L}\\p{M}\\p{N}])`;
     let re: RegExp;
     try {
-      re = new RegExp(src, 'iu');
+      re = new RegExp(src, 'giu');
     } catch {
       continue;
     }
-    if (!re.test(example)) continue;
+    // Every occurrence is blanked so the answer is never visible in the sentence.
     const sentence = example.replace(re, BLANK);
-    if (!/\p{L}/u.test(sentence.replace(BLANK, ''))) continue;
+    if (sentence === example) continue;
+    if (!/\p{L}/u.test(sentence.split(BLANK).join(''))) continue;
     return { sentence, answer: v };
   }
   return null;
 }
 
-/** The example with the first occurrence of the term (or one side of a "m / f" pair) blanked, or null. */
+/** The example with every occurrence of the term (or one side of a "m / f" pair) blanked, or null. */
 export function blankSentence(term: string, example: string, _lang?: string): string | null {
   return findBlank(term, example)?.sentence ?? null;
 }
 
 interface Item {
   card: ReviewCard;
+  /** Display form: variants joined by " / ", "(m)/(f)" markers removed. */
   term: string;
+  /** What TTS says: the first variant. */
+  spoken: string;
   meaning: string;
   tk: string;
   mk: string;
@@ -97,12 +101,13 @@ export function buildSession(cards: ReviewCard[], opts: SessionOptions): Session
 
   const items: Item[] = [];
   for (const card of cards) {
-    const term = (card.term ?? '').trim();
+    const variants = expectedVariants((card.term ?? '').trim());
+    const term = variants.join(' / ');
     const meaning = meaningOf(card, opts.nativeFirst);
     const tk = termKey(term);
     const mk = meaningKey(meaning);
     if (!tk || !mk) continue;
-    items.push({ card, term, meaning, tk, mk, isNew: (card.srs?.reps ?? 0) === 0, blank: findBlank(term, card.example ?? '') });
+    items.push({ card, term, spoken: variants[0] ?? term, meaning, tk, mk, isNew: (card.srs?.reps ?? 0) === 0, blank: findBlank(term, card.example ?? '') });
   }
   if (items.length < 4) return { error: 'not_enough_cards', needed: 4 };
 
@@ -194,11 +199,11 @@ export function buildSession(cards: ReviewCard[], opts: SessionOptions): Session
     if (!o) return null;
     const prompt: ExercisePrompt =
       kind === 'meaning'
-        ? { term: it.term, speak: it.term, ...(it.card.pronunciation ? { pronunciation: it.card.pronunciation } : {}) }
+        ? { term: it.term, ...(opts.canSpeak ? { speak: it.spoken } : {}), ...(it.card.pronunciation ? { pronunciation: it.card.pronunciation } : {}) }
         : kind === 'reverse'
           ? { meaning: it.meaning }
           : kind === 'listen'
-            ? { speak: it.term }
+            ? { speak: it.spoken }
             : { sentence: it.blank!.sentence, meaning: it.meaning };
     return { kind, cardIds, prompt, options: o.options, answer: o.answer };
   }

@@ -98,17 +98,15 @@ export function damerauLevenshtein(a: string, b: string): number {
   return d[m]![n]!;
 }
 
-const compact = (s: string) => s.replace(/\s+/g, '');
-
 export function checkTyped(input: string, expected: string, lang: string): CheckResult {
-  const got = compact(normalizeAnswer(input, lang));
+  const got = normalizeAnswer(input, lang);
   if (!got) return 'wrong';
   let best: CheckResult = 'wrong';
   for (const v of expectedVariants(expected)) {
-    const want = compact(normalizeAnswer(v, lang));
+    const want = normalizeAnswer(v, lang);
     if (!want) continue;
     if (got === want) return 'correct';
-    if (Array.from(want).length >= 6 && damerauLevenshtein(got, want) === 1) best = 'almost';
+    if (/\p{L}/u.test(want) && Array.from(want).length >= 6 && damerauLevenshtein(got, want) === 1) best = 'almost';
   }
   return best;
 }

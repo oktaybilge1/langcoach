@@ -7,7 +7,7 @@ import {
   type Exercise,
   type SessionOptions,
 } from '../src/lib/practice/generate';
-import { normalizeAnswer } from '../src/lib/practice/check';
+import { expectedVariants, normalizeAnswer } from '../src/lib/practice/check';
 import { mulberry32 } from '../src/lib/practice/rng';
 
 const NOW = new Date('2026-10-22T12:00:00.000Z');
@@ -51,6 +51,7 @@ function ok(r: ReturnType<typeof buildSession>): Exercise[] {
 }
 
 const key = (s: string, lang = 'es-ES') => normalizeAnswer(s, lang).replace(/\s+/g, '');
+const disp = (t: string) => expectedVariants(t).join(' / ');
 
 describe('buildSession basics', () => {
   it('needs at least 4 usable cards', () => {
@@ -159,7 +160,7 @@ describe('meanings', () => {
 
 describe('blank', () => {
   it('Latin: case-insensitive whole word', () => {
-    expect(blankSentence('Casa', 'Mi casa es tu casa.', 'es-ES')).toBe('Mi ____ es tu casa.');
+    expect(blankSentence('Casa', 'Mi casa es tu casa.', 'es-ES')).toBe('Mi ____ es tu ____.');
     expect(blankSentence('casa', 'Casamiento feliz', 'es-ES')).toBeNull();
     expect(blankSentence('año', 'Feliz año nuevo', 'es-ES')).toBe('Feliz ____ nuevo');
     expect(blankSentence('ano', 'Feliz año nuevo', 'es-ES')).toBeNull();
@@ -181,6 +182,7 @@ describe('blank', () => {
         const c = d.find((x) => x.id === e.cardIds[0])!;
         expect(c.example).not.toBe('Nothing here.');
         expect(e.prompt.sentence).toContain('____');
+        expect(e.prompt.sentence!.toLowerCase()).not.toContain((e.answer as string).toLowerCase());
         expect(e.options).toContain(e.answer);
       }
     }
@@ -277,7 +279,7 @@ describe('Review Focus 1: options are always sane', () => {
           if (e.kind === 'meaning') {
             expect(others.some((y) => meaningOf(y, nativeFirst) === x)).toBe(true);
             // no card with the same term may have this meaning (homonyms would make it correct too)
-            for (const y of d.filter((y) => key(y.term) === key(c.term))) {
+            for (const y of d.filter((y) => key(disp(y.term)) === key(disp(c.term)))) {
               expect(key(meaningOf(y, nativeFirst), 'und')).not.toBe(key(x, 'und'));
             }
           } else {
@@ -286,7 +288,7 @@ describe('Review Focus 1: options are always sane', () => {
             const cm = key(meaningOf(c, nativeFirst), 'und');
             for (const y of d.filter((y) => key(meaningOf(y, nativeFirst), 'und') === cm)) {
               if (e.kind === 'blank') continue;
-              expect(key(y.term)).not.toBe(key(x));
+              expect(key(disp(y.term))).not.toBe(key(x));
             }
           }
         }
@@ -294,5 +296,45 @@ describe('Review Focus 1: options are always sane', () => {
     }
     expect(sessions).toBeGreaterThan(200);
     expect(exercises).toBeGreaterThan(2000);
+  });
+});
+
+describe('review fixes: speak and display forms', () => {
+  const gendered = () => [
+    card(0, { term: 'el camarero (m) / la camarera (f)', translation: 'waiter', example: 'Llama a la camarera ahora.' }),
+    ...deck(11).map((c, i) => ({ ...c, id: `g${i}` })),
+  ];
+  it('never sets speak when canSpeak is false', () => {
+    for (let seed = 1; seed <= 20; seed++) {
+      for (const e of ok(buildSession(deck(12), opts({ seed, canSpeak: false })))) expect(e.prompt.speak).toBeUndefined();
+    }
+  });
+  it('speaks the first variant without (m)/(f) markers', () => {
+    let seen = 0;
+    for (let seed = 1; seed <= 60; seed++) {
+      for (const e of ok(buildSession(gendered(), opts({ seed })))) {
+        if (e.cardIds[0] !== 'c0' || !e.prompt.speak) continue;
+        seen++;
+        expect(e.prompt.speak).toBe('el camarero');
+      }
+    }
+    expect(seen).toBeGreaterThan(0);
+  });
+  it('shows terms in display form everywhere (no markers in options, pairs, prompts, answers)', () => {
+    const marker = /\((m|f)\)/;
+    let seen = 0;
+    for (let seed = 1; seed <= 60; seed++) {
+      for (const e of ok(buildSession(gendered(), opts({ seed })))) {
+        const texts = [
+          ...(e.options ?? []),
+          ...(e.prompt.terms ?? []),
+          e.prompt.term ?? '',
+          ...(typeof e.answer === 'string' ? [e.answer] : e.answer.flat()),
+        ];
+        for (const t of texts) expect(t).not.toMatch(marker);
+        if (texts.some((t) => t.includes('el camarero / la camarera'))) seen++;
+      }
+    }
+    expect(seen).toBeGreaterThan(0);
   });
 });

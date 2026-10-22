@@ -88,6 +88,14 @@ describe('checkTyped', () => {
     expect(checkTyped('playz', 'playa', 'es-ES')).toBe('wrong'); // length 5
     expect(checkTyped('amigo', 'amigos', 'es-ES')).toBe('almost'); // length 6
   });
+  it('keeps single spaces; almost length counts spaces; no almost without letters', () => {
+    expect(checkTyped('el camarera', 'la camarera', 'es-ES')).toBe('wrong');
+    expect(checkTyped('el pa', 'el pan', 'es-ES')).toBe('almost');
+    expect(checkTyped('elpan', 'el pan', 'es-ES')).toBe('almost');
+    expect(checkTyped('el  pan', 'el pan', 'es-ES')).toBe('correct');
+    expect(checkTyped('123457', '123456', 'es-ES')).toBe('wrong');
+    expect(checkTyped('123456', '123456', 'es-ES')).toBe('correct');
+  });
   it('empty input is wrong', () => {
     expect(checkTyped('', 'hola', 'es-ES')).toBe('wrong');
     expect(checkTyped('   ', 'hola', 'es-ES')).toBe('wrong');
