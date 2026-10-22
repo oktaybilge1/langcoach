@@ -1,6 +1,7 @@
-import { Coach, MemoryStore } from '@langcoach/core/browser';
-import { describe, expect, it } from 'vitest';
+import { Coach, MemoryStore, isoWeek } from '@langcoach/core/browser';
+import { describe, expect, it, vi } from 'vitest';
 import { createRouter } from '../src/background/router';
+import { suggestThemes } from '../src/lib/themes';
 import { isMessage, type Message } from '../src/shared/messages';
 import { fakeArea } from './chrome-fake';
 
@@ -41,7 +42,7 @@ describe('background router', () => {
       type: 'getSnapshot',
     });
     expect(r.data?.profile.targetLanguage).toBe('Spanish');
-    expect(r.data?.today.planExists).toBe(false);
+    expect(r.data?.today.planExists).toBe(true); // the week's plan is created on demand (C1)
   });
 
   it('saveManual, getDue, review, updateCard delegate to the coach', async () => {
@@ -138,6 +139,70 @@ describe('background router', () => {
     const { call } = setup();
     const r = await call({ type: 'capture', kind: 'terms', request: {}, response: { a: 1 }, pageUrl: 'https://labs.google/lll/x' });
     expect(r).toEqual({ ok: true, data: null });
+  });
+
+  describe('weekly plan upkeep (C1)', () => {
+    function weekSetup(uiLanguage = () => 'en') {
+      const store = new MemoryStore();
+      const now = { t: NOW.getTime() };
+      let n = 0;
+      const clock = () => new Date(now.t);
+      const coach = new Coach(store, clock, () => `id${++n}`);
+      const area = fakeArea();
+      const router = createRouter({ coach, store, area, clock, log: () => {}, uiLanguage });
+      const call = <T>(m: Message) => router.handle(m) as Promise<{ ok: boolean; data?: T; error?: { name: string } }>;
+      return { call, now, store, router, coach };
+    }
+    type Snap = { today: { planExists: boolean; tasks: unknown[] }; plan: { week: string; theme: string } | null };
+
+    it('getSnapshot in the next ISO week creates the plan for that week with a suggested theme', async () => {
+      const { call, now } = weekSetup();
+      await call({ type: 'setProfile', profile });
+      await call({ type: 'createPlan', theme: 'first week' });
+      now.t += 7 * 86_400_000;
+      const week = isoWeek(new Date(now.t));
+      const r = await call<Snap>({ type: 'getSnapshot' });
+      expect(r.ok).toBe(true);
+      expect(r.data?.today.planExists).toBe(true);
+      expect(r.data?.plan?.week).toBe(week);
+      const seed = Number(week.split('-W')[1]);
+      expect(r.data?.plan?.theme).toBe(suggestThemes('travel', 'A1', 'en', seed)[0]);
+    });
+
+    it('uses the UI language setting (or the browser language for auto) for the theme', async () => {
+      const { call } = weekSetup(() => 'tr-TR');
+      await call({ type: 'setProfile', profile });
+      const seed = Number(isoWeek(NOW).split('-W')[1]);
+      const r = await call<Snap>({ type: 'getSnapshot' });
+      expect(r.data?.plan?.theme).toBe(suggestThemes('travel', 'A1', 'tr', seed)[0]);
+    });
+
+    it('does not create a plan without a profile, and ensurePlan is exposed for startup/alarms', async () => {
+      const { call, router, store } = weekSetup();
+      await router.ensurePlan();
+      expect(Object.keys((await store.load()).plans)).toHaveLength(0);
+      await call({ type: 'setProfile', profile });
+      await router.ensurePlan();
+      expect(Object.keys((await store.load()).plans)).toEqual([isoWeek(NOW)]);
+    });
+
+    it('keeps an existing plan for the current week', async () => {
+      const { call } = weekSetup();
+      await call({ type: 'setProfile', profile });
+      await call({ type: 'createPlan', theme: 'my own theme' });
+      const r = await call<Snap>({ type: 'getSnapshot' });
+      expect(r.data?.plan?.theme).toBe('my own theme');
+    });
+
+    it('loads the stored state once per snapshot when the plan exists (I7)', async () => {
+      const { call, store } = weekSetup();
+      await call({ type: 'setProfile', profile });
+      await call({ type: 'getSnapshot' });
+      const spy = vi.spyOn(store, 'load');
+      const r = await call<Snap & { progress: { weekly: { planned: number } } }>({ type: 'getSnapshot' });
+      expect(r.data?.progress.weekly.planned).toBeGreaterThan(0);
+      expect(spy).toHaveBeenCalledTimes(1);
+    });
   });
 
   it('isMessage guards unknown input', () => {

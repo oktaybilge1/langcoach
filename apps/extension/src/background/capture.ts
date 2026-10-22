@@ -17,6 +17,17 @@ export const GRAMMAR_WINDOW_MS = 5 * 60_000;
 export const UNDO_WINDOW_MS = 10 * 60_000;
 /** core saveLesson accepts at most this many items per lesson. */
 export const MAX_ITEMS_PER_LESSON = 50;
+/** Captures beyond these bounds are ignored (logged only): real LLL responses are far smaller. */
+export const MAX_CAPTURE_JSON_BYTES = 2 * 1024 * 1024;
+export const MAX_CAPTURE_ITEMS = 500;
+
+function jsonSize(v: unknown): number {
+  try {
+    return JSON.stringify(v)?.length ?? 0;
+  } catch {
+    return Infinity;
+  }
+}
 
 export interface CaptureContext {
   tabId?: number;
@@ -186,7 +197,15 @@ export function createCaptureService(deps: CaptureDeps) {
 
   return {
     capture(msg: MessageMap['capture']['request'], ctx: CaptureContext = {}): Promise<CaptureResult | null> {
+      if (jsonSize(msg.response) > MAX_CAPTURE_JSON_BYTES) {
+        log(`LangCoach: ignored a ${msg.kind} response larger than 2 MB`);
+        return Promise.resolve(null);
+      }
       const parsed = parseCapture(msg.kind, msg.request, msg.response);
+      if (parsed && parsed.items.length > MAX_CAPTURE_ITEMS) {
+        log(`LangCoach: ignored a ${msg.kind} response with more than ${MAX_CAPTURE_ITEMS} items`);
+        return Promise.resolve(null);
+      }
       if (!parsed) {
         log(`LangCoach: ignored a ${msg.kind} response with an unknown shape`);
         return Promise.resolve(null);

@@ -92,6 +92,50 @@ describe('daily reminder', () => {
     expect(createNotif).not.toHaveBeenCalled();
   });
 
+  describe('reminder stays quiet when there is nothing to nag about (C1)', () => {
+    const now = new Date('2026-03-04T18:00:00Z');
+    async function withProfile() {
+      const store = new MemoryStore();
+      const coach = new Coach(store, () => now);
+      await coach.setProfile({
+        nativeLanguage: 'English',
+        targetLanguage: 'Spanish (Spain)',
+        level: 'A1',
+        goal: 'travel',
+        minutesPerDay: 15,
+        daysPerWeek: 7,
+      });
+      const create = vi.fn(async () => REMINDER_NOTIFICATION_ID);
+      const deps = { coach, notifications: { create }, t: (k: string) => k, iconUrl: 'i.png' };
+      return { coach, create, deps };
+    }
+
+    it('is silent when today already has activity, even with todo tasks left', async () => {
+      const { coach, create, deps } = await withProfile();
+      await coach.weekPlan('Ordering coffee');
+      await coach.autoComplete('review', { cardsReviewed: 3 });
+      expect((await coach.today()).tasks.some((t) => t.status === 'todo')).toBe(true);
+      await createReminderAlarmHandler(deps)({ name: REMINDER_ALARM });
+      expect(create).not.toHaveBeenCalled();
+    });
+
+    it('never treats "no plan" as pending', async () => {
+      const { create, deps } = await withProfile();
+      await createReminderAlarmHandler(deps)({ name: REMINDER_ALARM });
+      expect(create).not.toHaveBeenCalled();
+    });
+
+    it('creates the week plan first (ensurePlan), then notifies about its todo tasks', async () => {
+      const { coach, create, deps } = await withProfile();
+      const ensurePlan = vi.fn(async () => {
+        await coach.weekPlan('Ordering coffee');
+      });
+      await createReminderAlarmHandler({ ...deps, ensurePlan })({ name: REMINDER_ALARM });
+      expect(ensurePlan).toHaveBeenCalledOnce();
+      expect(create).toHaveBeenCalledOnce();
+    });
+  });
+
   it('notification click opens side panel when windowId available, else opens LLL tab', async () => {
     const openPanel = vi.fn(async () => {});
     const createTab = vi.fn(async () => ({}));

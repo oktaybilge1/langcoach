@@ -169,6 +169,24 @@ describe('capture handler', () => {
     expect((await state()).lessons).toHaveLength(0);
   });
 
+  it('ignores (log only) a capture with more than 500 items', async () => {
+    const { call, state, log } = setup();
+    const many = { vocabulary: Array.from({ length: 501 }, (_, i) => ({ term: `w${i}`, translation: `t${i}` })), phrases: [] };
+    const r = await call(terms(esReq, many));
+    expect(r).toEqual({ ok: true, data: null });
+    expect((await state()).lessons).toHaveLength(0);
+    expect(log).toHaveBeenCalled();
+  });
+
+  it('ignores (log only) a capture whose JSON response is larger than 2 MB', async () => {
+    const { call, state, log } = setup();
+    const big = { vocabulary: [{ term: 'w', translation: 't', note: 'x'.repeat(2 * 1024 * 1024) }], phrases: [] };
+    const r = await call(terms(esReq, big));
+    expect(r).toEqual({ ok: true, data: null });
+    expect((await state()).lessons).toHaveLength(0);
+    expect(log).toHaveBeenCalled();
+  });
+
   it('a save error responds ok:false, logs, and rolls back earlier chunks', async () => {
     const { call, coach, state, log, area } = setup();
     const many = { vocabulary: Array.from({ length: 60 }, (_, i) => ({ term: `w${i}`, translation: `t${i}` })), phrases: [] };

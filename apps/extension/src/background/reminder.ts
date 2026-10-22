@@ -68,17 +68,21 @@ export interface ReminderAlarmDeps {
   };
   t: (key: string) => string;
   iconUrl: string;
+  /** Creates this week's plan if it is missing (a new ISO week started); runs before the check. */
+  ensurePlan?: () => Promise<void>;
 }
 
 export function createReminderAlarmHandler(deps: ReminderAlarmDeps) {
   return async (alarm: { name: string }): Promise<void> => {
     if (alarm.name !== REMINDER_ALARM) return;
     try {
+      if (deps.ensurePlan) await deps.ensurePlan();
       const state = await deps.coach.exportData();
       if (!state.profile) return;
       const today = await deps.coach.today();
-      const hasPending = today.tasks.length === 0 || today.tasks.some((task) => task.status !== 'done');
-      if (!hasPending) return;
+      // Quiet when the learner already practiced today, or when nothing is left to do (no plan = nothing pending).
+      if (state.log.some((e) => e.date === today.date)) return;
+      if (!today.tasks.some((task) => task.status === 'todo')) return;
       await deps.notifications.create(REMINDER_NOTIFICATION_ID, {
         type: 'basic',
         iconUrl: deps.iconUrl,

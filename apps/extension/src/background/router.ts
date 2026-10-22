@@ -1,10 +1,16 @@
 import {
   CorruptDataError,
   InvalidDataError,
+  isDue,
   isoWeek,
+  streak,
+  toLocalDate,
+  weeklyGoal,
   type Coach,
+  type State,
   type Store,
 } from '@langcoach/core/browser';
+import { suggestThemes, type Goal } from '../lib/themes';
 import {
   DEFAULT_SETTINGS,
   type ErrorInfo,
@@ -35,6 +41,8 @@ export interface RouterDeps {
   onSettingsChanged?: (settings: Settings) => void | Promise<void>;
   /** Extension-console logger; defaults to console.warn. */
   log?: (...args: unknown[]) => void;
+  /** Browser UI language, used for auto-created plan themes when the UI language setting is 'auto'. */
+  uiLanguage?: () => string;
 }
 
 export function toErrorInfo(e: unknown): ErrorInfo {
@@ -185,20 +193,51 @@ export function createRouter(deps: RouterDeps) {
       }),
   });
 
+  const browserUiLanguage =
+    deps.uiLanguage ??
+    (() => (typeof chrome !== 'undefined' && chrome.i18n?.getUILanguage?.()) || 'en');
+
+  /**
+   * Creates the current ISO week's plan when a profile exists and the week has none (a new week started).
+   * Returns the state as it is afterwards, so callers need not load it again.
+   */
+  async function ensurePlan(): Promise<State> {
+    const state = await store.load();
+    const week = isoWeek(clock());
+    if (!state.profile || state.plans[week]) return state;
+    const settings = await readSettings();
+    const uiLang = settings.uiLanguage === 'auto' ? browserUiLanguage() : settings.uiLanguage;
+    const seed = Number(week.split('-W')[1]) || 0;
+    const theme = suggestThemes(state.profile.goal as Goal, state.profile.level, uiLang, seed)[0] ?? 'everyday conversation';
+    try {
+      await coach.weekPlan(theme); // returns the existing plan if one was created meanwhile
+    } catch (e) {
+      log('LangCoach: could not create the weekly plan', e);
+      return state;
+    }
+    return store.load();
+  }
+
   async function snapshot(): Promise<Snapshot> {
-    const [state, progress, lc] = await Promise.all([store.load(), coach.progress(), area.get(LAST_CAPTURE_KEY)]);
-    const today = state.profile ? await coach.today() : null;
+    const [state, lc] = await Promise.all([ensurePlan(), area.get(LAST_CAPTURE_KEY)]);
+    // Everything below is computed from this one load (Coach.today/progress would each load and validate again).
+    const now = clock();
+    const date = toLocalDate(now);
+    const plan = state.plans[isoWeek(now)] ?? null;
+    const dueCount = state.cards.filter((c) => isDue(c.srs, now)).length;
     return {
       profile: state.profile,
-      today,
-      plan: state.plans[isoWeek(clock())] ?? null,
+      today: state.profile
+        ? { date, tasks: plan ? plan.tasks.filter((t) => t.date === date) : [], planExists: plan !== null }
+        : null,
+      plan,
       progress: {
-        streak: progress.streak,
-        totalXp: progress.totalXp,
-        weekly: progress.weekly,
-        dueCount: progress.dueCount,
+        streak: streak(state.log, date),
+        totalXp: state.log.reduce((sum, e) => sum + e.xp, 0),
+        weekly: weeklyGoal(plan ?? undefined),
+        dueCount,
       },
-      dueCount: progress.dueCount,
+      dueCount,
       lastCapture: (lc[LAST_CAPTURE_KEY] as LastCapture | undefined) ?? null,
       state,
     };
@@ -257,6 +296,14 @@ export function createRouter(deps: RouterDeps) {
   };
 
   return {
+    /** Creates this week's plan if a profile exists and the week has none (startup, alarms). Never throws. */
+    async ensurePlan(): Promise<void> {
+      try {
+        await ensurePlan();
+      } catch (e) {
+        log('LangCoach: weekly plan check failed', e);
+      }
+    },
     /** `ctx.tabId` is the sender tab (content-script messages). */
     async handle<K extends MessageType>(
       msg: { type: K } & MessageMap[K]['request'],

@@ -18,6 +18,7 @@ const router = createRouter({
   sidePanel: chrome.sidePanel,
   onSettingsChanged: (settings) => scheduleReminder(settings, chrome.alarms),
   log,
+  uiLanguage: () => chrome.i18n.getUILanguage(),
 });
 
 chrome.runtime.onMessage.addListener((msg: unknown, sender, sendResponse) => {
@@ -46,10 +47,12 @@ chrome.runtime.onInstalled.addListener(() => {
   void chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true });
   void setupMenus();
   void syncReminder();
+  void router.ensurePlan();
 });
 chrome.runtime.onStartup.addListener(() => {
   void setupMenus();
   void syncReminder();
+  void router.ensurePlan();
 });
 
 const onMenuClick = createMenuClickHandler({ coach, tabs: chrome.tabs, log });
@@ -60,6 +63,7 @@ const onAlarm = createReminderAlarmHandler({
   notifications: chrome.notifications,
   t: (k) => chrome.i18n.getMessage(k),
   iconUrl: chrome.runtime.getURL('icons/128.png'),
+  ensurePlan: () => router.ensurePlan(),
 });
 chrome.alarms.onAlarm.addListener((alarm) => void onAlarm(alarm));
 
