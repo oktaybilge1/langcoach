@@ -8,8 +8,14 @@ export interface Profile {
   goal: string;
   minutesPerDay: number;
   daysPerWeek: number;
+  /** Daily XP goal (default 20). */
+  dailyGoalXp?: DailyGoalXp;
   createdAt: string;
 }
+
+export type DailyGoalXp = 10 | 20 | 30 | 50;
+export const DAILY_GOALS: readonly DailyGoalXp[] = [10, 20, 30, 50];
+export const DEFAULT_DAILY_GOAL: DailyGoalXp = 20;
 
 export interface LessonItem {
   term: string;
@@ -70,6 +76,11 @@ export interface ReviewCard {
   translation: string;
   example: string;
   pronunciation?: string;
+  /** Meaning in the learner's native language (on-device translation). */
+  nativeTranslation?: string;
+  favorite?: boolean;
+  /** Set once by "I know this". */
+  mastered?: boolean;
   srs: SrsState;
 }
 
@@ -97,6 +108,15 @@ export interface LogEntry {
   xp: number;
 }
 
+export interface PracticeSession {
+  id: string;
+  at: string;
+  date: string;
+  exercises: number;
+  correct: number;
+  xp: number;
+}
+
 export interface State {
   version: 1;
   profile: Profile | null;
@@ -104,6 +124,14 @@ export interface State {
   lessons: Lesson[];
   cards: ReviewCard[];
   log: LogEntry[];
+  /** Streak freezes held (0..2). */
+  streakFreezes?: number;
+  /** Dates protected by a consumed freeze (last 60 kept). */
+  freezeUsedDates?: string[];
+  /** Idempotency markers for earned freezes: `<streak start date>#<streak length>` (last 60 kept). */
+  freezeAwards?: string[];
+  /** Recorded practice sessions (last 500 kept). */
+  sessions?: PracticeSession[];
 }
 
 export function emptyState(): State {

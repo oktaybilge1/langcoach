@@ -6,4 +6,5 @@ export { JsonFileStore, MemoryStore, defaultDataPath, type Store } from './store
 export * from './srs.js';
 export * from './planner.js';
 export * from './progress.js';
+export * from './streak.js';
 export * from './coach.js';

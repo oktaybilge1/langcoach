@@ -31,3 +31,10 @@ export function weekDates(week: string): string[] {
     return `${pad(x.getUTCFullYear(), 4)}-${pad(x.getUTCMonth() + 1)}-${pad(x.getUTCDate())}`;
   });
 }
+
+/** Shift a YYYY-MM-DD calendar date by `n` days (computed in UTC, so DST-safe). */
+export function addDays(date: string, n: number): string {
+  const [y, m, d] = date.split('-').map(Number) as [number, number, number];
+  const t = new Date(Date.UTC(y, m - 1, d + n));
+  return `${pad(t.getUTCFullYear(), 4)}-${pad(t.getUTCMonth() + 1)}-${pad(t.getUTCDate())}`;
+}

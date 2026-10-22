@@ -188,12 +188,15 @@ describe('Coach', () => {
   });
 
   test('progress works without profile', async () => {
-    expect(await coach.progress()).toEqual({
+    expect(await coach.progress()).toMatchObject({
       profile: null,
       streak: 0,
       totalXp: 0,
       weekly: { done: 0, planned: 0 },
       dueCount: 0,
+      todayXp: 0,
+      dailyGoalXp: 20,
+      streakFreezes: 0,
     });
   });
 

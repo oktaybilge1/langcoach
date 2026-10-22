@@ -16,6 +16,7 @@ const profile = obj({
   goal: z.string(),
   minutesPerDay: z.number().int().min(5).max(180),
   daysPerWeek: z.number().int().min(1).max(7),
+  dailyGoalXp: z.union([z.literal(10), z.literal(20), z.literal(30), z.literal(50)]).optional(),
   createdAt: z.string(),
 });
 
@@ -72,6 +73,9 @@ const reviewCard = obj({
   translation: z.string(),
   example: z.string(),
   pronunciation: z.string().optional(),
+  nativeTranslation: z.string().optional(),
+  favorite: z.boolean().optional(),
+  mastered: z.boolean().optional(),
   srs,
 });
 
@@ -95,6 +99,15 @@ const logEntry = obj({
   xp: z.number().min(0),
 });
 
+const practiceSession = obj({
+  id: z.string(),
+  at: z.string(),
+  date: z.string(),
+  exercises: z.number().int().min(0),
+  correct: z.number().int().min(0),
+  xp: z.number().min(0),
+});
+
 const stateSchema = obj({
   version: z.literal(1),
   profile: profile.nullable(),
@@ -102,6 +115,10 @@ const stateSchema = obj({
   lessons: z.array(lesson),
   cards: z.array(reviewCard),
   log: z.array(logEntry),
+  streakFreezes: z.number().int().min(0).optional(),
+  freezeUsedDates: z.array(z.string()).optional(),
+  freezeAwards: z.array(z.string()).optional(),
+  sessions: z.array(practiceSession).optional(),
 });
 
 export function parseState(raw: unknown): State {
