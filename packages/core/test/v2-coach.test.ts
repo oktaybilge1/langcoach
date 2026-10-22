@@ -299,7 +299,7 @@ describe('progress v2 fields and rollover', () => {
     );
   });
 
-  test('todayXp, weekXp and streak via daily goal', async () => {
+  test('todayXp, weekXp and streak (any XP counts)', async () => {
     await coach.setProfile({ ...profile, dailyGoalXp: 10 });
     now = new Date(2026, 9, 21, 9, 0);
     await coach.recordPractice({ sessionId: 'a', results: [{ cardId: ids[0]!, outcome: 'correct' }] });
@@ -308,9 +308,38 @@ describe('progress v2 fields and rollover', () => {
     const p = await coach.progress();
     expect(p.todayXp).toBe(2);
     expect(p.dailyGoalXp).toBe(10);
-    expect(p.streak).toBe(1); // today below goal, yesterday had a session
+    expect(p.streak).toBe(2); // today has some XP (below goal) and yesterday had a session
     expect(p.weekXp.at(-1)).toEqual({ date: '2026-10-22', xp: 2 });
     expect(p.weekXp.at(-2)).toEqual({ date: '2026-10-21', xp: 11 });
+  });
+
+  test('raising the daily goal does not change past streaks', async () => {
+    await coach.setProfile({ ...profile, dailyGoalXp: 10 });
+    const s = await state();
+    for (const [date, xp] of [['2026-10-19', 3], ['2026-10-20', 12], ['2026-10-21', 1]] as const) {
+      s.log.push({ at: 'x', date, taskId: 't', type: 'quiz', xp });
+    }
+    await store.save(s);
+    const before = await coach.progress();
+    expect(before.streak).toBe(3);
+    await coach.setProfile({ ...profile, dailyGoalXp: 50 });
+    const after = await coach.progress();
+    expect(after.dailyGoalXp).toBe(50);
+    expect(after.streak).toBe(3);
+  });
+
+  test('rollover consumes nothing when the gap is longer than the freezes held', async () => {
+    const s = await state();
+    s.streakFreezes = 2;
+    s.log.push({ at: 'x', date: '2026-10-18', taskId: 't', type: 'quiz', xp: 30 }); // missed 19, 20, 21
+    await store.save(s);
+    expect(await coach.rollover()).toEqual({ consumed: [], earned: 0 });
+    let p = await coach.progress();
+    expect(p.streakFreezes).toBe(2);
+    expect(p.streak).toBe(0);
+    await coach.markMastered(ids[0]!);
+    p = await coach.progress();
+    expect(p.streak).toBe(1);
   });
 
   test('rollover consumes a freeze for a missed day and is idempotent', async () => {
@@ -318,7 +347,10 @@ describe('progress v2 fields and rollover', () => {
     s.streakFreezes = 1;
     s.log.push({ at: 'x', date: '2026-10-20', taskId: 't', type: 'quiz', xp: 30 });
     await store.save(s);
-    expect((await coach.progress()).streak).toBe(2); // progress already reflects the freeze
+    // before rollover: persisted numbers only (the missed day is not yet protected)
+    const pre = await coach.progress();
+    expect(pre.streak).toBe(0);
+    expect(pre.streakFreezes).toBe(1);
     expect(await coach.rollover()).toEqual({ consumed: ['2026-10-21'], earned: 0 });
     const after = await state();
     expect(after.streakFreezes).toBe(0);
@@ -336,6 +368,7 @@ describe('progress v2 fields and rollover', () => {
       s.log.push({ at: 'x', date: addDays('2026-10-22', -i), taskId: 't', type: 'quiz', xp: 30 });
     }
     await store.save(s);
+    expect((await coach.progress()).streakFreezes).toBe(0); // not earned until rollover persists it
     expect(await coach.rollover()).toEqual({ consumed: [], earned: 1 });
     expect(await coach.rollover()).toEqual({ consumed: [], earned: 0 });
     expect((await coach.progress()).streakFreezes).toBe(1);

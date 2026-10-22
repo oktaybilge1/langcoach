@@ -515,7 +515,7 @@ export class Coach {
   /** Apply streak freezes for today: protect missed days, award freezes for 7-day milestones. */
   async rollover(): Promise<{ consumed: string[]; earned: number }> {
     return this.store.transaction<{ consumed: string[]; earned: number }>((s) => {
-      const r = applyFreezes(s, toLocalDate(this.clock()), goalOf(s));
+      const r = applyFreezes(s, toLocalDate(this.clock()));
       if (r.state === s) return { result: { consumed: [], earned: 0 } };
       return { state: r.state, result: { consumed: r.consumed, earned: r.earned } };
     });
@@ -553,20 +553,18 @@ export class Coach {
     streakFreezes: number;
     weekXp: { date: string; xp: number }[];
   }> {
-    const loaded = await this.store.load();
+    const s = await this.store.load();
     const now = this.clock();
     const today = toLocalDate(now);
-    const goal = goalOf(loaded);
-    // Read-only preview of today's rollover, so the numbers are right even before rollover() runs.
-    const s = applyFreezes(loaded, today, goal).state;
+    // Persisted numbers only: rollover() is what applies and saves freezes.
     return {
       profile: s.profile,
-      streak: computeStreak({ log: s.log, today, goal, freezeUsedDates: s.freezeUsedDates ?? [] }),
+      streak: computeStreak({ log: s.log, today, freezeUsedDates: s.freezeUsedDates ?? [] }),
       totalXp: s.log.reduce((sum, e) => sum + e.xp, 0),
       weekly: weeklyGoal(s.plans[isoWeek(now)]),
       dueCount: s.cards.filter((c) => isDue(c.srs, now)).length,
       todayXp: dailyXp(s.log, today),
-      dailyGoalXp: goal,
+      dailyGoalXp: goalOf(s),
       streakFreezes: s.streakFreezes ?? 0,
       weekXp: Array.from({ length: 7 }, (_, i) => {
         const date = addDays(today, i - 6);

@@ -123,17 +123,13 @@ describe('autoComplete', () => {
     expect(r).toEqual({ task: null, xpAwarded: 20 });
     expect((await coach.exportData()).log.at(-1)).toMatchObject({ taskId: 'unplanned', type: 'word_cam', xp: 20 });
   });
-  test('without profile only logs; streak counts once the default 20 XP goal is met', async () => {
+  test('without profile only logs; streak 1', async () => {
     const r = await coach.autoComplete('review', { cardsReviewed: 3 });
     expect(r.task).toBeNull();
     expect(r.xpAwarded).toBe(13);
-    let p = await coach.progress();
-    expect(p.streak).toBe(0); // 13 XP < daily goal 20: today not counted yet (but not broken)
-    expect(p.totalXp).toBe(13);
-    await coach.autoComplete('review');
-    p = await coach.progress();
+    const p = await coach.progress();
     expect(p.streak).toBe(1);
-    expect(p.todayXp).toBe(23);
+    expect(p.totalXp).toBe(13);
   });
   test('validates cardsReviewed', async () => {
     await expect(coach.autoComplete('review', { cardsReviewed: -1 })).rejects.toBeInstanceOf(InvalidDataError);

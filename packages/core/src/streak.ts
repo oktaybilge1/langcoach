@@ -20,15 +20,14 @@ export function goalMet(log: LogEntry[], date: string, goal: number): boolean {
   return dailyXp(log, date) >= goal;
 }
 
-/** Dates (YYYY-MM-DD) that count for the streak: goal met, a practice session, or a freeze. */
-function countedDates(log: LogEntry[], goal: number, freezeUsedDates: readonly string[]): Set<string> {
-  const xp = new Map<string, number>();
+/**
+ * Dates (YYYY-MM-DD) that count for the streak: any XP earned, a practice session, or a freeze.
+ * The daily goal deliberately plays no part (it only drives the goal ring), so changing the goal
+ * never rewrites past streaks.
+ */
+function countedDates(log: LogEntry[], freezeUsedDates: readonly string[]): Set<string> {
   const out = new Set<string>(freezeUsedDates);
-  for (const e of log) {
-    xp.set(e.date, (xp.get(e.date) ?? 0) + e.xp);
-    if (isPractice(e)) out.add(e.date);
-  }
-  for (const [date, sum] of xp) if (sum >= goal) out.add(date);
+  for (const e of log) if (e.xp > 0 || isPractice(e)) out.add(e.date);
   return out;
 }
 
@@ -51,37 +50,44 @@ function streakFrom(counted: Set<string>, today: string): { length: number; star
 export function computeStreak(input: {
   log: LogEntry[];
   today: string;
-  goal: number;
+  /** Accepted for API compatibility; the daily goal does not affect the streak. */
+  goal?: number;
   freezeUsedDates?: readonly string[];
 }): number {
-  return streakFrom(countedDates(input.log, input.goal, input.freezeUsedDates ?? []), input.today).length;
+  return streakFrom(countedDates(input.log, input.freezeUsedDates ?? []), input.today).length;
 }
 
 /**
  * Protect missed days with held freezes and award freezes for 7-day milestones.
+ * Freezes are used only when the ones held cover the whole gap (day after the last counted day
+ * up to yesterday); otherwise none are used and the streak breaks.
  * Pure: returns the same `state` object when nothing changes, so calling it twice for the same
- * `today` changes nothing the second time.
+ * `today` changes nothing the second time. `_goal` is accepted for API compatibility only.
  */
 export function applyFreezes(
   state: State,
   today: string,
-  goal: number,
+  _goal?: number,
 ): { state: State; consumed: string[]; earned: number } {
   const used = [...(state.freezeUsedDates ?? [])];
-  const counted = countedDates(state.log, goal, used);
+  const counted = countedDates(state.log, used);
   let held = Math.max(0, Math.floor(state.streakFreezes ?? 0));
   const startHeld = held;
 
-  // 1. Missed days between the last counted day before today and yesterday, oldest first.
+  // 1. Missed days between the last counted day before today and yesterday: all or nothing.
   const consumed: string[] = [];
   let last: string | null = null;
   for (const d of counted) if (d < today && (last === null || d > last)) last = d;
   if (last !== null) {
-    for (let d = addDays(last, 1); d < today && held > 0; d = addDays(d, 1)) {
-      held--;
-      used.push(d);
-      counted.add(d);
-      consumed.push(d);
+    const gap: string[] = [];
+    for (let d = addDays(last, 1); d < today && gap.length <= held; d = addDays(d, 1)) gap.push(d);
+    if (gap.length > 0 && gap.length <= held) {
+      for (const d of gap) {
+        held--;
+        used.push(d);
+        counted.add(d);
+        consumed.push(d);
+      }
     }
   }
 

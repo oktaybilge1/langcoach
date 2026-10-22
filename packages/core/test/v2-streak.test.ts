@@ -40,17 +40,24 @@ describe('computeStreak', () => {
     const log = [e(day(-2), 20), e(day(-1), 30), e(TODAY, 20)];
     expect(computeStreak({ log, today: TODAY, goal: 20, freezeUsedDates: [] })).toBe(3);
   });
-  test('today not yet met does not break the streak', () => {
-    const log = [e(day(-2), 20), e(day(-1), 30), e(TODAY, 5)];
+  test('today without activity yet does not break the streak', () => {
+    const log = [e(day(-2), 20), e(day(-1), 30)];
     expect(computeStreak({ log, today: TODAY, goal: 20, freezeUsedDates: [] })).toBe(2);
   });
-  test('a day below goal breaks it', () => {
-    const log = [e(day(-3), 20), e(day(-2), 5), e(day(-1), 30)];
-    expect(computeStreak({ log, today: TODAY, goal: 20, freezeUsedDates: [] })).toBe(1);
+  test('any XP counts: the daily goal does not affect the streak', () => {
+    const log = [e(day(-2), 1), e(day(-1), 5), e(TODAY, 3)];
+    for (const goal of [10, 20, 30, 50]) {
+      expect(computeStreak({ log, today: TODAY, goal, freezeUsedDates: [] })).toBe(3);
+    }
   });
-  test('a practice session counts even below goal', () => {
-    const log = [e(day(-2), 50), e(day(-3), 5), e(day(-1), 6, 'practice:s1')];
-    expect(computeStreak({ log, today: TODAY, goal: 50, freezeUsedDates: [] })).toBe(2);
+  test('a day without activity breaks it', () => {
+    const log = [e(day(-4), 20), e(day(-2), 5), e(day(-1), 30)];
+    expect(computeStreak({ log, today: TODAY, goal: 20, freezeUsedDates: [] })).toBe(2);
+  });
+  test('a practice session counts even with 0 XP', () => {
+    const log = [e(day(-2), 50), e(day(-1), 0, 'practice:s1')];
+    expect(computeStreak({ log, today: TODAY, freezeUsedDates: [] })).toBe(2);
+    expect(computeStreak({ log: [e(day(-1), 0)], today: TODAY })).toBe(0);
   });
   test('freeze-used dates count', () => {
     const log = [e(day(-3), 20), e(day(-1), 20)];
@@ -77,15 +84,18 @@ describe('applyFreezes', () => {
     ).toBe(3);
   });
 
-  test('multiple missed days: consumes oldest first, at most what is held, never negative', () => {
-    const s = stateWith([e(day(-5), 20)], { streakFreezes: 2 });
+  test('gap larger than freezes held: none consumed, freezes kept, streak breaks then restarts', () => {
+    const s = stateWith([e(day(-4), 20)], { streakFreezes: 2 }); // missed day-3, day-2, day-1
     const r = applyFreezes(s, TODAY, 20);
-    expect(r.consumed).toEqual([day(-4), day(-3)]);
-    expect(r.state.streakFreezes).toBe(0);
-    const again = applyFreezes(r.state, TODAY, 20);
+    expect(r.consumed).toEqual([]);
+    expect(r.state.streakFreezes).toBe(2);
+    expect(r.state).toBe(s);
+    expect(computeStreak({ log: s.log, today: TODAY, freezeUsedDates: r.state.freezeUsedDates ?? [] })).toBe(0);
+    const withToday = [...s.log, e(TODAY, 3)];
+    expect(computeStreak({ log: withToday, today: TODAY, freezeUsedDates: [] })).toBe(1);
+    const again = applyFreezes({ ...s, log: withToday }, TODAY, 20);
     expect(again.consumed).toEqual([]);
-    expect(again.state.streakFreezes).toBe(0);
-    expect(again.state).toBe(r.state);
+    expect(again.state.streakFreezes).toBe(2);
   });
 
   test('two missed days with two freezes → streak protected', () => {
@@ -113,8 +123,9 @@ describe('applyFreezes', () => {
   });
 
   test('idempotent for the same today', () => {
-    const s = stateWith([e(day(-4), 20)], { streakFreezes: 1 });
+    const s = stateWith([e(day(-2), 20)], { streakFreezes: 1 });
     const r1 = applyFreezes(s, TODAY, 20);
+    expect(r1.consumed).toEqual([day(-1)]);
     const r2 = applyFreezes(r1.state, TODAY, 20);
     expect(r2.consumed).toEqual([]);
     expect(r2.earned).toBe(0);
