@@ -10,11 +10,10 @@ const TINY = '/lll/en/experiments/tiny-lesson';
  * property and ignores an `input` event when the DOM value equals the tracked value. A plain `el.value = x`
  * updates the tracker too, so React never sees the change; only the native prototype setter gets through.
  */
-function reactInput(attrs: { maxLength?: number; placeholder?: string } = {}) {
+function reactInput() {
+  // Live LLL markup: no type attribute, no maxLength, not inside a form, rotating placeholder.
   const el = document.createElement('input');
-  el.type = 'text';
-  if (attrs.maxLength !== undefined) el.maxLength = attrs.maxLength;
-  if (attrs.placeholder !== undefined) el.placeholder = attrs.placeholder;
+  el.placeholder = Math.random() < 0.5 ? 'going on a first date' : 'scuba diving';
   const native = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')!;
   let tracked = '';
   Object.defineProperty(el, 'value', {
@@ -38,17 +37,27 @@ function reactInput(attrs: { maxLength?: number; placeholder?: string } = {}) {
   return { el, reactState };
 }
 
-function decoys() {
-  const search = document.createElement('input');
-  search.type = 'text';
-  search.placeholder = 'Search';
-  const area = document.createElement('textarea');
-  document.body.append(search, area);
-  return { search, area };
+/** The language picker on the live page: a text input with role="combobox". */
+function languageCombobox() {
+  const combo = document.createElement('input');
+  combo.setAttribute('role', 'combobox');
+  combo.setAttribute('aria-label', 'Select Language');
+  document.body.append(combo);
+  return combo;
+}
+
+/** The live page layout: combobox first, then the purpose input in a plain div. */
+function livePage() {
+  const combo = languageCombobox();
+  const wrap = document.createElement('div');
+  const { el, reactState } = reactInput();
+  wrap.append(el);
+  document.body.append(wrap);
+  return { combo, el, reactState };
 }
 
 beforeEach(() => {
-  document.body.innerHTML = '';
+  document.body.replaceChildren();
   history.pushState({}, '', TINY);
 });
 afterEach(() => {
@@ -57,61 +66,62 @@ afterEach(() => {
 });
 
 describe('fillPurposeField (I2)', () => {
-  it('fills the maxLength=50 input inside the experiment form so React sees the change, skipping decoys', () => {
-    const { search, area } = decoys();
-    const form = document.createElement('form');
-    const other = document.createElement('input');
-    other.type = 'text';
-    const { el, reactState } = reactInput({ maxLength: 50 });
-    form.append(other, el);
-    document.body.append(form);
-
+  it('fills the only plain text input (live markup) so React sees the change, skipping the combobox', () => {
+    const { combo, el, reactState } = livePage();
+    expect(el.maxLength).toBe(-1);
+    expect(el.hasAttribute('type')).toBe(false);
     expect(fillPurposeField(window, 'ordering coffee at a cafe')).toBe(true);
     expect(el.value).toBe('ordering coffee at a cafe');
     expect(reactState).toEqual(['ordering coffee at a cafe']);
-    expect(search.value).toBe('');
-    expect(area.value).toBe('');
-    expect(other.value).toBe('');
+    expect(combo.value).toBe('');
   });
 
   it('caps the text at 50 characters', () => {
-    const { el } = reactInput({ maxLength: 50 });
-    const form = document.createElement('form');
-    form.append(el);
-    document.body.append(form);
+    const { el } = livePage();
     expect(fillPurposeField(window, 'x'.repeat(80))).toBe(true);
     expect(el.value).toHaveLength(50);
   });
 
-  it.each([
-    ['en', 'What do you want to learn? Describe a situation'],
-    ['es', '¿Qué quieres aprender? Describe una situación'],
-    ['fr', 'Décrivez une situation'],
-    ['pt', 'Descreva uma situação'],
-  ])('falls back to a placeholder hint (%s)', (lang, placeholder) => {
-    history.pushState({}, '', `/lll/${lang}/experiments/tiny-lesson`);
-    decoys();
-    const { el, reactState } = reactInput({ placeholder });
-    document.body.append(el);
+  it('ignores hidden, disabled and non-text inputs when counting', () => {
+    const { el, reactState } = livePage();
+    const hidden = document.createElement('input');
+    hidden.type = 'text';
+    hidden.hidden = true;
+    const disabled = document.createElement('input');
+    disabled.disabled = true;
+    const invisible = document.createElement('input');
+    invisible.style.display = 'none';
+    const file = document.createElement('input');
+    file.type = 'file';
+    const area = document.createElement('textarea');
+    document.body.append(hidden, disabled, invisible, file, area);
     expect(fillPurposeField(window, 'hotel check-in')).toBe(true);
     expect(reactState).toEqual(['hotel check-in']);
+    expect(el.value).toBe('hotel check-in');
+    expect(hidden.value + disabled.value + invisible.value + area.value).toBe('');
   });
 
-  it('reports not found instead of taking the first input on the page', () => {
-    const { search, area } = decoys();
+  it('reports not found when two plain text inputs exist (ambiguous)', () => {
+    const { el } = livePage();
+    const decoy = document.createElement('input');
+    decoy.type = 'text';
+    document.body.prepend(decoy);
     expect(fillPurposeField(window, 'hotel check-in')).toBe(false);
-    expect(search.value).toBe('');
-    expect(area.value).toBe('');
+    expect(decoy.value).toBe('');
+    expect(el.value).toBe('');
+  });
+
+  it('reports not found when only the combobox exists', () => {
+    const combo = languageCombobox();
+    expect(fillPurposeField(window, 'hotel check-in')).toBe(false);
+    expect(combo.value).toBe('');
   });
 
   it.each(['/lll/en/experiments/slang-hang', '/lll/en', '/lll/en/experiments/tiny-lesson-x', '/other/en/experiments/tiny-lesson'])(
     'does nothing outside the Tiny Lesson page: %s',
     (path) => {
       history.pushState({}, '', path);
-      const { el } = reactInput({ maxLength: 50 });
-      const form = document.createElement('form');
-      form.append(el);
-      document.body.append(form);
+      const { el } = livePage();
       expect(fillPurposeField(window, 'hotel check-in')).toBe(false);
       expect(el.value).toBe('');
     },
@@ -139,16 +149,14 @@ describe('fillTheme message (I2)', () => {
 
   it('responds {filled:true} when the purpose field was filled', () => {
     const bg = start();
-    const { el } = reactInput({ maxLength: 50 });
-    const form = document.createElement('form');
-    form.append(el);
-    document.body.append(form);
+    livePage();
     expect(bg({ type: 'fillTheme', theme: 'hotel check-in' })).toHaveBeenCalledWith({ filled: true });
   });
 
-  it('responds {filled:false} when no purpose field is found', () => {
+  it('responds {filled:false} when no single purpose field is found', () => {
     const bg = start();
-    decoys();
+    livePage();
+    document.body.append(document.createElement('input'));
     expect(bg({ type: 'fillTheme', theme: 'hotel check-in' })).toHaveBeenCalledWith({ filled: false });
   });
 
