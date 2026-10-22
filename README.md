@@ -26,6 +26,7 @@ One-off AI language exercises are great, but they forget you the moment you clos
 - **Automatic capture:** Generates flashcards automatically when you use Tiny Lesson, Slang Hang, or Word Cam on `https://labs.google/lll/*` (with one-click Undo and right-click "Save to LangCoach").
 - **Side panel coach:** Today's tasks, FSRS flashcard review (`Space` to flip, `1–4` to rate, `speechSynthesis` audio), weekly plan, streak, XP, and achievements.
 - **23 LLL target languages & 5 UI languages:** English, Türkçe, Español, Français, Português (Brasil), plus full RTL card support.
+- **No network requests:** the extension itself makes no network requests; your deck stays in `chrome.storage.local`. The 🔊 button uses your browser's speech voices; for some voices the browser vendor may process the spoken text on its servers.
 
 ## 2. Claude Code MCP Server
 

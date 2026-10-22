@@ -40,7 +40,7 @@ Layout:
 
 - `packages/core`: all logic (plans, FSRS reviews, streak, XP, storage). Node (`@langcoach/core`) and browser (`@langcoach/core/browser`) entry points. No MCP code.
 - `packages/mcp`: the MCP server published to npm as `langcoach`.
-- `apps/extension`: Manifest V3 browser extension (Chrome/Edge/Brave) for `https://labs.google/lll/*` (Side Panel UI, automatic fetch/XHR lesson capture, FSRS review deck, daily reminder).
+- `apps/extension`: Manifest V3 browser extension (Chrome/Edge/Brave) for `https://labs.google/lll/*` (Side Panel UI, automatic lesson capture by wrapping `fetch` (XHR is not intercepted), FSRS review deck, daily reminder).
 - `docs/`: install guides (`docs/INSTALL.md`, `docs/extension/INSTALL.md`), store listing, privacy policy, and design specs.
 
 Rules:

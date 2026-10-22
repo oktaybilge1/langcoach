@@ -7,7 +7,8 @@ LangCoach **does not collect, transmit, store on external servers, or share any 
 
 ## Data Collection & Network Usage
 - **No personal data collected:** LangCoach does not require an account, email address, or API key.
-- **No network requests:** The extension never makes outbound network requests to any server, never calls Google's APIs itself, and includes no analytics, crash reporting, or telemetry.
+- **No network requests:** LangCoach itself never makes outbound network requests to any server, never calls Google's APIs itself, and includes no analytics, crash reporting, or telemetry.
+- **Pronunciation audio:** The 🔊 button uses your browser's built-in speech voices (`speechSynthesis`). For some voices (for example Chrome's online "Google" voices) the browser vendor may process the spoken word on its servers. LangCoach does not send this itself, and you can avoid it by not using the button or by choosing a local voice in your operating system.
 - **Local-only storage:** Your language profile, weekly plan, captured vocabulary cards, review history, and settings are stored exclusively on your device via `chrome.storage.local`. You can export or delete this data at any time from the Settings tab.
 
 ## Permissions Explained

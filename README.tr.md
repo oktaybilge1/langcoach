@@ -26,6 +26,7 @@ Tek seferlik yapay zekâ dil alıştırmaları harika ama sekmeyi kapattığın 
 - **Otomatik yakalama:** `https://labs.google/lll/*` üzerinde Tiny Lesson, Slang Hang veya Word Cam kullandığında kelimeleri, deyimleri ve dilbilgisi notlarını otomatik olarak kartlara dönüştürür (tek tıkla Geri Al ve sağ tıkla "LangCoach'a kaydet" desteğiyle).
 - **Yan panel koçu:** Bugünün görevleri, FSRS kart tekrarı (`Boşluk` ile çevir, `1–4` ile puanla, sesli telaffuz), haftalık plan, seri, XP ve rozetler.
 - **23 hedef dil ve 5 arayüz dili:** Türkçe, English, Español, Français, Português (Brasil) ve tam RTL kart desteği.
+- **Ağ isteği yok:** Uzantının kendisi hiçbir ağ isteği yapmaz; desten `chrome.storage.local` içinde kalır. 🔊 düğmesi tarayıcının konuşma seslerini kullanır; bazı seslerde okunan metin tarayıcı üreticisinin sunucularında işlenebilir.
 
 ## 2. Claude Code MCP Sunucusu
 

@@ -26,7 +26,7 @@ Turn one-off language exercises on Google Labs' Little Language Lessons (`labs.g
 - **Spaced repetition (FSRS):** Review due flashcards inside the browser Side Panel with keyboard shortcuts (`Space` to flip, `1–4` to rate Again / Hard / Good / Easy) and built-in pronunciation audio (`speechSynthesis`).
 - **Right-click to save:** Highlight any word or phrase on Little Language Lessons and select "Save to LangCoach".
 - **Progress & achievements:** Track your daily streak, total XP, level, words learned, and unlock milestone badges.
-- **100% local & private:** Zero accounts, zero servers, zero analytics, and zero network requests. Your data stays in `chrome.storage.local` and can be exported/imported as JSON anytime.
+- **100% local & private:** Zero accounts, zero servers, zero analytics; LangCoach itself makes no network requests. Your data stays in `chrome.storage.local` and can be exported/imported as JSON anytime. (The 🔊 button uses the browser's speech voices; for some voices the browser vendor may process the spoken text.)
 
 **Disclaimer:** LangCoach is an independent open-source project and is not affiliated with, endorsed by, or sponsored by Google.
 
