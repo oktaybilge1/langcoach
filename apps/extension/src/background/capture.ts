@@ -77,10 +77,9 @@ export function createCaptureService(deps: CaptureDeps) {
   const run = serializer();
 
   /** The translation pair for this capture, or null (no profile, unknown/same native language). */
-  async function nativePair(p: ParsedCapture): Promise<NativePair | null> {
+  async function nativePair(p: ParsedCapture, nativeLanguage: string | undefined): Promise<NativePair | null> {
     try {
-      const s = await store.load();
-      const pair = translationPair(p.sourceLanguage, s.profile?.nativeLanguage);
+      const pair = translationPair(p.sourceLanguage, nativeLanguage);
       if (!pair) return null;
       const overlay = deps.getShowNativeOnPage ? await deps.getShowNativeOnPage() : true;
       return { ...pair, overlay };
@@ -90,11 +89,11 @@ export function createCaptureService(deps: CaptureDeps) {
     }
   }
 
-  /** Card id, term and English meaning of every item of the capture (new or already in the deck). */
+  /** Card id, term and English meaning of every item of the capture (new or already in the deck). One load. */
   async function nativeHint(p: ParsedCapture): Promise<NativeCaptureHint | undefined> {
-    const pair = await nativePair(p);
-    if (!pair) return undefined;
     const s = await store.load();
+    const pair = await nativePair(p, s.profile?.nativeLanguage);
+    if (!pair) return undefined;
     const byKey = new Map(s.cards.map((c) => [c.term.trim().toLocaleLowerCase(), c]));
     const seen = new Set<string>();
     const items: NativeCaptureHint['items'] = [];
@@ -155,16 +154,16 @@ export function createCaptureService(deps: CaptureDeps) {
       const lc = asLastCapture((await area.get(LAST_CAPTURE_KEY))[LAST_CAPTURE_KEY]);
       const id = lc?.lessonIds.includes(match.id) ? lc.lessonIds[0]! : match.id;
       await coach.attachGrammar(id, grammar);
-      return grammarResult(p);
+      return grammarResult(p, s.profile?.nativeLanguage);
     }
     const { map } = await readPending(now);
     map[pairKey(p.targetLanguage, p.purpose)] = { grammar, at: new Date(now).toISOString() };
     await writePending(map);
-    return grammarResult(p);
+    return grammarResult(p, s.profile?.nativeLanguage);
   }
 
-  async function grammarResult(p: ParsedCapture): Promise<CaptureResult> {
-    const pair = await nativePair(p);
+  async function grammarResult(p: ParsedCapture, nativeLanguage: string | undefined): Promise<CaptureResult> {
+    const pair = await nativePair(p, nativeLanguage);
     const examples = [
       ...new Set((p.grammar ?? []).flatMap((g) => g.examples.map((x) => x.translation.trim()).filter(Boolean))),
     ].slice(0, 100);

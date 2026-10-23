@@ -24,6 +24,12 @@ export interface NativeTranslations {
   progress: number | null;
   /** Call straight from a click handler: the model download needs the user gesture. */
   download: () => void;
+  /** The last download attempt failed while the model is still downloadable (show "try again"). */
+  downloadFailed: boolean;
+  /** The learner hid the "can't translate on-device" note for this pair. */
+  dismissed: boolean;
+  /** Hides the 'unavailable' note for the current pair (persisted in settings.dismissedNativePairs). */
+  dismiss: () => void;
   nativeOf: (cardId: string) => string | undefined;
 }
 
@@ -51,6 +57,9 @@ export function useNativeTranslations(
   const [progress, setProgress] = useState<number | null>(null);
   const [fresh, setFresh] = useState<Record<string, string>>({});
   const [recheck, setRecheck] = useState(0);
+  const [downloadFailed, setDownloadFailed] = useState(false);
+  /** settings.dismissedNativePairs, read once (null until known). */
+  const [dismissedPairs, setDismissedPairs] = useState<string[] | null>(null);
   /** Card ids already tried this session (a failed text is retried on the next panel open). */
   const attempted = useRef(new Set<string>());
   const running = useRef(false);
@@ -159,9 +168,36 @@ export function useNativeTranslations(
     // pendingCount: new captures arrive through snapshot refreshes
   }, [mainKey, pendingCount, recheck, translator]);
 
+  const pairKey = main ? `${main.source}:${main.target}` : '';
+
+  useEffect(() => {
+    if (!pairKey || dismissedPairs !== null) return;
+    let active = true;
+    send({ type: 'getSettings' })
+      .then((st) => {
+        if (active) setDismissedPairs(Array.isArray(st?.dismissedNativePairs) ? st.dismissedNativePairs : []);
+      })
+      .catch(() => {
+        if (active) setDismissedPairs([]);
+      });
+    return () => {
+      active = false;
+    };
+  }, [pairKey, dismissedPairs, send]);
+
+  const dismiss = useCallback(() => {
+    if (!pairKey) return;
+    const next = [...(dismissedPairs ?? []).filter((k) => k !== pairKey), pairKey].slice(-20);
+    setDismissedPairs(next);
+    void send({ type: 'setSettings', settings: { dismissedNativePairs: next } }).catch(() => {
+      /* hidden for this session anyway */
+    });
+  }, [pairKey, dismissedPairs, send]);
+
   const download = useCallback(() => {
     if (!main) return;
     setStatus('downloading');
+    setDownloadFailed(false);
     setProgress(0);
     // Called synchronously from the click: ensureReady starts create() before any await.
     void translator
@@ -172,9 +208,22 @@ export function useNativeTranslations(
         if (st === 'available') {
           setStatus('available');
           void translateAll();
-        } else {
-          setStatus('unavailable');
+          return;
         }
+        // The download failed (network, disk, cancelled): ask again; a still-downloadable model gets the
+        // button back with a "try again" line instead of the misleading "can't translate" note.
+        void translator.available(main.source, main.target).then((a) => {
+          if (!mounted.current) return;
+          if (a === 'downloadable') {
+            setDownloadFailed(true);
+            setStatus('downloadable');
+          } else if (a === 'available') {
+            setStatus('available');
+            void translateAll();
+          } else {
+            setStatus(a);
+          }
+        });
       });
   }, [main, translator, translateAll]);
 
@@ -186,7 +235,19 @@ export function useNativeTranslations(
   const nativeOf = useCallback((id: string) => nativeById.get(id) ?? fresh[id], [nativeById, fresh]);
 
   if (!nativeLanguage) {
-    return { status: 'off', source: null, target: null, missing: 0, translating: false, progress: null, download, nativeOf };
+    return {
+      status: 'off',
+      source: null,
+      target: null,
+      missing: 0,
+      translating: false,
+      progress: null,
+      download,
+      downloadFailed: false,
+      dismissed: false,
+      dismiss,
+      nativeOf,
+    };
   }
   return {
     status: main ? status : 'off',
@@ -196,6 +257,10 @@ export function useNativeTranslations(
     translating,
     progress,
     download,
+    downloadFailed,
+    // Unknown until settings are read: stay hidden rather than flash the note.
+    dismissed: dismissedPairs === null || dismissedPairs.includes(pairKey),
+    dismiss,
     nativeOf,
   };
 }

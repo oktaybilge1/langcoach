@@ -91,12 +91,17 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-function harness(snap: Snapshot) {
+function harness(snap: Snapshot, st: Settings = settings) {
   const calls: Message[] = [];
   let current = snap;
+  let currentSettings = st;
   const send: PanelSend = vi.fn(async <K extends MessageType>(msg: { type: K } & MessageMap[K]['request']) => {
     calls.push(msg as Message);
-    if (msg.type === 'getSettings') return settings as ResponseOf<K>;
+    if (msg.type === 'getSettings') return currentSettings as ResponseOf<K>;
+    if (msg.type === 'setSettings') {
+      currentSettings = { ...currentSettings, ...(msg as MessageMap['setSettings']['request']).settings };
+      return currentSettings as ResponseOf<K>;
+    }
     if (msg.type === 'getSnapshot') return current as ResponseOf<K>;
     if (msg.type === 'getDue') return current.state!.cards as ResponseOf<K>;
     if (msg.type === 'setNativeTranslations') {
@@ -160,6 +165,47 @@ describe('native translations in the side panel', () => {
     await flush(10);
     expect(banner()?.textContent).toContain("Your browser can't translate English→Turkish on-device yet; showing English.");
     expect(h.stored()).toHaveLength(0);
+  });
+
+  it('a failed download brings the button back with a short error line', async () => {
+    const h = harness(snapshotWith([card(1)]));
+    const f = fakeApi(() => 'downloadable');
+    f.raw.create.mockRejectedValueOnce(new Error('network'));
+    await act(async () => {
+      render(<App send={h.send} translator={createTranslatorCache(f.api)} />, host);
+    });
+    await flush(10);
+    await act(async () => {
+      host.querySelector<HTMLButtonElement>('[data-testid="native-download"]')!.click();
+    });
+    await flush(10);
+    expect(host.querySelector('[data-testid="native-download"]')).not.toBeNull();
+    expect(host.querySelector('[data-testid="native-download-failed"]')?.textContent).toBe(
+      "Download didn't finish — try again",
+    );
+    expect(host.querySelector('[data-testid="native-unavailable"]')).toBeNull();
+  });
+
+  it("the 'unavailable' note can be dismissed per language pair and stays dismissed", async () => {
+    const h = harness(snapshotWith([card(1)]));
+    await act(async () => {
+      render(<App send={h.send} translator={createTranslatorCache(undefined, () => undefined)} />, host);
+    });
+    await flush(10);
+    await act(async () => {
+      host.querySelector<HTMLButtonElement>('[data-testid="native-dismiss"]')!.click();
+    });
+    await flush(10);
+    expect(banner()).toBeNull();
+    expect(h.calls).toContainEqual({ type: 'setSettings', settings: { dismissedNativePairs: ['en:tr'] } });
+    render(null, host);
+
+    const h2 = harness(snapshotWith([card(1)]), { ...settings, dismissedNativePairs: ['en:tr'] });
+    await act(async () => {
+      render(<App send={h2.send} translator={createTranslatorCache(undefined, () => undefined)} />, host);
+    });
+    await flush(10);
+    expect(banner()).toBeNull();
   });
 
   it('no banner for an English learner or when nothing is missing', async () => {

@@ -42,6 +42,14 @@ export interface TranslatorCache {
 /** Longest stored native translation (core setNativeTranslations limit). */
 export const MAX_NATIVE_CHARS = 500;
 
+/** At most `max` UTF-16 code units (the core/router limit), never ending on half a surrogate pair. */
+export function capUnits(s: string, max: number): string {
+  if (s.length <= max) return s;
+  const cut = s.slice(0, max);
+  const last = cut.charCodeAt(cut.length - 1);
+  return last >= 0xd800 && last <= 0xdbff ? cut.slice(0, -1) : cut;
+}
+
 const STATES: readonly string[] = ['available', 'downloadable', 'downloading', 'unavailable'];
 
 /** Native-language names as onboarding stores them, plus localized names and codes → Translator codes. */
@@ -100,7 +108,8 @@ const CODES = new Set([...Object.values(NATIVE), 'zh-Hant']);
 /** Translator code for the learner's native language, or null (unknown / "Other" → feature off). */
 export function nativeLanguageCode(name: unknown): string | null {
   if (typeof name !== 'string') return null;
-  const n = name.trim().toLocaleLowerCase();
+  // Locale-independent: under a Turkish UI toLocaleLowerCase() would turn "Italian" into "ıtalian".
+  const n = name.trim().toLowerCase();
   if (n === '') return null;
   if (NATIVE[n]) return NATIVE[n]!;
   const base = n.split(/[-_]/)[0]!;
@@ -223,7 +232,7 @@ export function createTranslatorCache(
       const out = await t.translate(text);
       if (typeof out !== 'string') return null;
       const trimmed = out.trim();
-      return trimmed === '' ? null : [...trimmed].slice(0, MAX_NATIVE_CHARS).join('');
+      return trimmed === '' ? null : capUnits(trimmed, MAX_NATIVE_CHARS);
     } catch {
       return null;
     }

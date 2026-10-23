@@ -74,6 +74,16 @@ describe('capture → native translation hint', () => {
     expect(r.data!.native).toBeUndefined();
   });
 
+  it('loads the learning state no more often than when translation is off', async () => {
+    const count = async (native: string) => {
+      const { call, store } = await setup(native);
+      const spy = vi.spyOn(store, 'load');
+      await call(terms);
+      return spy.mock.calls.length;
+    };
+    expect(await count('Turkish')).toBe(await count('English'));
+  });
+
   it('respects showNativeOnPage=false (translations still stored, no overlay)', async () => {
     const { call } = await setup('Turkish');
     await call({ type: 'setSettings', settings: { showNativeOnPage: false } });
@@ -132,6 +142,25 @@ describe('setNativeTranslations message', () => {
     expect(isAllowed('setNativeTranslations', { id: ID, url: 'https://labs.google/lll/en', tab: {} }, ID, ORIGIN, false)).toBe(true);
     expect(isAllowed('setNativeTranslations', { id: ID, url: 'https://evil.example/', tab: {} }, ID, ORIGIN, false)).toBe(false);
     expect(isAllowed('setNativeTranslations', { id: 'other', url: `${ORIGIN}x` }, ID, ORIGIN, false)).toBe(false);
+  });
+});
+
+describe('dismissedNativePairs setting', () => {
+  it('is absent by default, validates (≤20 pair keys) and persists', async () => {
+    const { call } = await setup('Turkish');
+    expect((await call<Record<string, unknown>>({ type: 'getSettings' })).data).not.toHaveProperty('dismissedNativePairs');
+    const ok = await call<{ dismissedNativePairs: string[] }>({
+      type: 'setSettings',
+      settings: { dismissedNativePairs: ['en:tr', 'en:zh-Hant'] },
+    });
+    expect(ok.data?.dismissedNativePairs).toEqual(['en:tr', 'en:zh-Hant']);
+    expect((await call<{ dismissedNativePairs: string[] }>({ type: 'getSettings' })).data?.dismissedNativePairs).toEqual([
+      'en:tr',
+      'en:zh-Hant',
+    ]);
+    for (const bad of ['en:tr', [5], ['<script>'], Array.from({ length: 21 }, (_, i) => `en:t${String.fromCharCode(97 + i)}`)]) {
+      expect((await call({ type: 'setSettings', settings: { dismissedNativePairs: bad } })).ok).toBe(false);
+    }
   });
 });
 

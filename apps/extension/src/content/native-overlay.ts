@@ -5,6 +5,8 @@
  * debounced MutationObserver re-applies after LLL re-renders. Every failure is swallowed.
  */
 
+import { capUnits } from '../lib/translate';
+
 export const NATIVE_ATTR = 'data-langcoach-native';
 
 export interface OverlayEntry {
@@ -154,7 +156,7 @@ export function createNativeOverlay(doc: Document, opts: { lang: string; debounc
         if (destroyed || !Array.isArray(entries)) return;
         for (const e of entries) {
           if (!e || typeof e.meaning !== 'string' || typeof e.native !== 'string') continue;
-          const native = norm(e.native).slice(0, MAX_TEXT);
+          const native = capUnits(norm(e.native), MAX_TEXT);
           const meaning = norm(e.meaning);
           if (!native || !meaning || meaning.length > MAX_TEXT) continue;
           if (byMeaning.size >= MAX_ENTRIES && !byMeaning.has(meaning)) continue;

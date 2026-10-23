@@ -23,6 +23,7 @@ export interface NativeBannerProps {
 export function NativeBanner({ native, t, uiLocale }: NativeBannerProps) {
   if (native.status === 'off' || native.status === 'checking' || native.missing === 0) return null;
   if (native.status === 'available' && !native.translating) return null;
+  if (native.status === 'unavailable' && native.dismissed) return null;
   const src = languageName(native.source, uiLocale);
   const dst = languageName(native.target, uiLocale);
   const count = String(native.missing);
@@ -38,6 +39,11 @@ export function NativeBanner({ native, t, uiLocale }: NativeBannerProps) {
       {native.status === 'downloadable' && (
         <>
           <p class="muted">{t('nativeDownloadBody', [count, dst])}</p>
+          {native.downloadFailed && (
+            <p class="error-text" role="alert" data-testid="native-download-failed">
+              {t('nativeDownloadFailed')}
+            </p>
+          )}
           <div class="theme-actions">
             <button type="button" class="primary" data-testid="native-download" onClick={() => native.download()}>
               {t('nativeDownloadBtn')}
@@ -58,9 +64,14 @@ export function NativeBanner({ native, t, uiLocale }: NativeBannerProps) {
         </div>
       )}
       {native.status === 'unavailable' && (
-        <p class="muted" data-testid="native-unavailable">
-          {t('nativeUnavailable', [src, dst])}
-        </p>
+        <div class="today-summary">
+          <p class="muted" data-testid="native-unavailable">
+            {t('nativeUnavailable', [src, dst])}
+          </p>
+          <button type="button" class="btn-subtle" data-testid="native-dismiss" onClick={() => native.dismiss()}>
+            {t('nativeDismiss')}
+          </button>
+        </div>
       )}
     </section>
   );

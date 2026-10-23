@@ -55,6 +55,22 @@ describe('nativeLanguageCode', () => {
     expect(nativeLanguageCode(name)).toBe(code);
   });
 
+  it('does not depend on the browser locale (Turkish dotless ı)', () => {
+    const orig = String.prototype.toLocaleLowerCase;
+    // Turkish-locale behaviour: "I" lowercases to dotless "ı".
+    String.prototype.toLocaleLowerCase = function (this: string) {
+      return orig.call(this.replace(/I/g, 'ı'), 'en');
+    } as typeof orig;
+    try {
+      expect(nativeLanguageCode('Italian')).toBe('it');
+      expect(nativeLanguageCode('IT')).toBe('it');
+      expect(nativeLanguageCode('INDONESIAN')).toBe('id');
+      expect(nativeLanguageCode('İngilizce')).toBe('en');
+    } finally {
+      String.prototype.toLocaleLowerCase = orig;
+    }
+  });
+
   it.each(['Other', '', 'Klingon', 'xx', undefined, null, 42])('unknown %s → null (feature off)', (v) => {
     expect(nativeLanguageCode(v as string)).toBeNull();
   });
@@ -184,6 +200,15 @@ describe('createTranslatorCache', () => {
     const [a, b] = await c.translateMany(['empty', 'long'], 'en', 'tr');
     expect(a).toBeNull();
     expect(b).toHaveLength(500);
+  });
+
+  it('caps by UTF-16 code units (core limit) without splitting a surrogate pair', async () => {
+    const f = fakeApi('available', (t) => (t === 'a' ? 'x'.repeat(499) + '😀' : '😀'.repeat(300)));
+    const c = createTranslatorCache(f.api);
+    const [a, b] = await c.translateMany(['a', 'b'], 'en', 'tr');
+    expect(a).toBe('x'.repeat(499));
+    expect(b).toHaveLength(500);
+    expect(b).toBe('😀'.repeat(250));
   });
 
   it('reads the global API lazily', async () => {

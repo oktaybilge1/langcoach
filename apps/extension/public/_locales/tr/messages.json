@@ -498,5 +498,11 @@
   },
   "fieldShowNativeOnPage": {
     "message": "Sayfada kendi dilimi göster"
+  },
+  "nativeDownloadFailed": {
+    "message": "İndirme tamamlanmadı — tekrar dene"
+  },
+  "nativeDismiss": {
+    "message": "Gizle"
   }
 }

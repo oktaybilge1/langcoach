@@ -136,6 +136,10 @@ export function validateMessage(m: Record<string, unknown>): void {
 }
 
 const TIME_RE = /^([01]\d|2[0-3]):[0-5]\d$/;
+const PAIR_RE = /^[a-z]{2,3}(?:-[A-Za-z]{2,4})?:[a-z]{2,3}(?:-[A-Za-z]{2,4})?$/;
+const MAX_DISMISSED_PAIRS = 20;
+const isPairList = (v: unknown): v is string[] =>
+  Array.isArray(v) && v.length <= MAX_DISMISSED_PAIRS && v.every((x) => typeof x === 'string' && PAIR_RE.test(x));
 
 function mergeSettings(current: Settings, patch: Partial<Settings>): Settings {
   const next: Settings = { ...current };
@@ -162,6 +166,12 @@ function mergeSettings(current: Settings, patch: Partial<Settings>): Settings {
   if (patch.showNativeOnPage !== undefined) {
     if (typeof patch.showNativeOnPage !== 'boolean') throw new InvalidDataError('showNativeOnPage must be a boolean');
     next.showNativeOnPage = patch.showNativeOnPage;
+  }
+  if (patch.dismissedNativePairs !== undefined) {
+    if (!isPairList(patch.dismissedNativePairs)) {
+      throw new InvalidDataError(`dismissedNativePairs must be up to ${MAX_DISMISSED_PAIRS} pair keys like "en:tr"`);
+    }
+    next.dismissedNativePairs = [...new Set(patch.dismissedNativePairs)];
   }
   return next;
 }
@@ -191,6 +201,9 @@ export function createRouter(deps: RouterDeps) {
       hasCamera: typeof st.hasCamera === 'boolean' ? st.hasCamera : DEFAULT_SETTINGS.hasCamera,
       showNativeOnPage:
         typeof st.showNativeOnPage === 'boolean' ? st.showNativeOnPage : DEFAULT_SETTINGS.showNativeOnPage,
+      ...(isPairList(st.dismissedNativePairs) && st.dismissedNativePairs.length
+        ? { dismissedNativePairs: st.dismissedNativePairs }
+        : {}),
       ...(typeof st.pendingTargetLanguage === 'string' && st.pendingTargetLanguage !== ''
         ? { pendingTargetLanguage: st.pendingTargetLanguage }
         : {}),

@@ -14,6 +14,8 @@ export interface Settings {
   pendingTargetLanguage?: string;
   /** Show the on-device native translation under LLL's own meanings on the lesson page. */
   showNativeOnPage: boolean;
+  /** Translator pairs ("en:tr") whose "can't translate on-device" note the learner dismissed (max 20). */
+  dismissedNativePairs?: string[];
 }
 
 export const DEFAULT_SETTINGS: Settings = {

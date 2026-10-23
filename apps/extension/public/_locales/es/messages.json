@@ -498,5 +498,11 @@
   },
   "fieldShowNativeOnPage": {
     "message": "Mostrar mi idioma en la página"
+  },
+  "nativeDownloadFailed": {
+    "message": "La descarga no terminó: inténtalo de nuevo"
+  },
+  "nativeDismiss": {
+    "message": "Ocultar"
   }
 }
