@@ -15,7 +15,7 @@ const flush = async () => {
   });
 };
 
-const settingsFor = (uiLanguage = 'en'): Settings => ({ autoSave: true, reminderTime: null, uiLanguage, hasCamera: false, showNativeOnPage: true });
+const settingsFor = (uiLanguage = 'en'): Settings => ({ autoSave: true, reminderTime: null, uiLanguage, hasCamera: false, showNativeOnPage: true, soundEffects: true });
 
 const profile = {
   nativeLanguage: 'English',
@@ -74,7 +74,7 @@ let host: HTMLDivElement;
 
 async function renderApp(send: PanelSend, initialTab?: Parameters<typeof App>[0]['initialTab']) {
   await act(async () => {
-    render(<App send={send} initialTab={initialTab} />, host);
+    render(<App send={send} initialTab={initialTab ?? 'today'} />, host);
   });
   await flush();
 }

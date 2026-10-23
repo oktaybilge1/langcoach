@@ -276,3 +276,78 @@ test('14. native translations: capture -> stored on cards -> line on the LLL pag
     await cleanup();
   }
 });
+
+test('15. practice: start with captured words -> answer every exercise -> end screen XP -> today XP increased once', async () => {
+  const { context, extensionId, cleanup } = await launchWithExtension();
+  try {
+    const panel = await context.newPage();
+    const errors: string[] = [];
+    panel.on('pageerror', (e) => errors.push(e.message));
+    await panel.goto(`chrome-extension://${extensionId}/sidepanel.html`);
+    await panel.getByTestId('onboard-target').selectOption('Spanish (Spain)');
+    await panel.getByTestId('onboard-submit').click();
+    await expect(panel.getByTestId('tab-today')).toBeVisible();
+
+    const words: [string, string, string][] = [
+      ['la cuenta', 'the bill', '¿Me trae la cuenta, por favor?'],
+      ['la mesa', 'the table', 'Una mesa para dos.'],
+      ['el menú', 'the menu', '¿Puedo ver el menú?'],
+      ['el agua', 'the water', 'Quiero el agua con gas.'],
+      ['el postre', 'the dessert', 'El postre está delicioso.'],
+    ];
+    for (const [term, translation, example] of words) {
+      const res = await panel.evaluate(
+        ([t, tr, ex]) => chrome.runtime.sendMessage({ type: 'saveManual', term: t, translation: tr, example: ex }),
+        [term, translation, example],
+      );
+      expect(res).toMatchObject({ ok: true });
+    }
+    const xpOf = async () =>
+      (await panel.evaluate(() => chrome.runtime.sendMessage({ type: 'getSnapshot' }))).data.progress.todayXp as number;
+    const before = await xpOf();
+
+    // Cards are due: the panel opens on Practice.
+    await panel.reload();
+    await expect(panel.getByTestId('tab-practice')).toHaveAttribute('aria-current', 'page');
+    await panel.getByTestId('btn-start-practice').click();
+
+    for (let i = 0; i < 30; i++) {
+      if (await panel.getByTestId('practice-end').isVisible()) break;
+      const ex = panel.getByTestId('practice-exercise');
+      await expect(ex).toBeVisible();
+      const kind = await ex.getAttribute('data-kind');
+      const known = (await ex.getAttribute('data-e2e-answer'))!;
+      expect(known, 'e2e builds expose the answer').not.toBeNull();
+      if (kind === 'match') {
+        for (const [ti, mi] of JSON.parse(known) as [number, number][]) {
+          await panel.getByTestId(`match-term-${ti}`).click();
+          await panel.getByTestId(`match-meaning-${mi}`).click();
+        }
+      } else if (kind === 'type') {
+        await panel.getByTestId('type-input').fill(known);
+        await panel.keyboard.press('Enter');
+      } else {
+        await panel.keyboard.press(String(Number(known) + 1));
+        await panel.keyboard.press('Enter');
+      }
+      await expect(panel.getByTestId('practice-feedback')).toHaveAttribute('data-state', 'correct');
+      await panel.getByTestId('btn-continue').click();
+    }
+
+    await expect(panel.getByTestId('practice-end')).toBeVisible();
+    const xpEl = panel.getByTestId('practice-xp');
+    await expect(xpEl).not.toHaveAttribute('data-xp', '');
+    const earned = Number(await xpEl.getAttribute('data-xp'));
+    expect(earned).toBeGreaterThanOrEqual(15); // 5 words + 5 completion + 5 perfect
+    await expect(panel.getByTestId('practice-accuracy')).toContainText('100%');
+    await expect.poll(xpOf).toBe(before + earned);
+
+    // Re-rendering the end screen (storage refresh) does not record twice.
+    await panel.getByTestId('tab-today').click();
+    await panel.getByTestId('tab-practice').click();
+    expect(await xpOf()).toBe(before + earned);
+    expect(errors).toEqual([]);
+  } finally {
+    await cleanup();
+  }
+});

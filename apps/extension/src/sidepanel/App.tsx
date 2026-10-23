@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'preact/hooks';
+import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 import {
   DEFAULT_SETTINGS,
   send as defaultSend,
@@ -13,16 +13,18 @@ import { createTranslator } from './i18n';
 import { panelTranslator, useNativeTranslations } from './useNativeTranslations';
 import { Onboarding } from './views/Onboarding';
 import { Plan } from './views/Plan';
+import { Practice } from './views/Practice';
 import { Progress } from './views/Progress';
 import { Review } from './views/Review';
 import { DataActions, Settings } from './views/Settings';
 import { Today } from './views/Today';
 
 export type PanelSend = <K extends MessageType>(msg: { type: K } & MessageMap[K]['request']) => Promise<ResponseOf<K>>;
-export type TabId = 'today' | 'review' | 'plan' | 'progress' | 'settings';
+export type TabId = 'today' | 'practice' | 'review' | 'plan' | 'progress' | 'settings';
 
 export interface AppProps {
   send?: PanelSend;
+  /** Fixed first tab; when absent the panel opens on Practice if cards are due, else Today. */
   initialTab?: TabId;
   /** On-device translator (tests inject a fake; defaults to the global Translator API). */
   translator?: TranslatorCache;
@@ -40,8 +42,10 @@ export function toLoadError(e: unknown): LoadError {
   return { kind: 'generic', message };
 }
 
-export function App({ send = defaultSend, initialTab = 'today', translator = panelTranslator }: AppProps) {
-  const [tab, setTab] = useState<TabId>(initialTab);
+export function App({ send = defaultSend, initialTab, translator = panelTranslator }: AppProps) {
+  const [tab, setTab] = useState<TabId>(initialTab ?? 'today');
+  /** The due-cards default applies once, on the first snapshot of this panel. */
+  const tabChosen = useRef(initialTab !== undefined);
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
   const [settings, setSettings] = useState<SettingsType>(DEFAULT_SETTINGS);
   const [loading, setLoading] = useState(true);
@@ -53,6 +57,10 @@ export function App({ send = defaultSend, initialTab = 'today', translator = pan
       const st = await send({ type: 'getSettings' }).catch(() => null);
       if (st) setSettings(st);
       const snap = await send({ type: 'getSnapshot' });
+      if (!tabChosen.current) {
+        tabChosen.current = true;
+        if (snap.profile && snap.dueCount > 0) setTab('practice');
+      }
       setSnapshot(snap);
       setLoadError(null);
     } catch (e) {
@@ -157,6 +165,15 @@ export function App({ send = defaultSend, initialTab = 'today', translator = pan
           <button
             type="button"
             class="tab-btn"
+            data-testid="tab-practice"
+            aria-current={tab === 'practice' ? 'page' : undefined}
+            onClick={() => setTab('practice')}
+          >
+            {t('tabPractice')}
+          </button>
+          <button
+            type="button"
+            class="tab-btn"
             data-testid="tab-review"
             aria-current={tab === 'review' ? 'page' : undefined}
             onClick={() => setTab('review')}
@@ -205,9 +222,10 @@ export function App({ send = defaultSend, initialTab = 'today', translator = pan
             send={send}
             onRefresh={refresh}
             onOpenReview={() => setTab('review')}
+            onOpenPractice={() => setTab('practice')}
             native={native}
           />
-        ) : tab === 'review' ? (
+        ) : tab === 'practice' ? null : tab === 'review' ? (
           <Review snapshot={snapshot} uiLocale={locale} t={t} send={send} onRefresh={refresh} native={native} />
         ) : tab === 'plan' ? (
           <Plan snapshot={snapshot} t={t} />
@@ -215,6 +233,23 @@ export function App({ send = defaultSend, initialTab = 'today', translator = pan
           <Progress snapshot={snapshot} t={t} />
         ) : (
           <Settings snapshot={snapshot} settings={settings} t={t} send={send} onRefresh={refresh} />
+        )}
+        {snapshot.profile && (
+          // Stays mounted while other tabs are open so a session survives a peek at another tab;
+          // closing the panel unmounts it and nothing is recorded.
+          <div class="practice-host" hidden={tab !== 'practice'}>
+            <Practice
+              snapshot={snapshot}
+              uiLocale={locale}
+              t={t}
+              send={send}
+              onRefresh={refresh}
+              onDone={() => setTab('today')}
+              soundEffects={settings.soundEffects !== false}
+              active={tab === 'practice'}
+              native={native}
+            />
+          </div>
         )}
       </main>
     </div>

@@ -20,6 +20,7 @@ const defaultSettings: Settings = {
   uiLanguage: 'en',
   hasCamera: false,
   showNativeOnPage: true,
+  soundEffects: true,
   pendingTargetLanguage: 'European Spanish',
 };
 
@@ -168,7 +169,7 @@ describe('side panel UI', () => {
     });
 
     await act(async () => {
-      render(<App send={send} />, host);
+      render(<App send={send} initialTab="today" />, host);
     });
     await flush();
 

@@ -504,5 +504,194 @@
   },
   "nativeDismiss": {
     "message": "Ocultar"
+  },
+  "tabPractice": {
+    "message": "Practicar"
+  },
+  "pxCtaTitle": {
+    "message": "Practica ahora"
+  },
+  "pxCtaDue": {
+    "message": "$COUNT$ palabras te esperan · unos 3 minutos",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "pxCtaBody": {
+    "message": "Una ronda rápida y divertida con tus palabras"
+  },
+  "pxStartTitle": {
+    "message": "¿Listo para practicar?"
+  },
+  "pxStatDue": {
+    "message": "pendientes"
+  },
+  "pxStatWords": {
+    "message": "palabras en tu mazo"
+  },
+  "pxStartBody": {
+    "message": "$COUNT$ ejercicios cortos con las palabras que reuniste. Los errores vuelven una vez al final para que los domines.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "pxKindsLabel": {
+    "message": "Tipos de ejercicio"
+  },
+  "pxKindMeaning": {
+    "message": "Significados"
+  },
+  "pxKindListen": {
+    "message": "Escucha"
+  },
+  "pxKindMatch": {
+    "message": "Emparejar"
+  },
+  "pxKindType": {
+    "message": "Escribir"
+  },
+  "pxKindBlank": {
+    "message": "Completar"
+  },
+  "pxStart": {
+    "message": "Empezar"
+  },
+  "pxEmptyTitle": {
+    "message": "Primero, reunamos algunas palabras"
+  },
+  "pxEmptyBody": {
+    "message": "Haz una Tiny Lesson para reunir al menos $COUNT$ palabras y luego vuelve a practicarlas aquí.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "pxEmptyCta": {
+    "message": "Abrir Tiny Lesson"
+  },
+  "pxAskMeaning": {
+    "message": "¿Qué significa?"
+  },
+  "pxAskReverse": {
+    "message": "Elige la palabra correcta"
+  },
+  "pxAskListen": {
+    "message": "¿Qué escuchas?"
+  },
+  "pxAskBlank": {
+    "message": "Completa el espacio"
+  },
+  "pxBlankGap": {
+    "message": "espacio"
+  },
+  "pxAskMatch": {
+    "message": "Empareja las parejas"
+  },
+  "pxMatchWords": {
+    "message": "Palabras"
+  },
+  "pxMatchMeanings": {
+    "message": "Significados"
+  },
+  "pxAskType": {
+    "message": "Escríbelo en el idioma que aprendes"
+  },
+  "pxTypePlaceholder": {
+    "message": "Escribe tu respuesta"
+  },
+  "pxCheck": {
+    "message": "Comprobar"
+  },
+  "pxContinue": {
+    "message": "Continuar"
+  },
+  "pxPraise1": {
+    "message": "¡Bien!"
+  },
+  "pxPraise2": {
+    "message": "¡Muy bien!"
+  },
+  "pxPraise3": {
+    "message": "¡Lo tienes!"
+  },
+  "pxWrongTitle": {
+    "message": "Casi, pero no"
+  },
+  "pxCorrectAnswer": {
+    "message": "Respuesta correcta:"
+  },
+  "pxAlmostTitle": {
+    "message": "¡Casi!"
+  },
+  "pxAlmostBody": {
+    "message": "Ojo con la ortografía:"
+  },
+  "pxMatchAlmost": {
+    "message": "Todo emparejado, con algún desliz"
+  },
+  "pxRetry": {
+    "message": "Otro intento"
+  },
+  "pxCombo": {
+    "message": "$COUNT$ seguidas",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "pxQuit": {
+    "message": "Salir (no se guarda nada)"
+  },
+  "pxProgress": {
+    "message": "Progreso de la sesión"
+  },
+  "pxEndTitle": {
+    "message": "¡Sesión completada!"
+  },
+  "pxEndPerfect": {
+    "message": "¡Sesión perfecta!"
+  },
+  "pxEndXp": {
+    "message": "XP ganados"
+  },
+  "pxEndAccuracy": {
+    "message": "Precisión"
+  },
+  "pxEndWords": {
+    "message": "Palabras reforzadas"
+  },
+  "pxGoalLine": {
+    "message": "$XP$ / $GOAL$ XP hoy",
+    "placeholders": {
+      "xp": {
+        "content": "$1"
+      },
+      "goal": {
+        "content": "$2"
+      }
+    }
+  },
+  "pxSaveFailed": {
+    "message": "No se pudo guardar la sesión: $ERROR$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "pxAgain": {
+    "message": "Practicar otra vez"
+  },
+  "pxDone": {
+    "message": "Listo"
+  },
+  "fieldSoundEffects": {
+    "message": "Efectos de sonido al practicar"
   }
 }

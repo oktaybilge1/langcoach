@@ -16,7 +16,7 @@ const flush = async (ms = 0) => {
   }
 };
 
-const settings: Settings = { autoSave: true, reminderTime: null, uiLanguage: 'en', hasCamera: false, showNativeOnPage: true };
+const settings: Settings = { autoSave: true, reminderTime: null, uiLanguage: 'en', hasCamera: false, showNativeOnPage: true, soundEffects: true };
 
 function card(i: number, extra: Partial<ReviewCard> = {}): ReviewCard {
   return {

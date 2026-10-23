@@ -1,6 +1,8 @@
 import {
   CorruptDataError,
+  DEFAULT_DAILY_GOAL,
   InvalidDataError,
+  dailyXp,
   isDue,
   isoWeek,
   streak,
@@ -53,6 +55,10 @@ export function toErrorInfo(e: unknown): ErrorInfo {
 }
 
 const MAX_NATIVE_ENTRIES = 500;
+const MAX_PRACTICE_CARDS = 500;
+const DEFAULT_PRACTICE_CARDS = 200;
+const MAX_PRACTICE_RESULTS = 50;
+const PRACTICE_OUTCOMES = ['correct', 'hard', 'wrong'];
 const MAX_NATIVE_CHARS = 500;
 const CAPTURE_KINDS = ['terms', 'grammar', 'conversation', 'object-descriptors'];
 const MAX_JSON = 20 * 1024 * 1024;
@@ -120,6 +126,29 @@ export function validateMessage(m: Record<string, unknown>): void {
     case 'setSettings':
       if (!isObj(m.settings)) bad('settings must be an object');
       break;
+    case 'getPracticeCards':
+      if (
+        m.limit !== undefined &&
+        (!Number.isInteger(m.limit) || (m.limit as number) < 1 || (m.limit as number) > MAX_PRACTICE_CARDS)
+      ) {
+        bad(`limit must be an integer from 1 to ${MAX_PRACTICE_CARDS}`);
+      }
+      break;
+    case 'recordPractice':
+      if (typeof m.sessionId !== 'string' || m.sessionId.trim() === '' || m.sessionId.length > 100) {
+        bad('sessionId must be a non-empty string of at most 100 characters');
+      }
+      if (!Array.isArray(m.results) || m.results.length < 1 || m.results.length > MAX_PRACTICE_RESULTS) {
+        bad(`results must be an array of 1 to ${MAX_PRACTICE_RESULTS} items`);
+      }
+      (m.results as unknown[]).forEach((r, i) => {
+        if (!isObj(r)) bad(`results[${i}] must be an object`);
+        id((r as Record<string, unknown>).cardId, `results[${i}].cardId`);
+        if (!PRACTICE_OUTCOMES.includes((r as Record<string, unknown>).outcome as string)) {
+          bad(`results[${i}].outcome must be one of ${PRACTICE_OUTCOMES.join(', ')}`);
+        }
+      });
+      break;
     case 'setNativeTranslations':
       if (!Array.isArray(m.entries) || m.entries.length > MAX_NATIVE_ENTRIES) {
         bad(`entries must be an array of at most ${MAX_NATIVE_ENTRIES} items`);
@@ -173,6 +202,10 @@ function mergeSettings(current: Settings, patch: Partial<Settings>): Settings {
     }
     next.dismissedNativePairs = [...new Set(patch.dismissedNativePairs)];
   }
+  if (patch.soundEffects !== undefined) {
+    if (typeof patch.soundEffects !== 'boolean') throw new InvalidDataError('soundEffects must be a boolean');
+    next.soundEffects = patch.soundEffects;
+  }
   return next;
 }
 
@@ -201,6 +234,7 @@ export function createRouter(deps: RouterDeps) {
       hasCamera: typeof st.hasCamera === 'boolean' ? st.hasCamera : DEFAULT_SETTINGS.hasCamera,
       showNativeOnPage:
         typeof st.showNativeOnPage === 'boolean' ? st.showNativeOnPage : DEFAULT_SETTINGS.showNativeOnPage,
+      soundEffects: typeof st.soundEffects === 'boolean' ? st.soundEffects : DEFAULT_SETTINGS.soundEffects,
       ...(isPairList(st.dismissedNativePairs) && st.dismissedNativePairs.length
         ? { dismissedNativePairs: st.dismissedNativePairs }
         : {}),
@@ -270,6 +304,8 @@ export function createRouter(deps: RouterDeps) {
         totalXp: state.log.reduce((sum, e) => sum + e.xp, 0),
         weekly: weeklyGoal(plan ?? undefined),
         dueCount,
+        todayXp: dailyXp(state.log, date),
+        dailyGoalXp: state.profile?.dailyGoalXp ?? DEFAULT_DAILY_GOAL,
       },
       dueCount,
       lastCapture: (lc[LAST_CAPTURE_KEY] as LastCapture | undefined) ?? null,
@@ -328,6 +364,17 @@ export function createRouter(deps: RouterDeps) {
         return next;
       }),
     setNativeTranslations: (m) => coach.setNativeTranslations(m.entries),
+    getPracticeCards: async (m) => {
+      const state = await store.load();
+      const now = clock();
+      const rank = (c: State['cards'][number]) => (isDue(c.srs, now) ? (c.srs.reps > 0 ? 0 : 1) : 2);
+      return state.cards
+        .map((c, i) => ({ c, i, r: rank(c) }))
+        .sort((a, b) => a.r - b.r || (a.r === 0 ? Date.parse(a.c.srs.due) - Date.parse(b.c.srs.due) : 0) || a.i - b.i)
+        .slice(0, m.limit ?? DEFAULT_PRACTICE_CARDS)
+        .map((x) => x.c);
+    },
+    recordPractice: (m) => coach.recordPractice({ sessionId: m.sessionId, results: m.results }),
   };
 
   return {

@@ -1,4 +1,13 @@
-import type { PlanTask, Profile, Rating, ReviewCard, State, WeekPlan } from '@langcoach/core/browser';
+import type {
+  PlanTask,
+  PracticeResult,
+  PracticeSummary,
+  Profile,
+  Rating,
+  ReviewCard,
+  State,
+  WeekPlan,
+} from '@langcoach/core/browser';
 import type { CaptureKind } from '../lib/parse';
 
 export type ProfileInput = Omit<Profile, 'createdAt'>;
@@ -16,6 +25,8 @@ export interface Settings {
   showNativeOnPage: boolean;
   /** Translator pairs ("en:tr") whose "can't translate on-device" note the learner dismissed (max 20). */
   dismissedNativePairs?: string[];
+  /** Short practice sound effects (Web Audio tones). */
+  soundEffects: boolean;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -24,6 +35,7 @@ export const DEFAULT_SETTINGS: Settings = {
   uiLanguage: 'auto',
   hasCamera: false,
   showNativeOnPage: true,
+  soundEffects: true,
 };
 
 /** Persisted marker of the most recent saved capture (key `langcoach:lastCapture`); Undo is checked against it. */
@@ -40,7 +52,15 @@ export interface Snapshot {
   profile: Profile | null;
   today: { date: string; tasks: PlanTask[]; planExists: boolean } | null;
   plan: WeekPlan | null;
-  progress: { streak: number; totalXp: number; weekly: { done: number; planned: number }; dueCount: number };
+  progress: {
+    streak: number;
+    totalXp: number;
+    weekly: { done: number; planned: number };
+    dueCount: number;
+    /** XP earned today and the learner's daily goal (for the goal ring). */
+    todayXp?: number;
+    dailyGoalXp?: number;
+  };
   dueCount: number;
   lastCapture: LastCapture | null;
   /** Full learner state for Progress/Achievements/Today grammar display in the side panel. */
@@ -114,6 +134,13 @@ export interface MessageMap {
     request: { entries: { cardId: string; text: string }[] };
     response: { updated: number };
   };
+  /** The deck for a practice session: due cards first, then new, then the rest (default limit 200). */
+  getPracticeCards: { request: { limit?: number }; response: ReviewCard[] };
+  /** Records a finished practice session once (idempotent by sessionId). */
+  recordPractice: {
+    request: { sessionId: string; results: PracticeResult[] };
+    response: PracticeSummary;
+  };
 }
 
 export type MessageType = keyof MessageMap;
@@ -153,6 +180,8 @@ export const MESSAGE_TYPES: readonly MessageType[] = [
   'getSettings',
   'setSettings',
   'setNativeTranslations',
+  'getPracticeCards',
+  'recordPractice',
 ];
 
 export const isMessage = (v: unknown): v is Message =>

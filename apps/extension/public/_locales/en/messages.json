@@ -504,5 +504,194 @@
   },
   "nativeDismiss": {
     "message": "Hide"
+  },
+  "tabPractice": {
+    "message": "Practice"
+  },
+  "pxCtaTitle": {
+    "message": "Practice now"
+  },
+  "pxCtaDue": {
+    "message": "$COUNT$ words are waiting · about 3 minutes",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "pxCtaBody": {
+    "message": "A quick, fun round with your own words"
+  },
+  "pxStartTitle": {
+    "message": "Ready to practice?"
+  },
+  "pxStatDue": {
+    "message": "due now"
+  },
+  "pxStatWords": {
+    "message": "words in your deck"
+  },
+  "pxStartBody": {
+    "message": "$COUNT$ short exercises with the words you collected. Mistakes come back once at the end, so you can nail them.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "pxKindsLabel": {
+    "message": "Exercise types"
+  },
+  "pxKindMeaning": {
+    "message": "Meanings"
+  },
+  "pxKindListen": {
+    "message": "Listening"
+  },
+  "pxKindMatch": {
+    "message": "Matching"
+  },
+  "pxKindType": {
+    "message": "Typing"
+  },
+  "pxKindBlank": {
+    "message": "Fill in the blank"
+  },
+  "pxStart": {
+    "message": "Start practice"
+  },
+  "pxEmptyTitle": {
+    "message": "Let's collect some words first"
+  },
+  "pxEmptyBody": {
+    "message": "Do a Tiny Lesson to collect at least $COUNT$ words — then come back and practice them here.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "pxEmptyCta": {
+    "message": "Open Tiny Lesson"
+  },
+  "pxAskMeaning": {
+    "message": "What does this mean?"
+  },
+  "pxAskReverse": {
+    "message": "Pick the right word"
+  },
+  "pxAskListen": {
+    "message": "What do you hear?"
+  },
+  "pxAskBlank": {
+    "message": "Fill in the blank"
+  },
+  "pxBlankGap": {
+    "message": "blank"
+  },
+  "pxAskMatch": {
+    "message": "Match the pairs"
+  },
+  "pxMatchWords": {
+    "message": "Words"
+  },
+  "pxMatchMeanings": {
+    "message": "Meanings"
+  },
+  "pxAskType": {
+    "message": "Type it in your target language"
+  },
+  "pxTypePlaceholder": {
+    "message": "Type your answer"
+  },
+  "pxCheck": {
+    "message": "Check"
+  },
+  "pxContinue": {
+    "message": "Continue"
+  },
+  "pxPraise1": {
+    "message": "Nice!"
+  },
+  "pxPraise2": {
+    "message": "Great job!"
+  },
+  "pxPraise3": {
+    "message": "You got it!"
+  },
+  "pxWrongTitle": {
+    "message": "Not quite"
+  },
+  "pxCorrectAnswer": {
+    "message": "Correct answer:"
+  },
+  "pxAlmostTitle": {
+    "message": "Almost!"
+  },
+  "pxAlmostBody": {
+    "message": "Watch the spelling:"
+  },
+  "pxMatchAlmost": {
+    "message": "All matched — a few slips"
+  },
+  "pxRetry": {
+    "message": "One more try"
+  },
+  "pxCombo": {
+    "message": "$COUNT$ in a row",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "pxQuit": {
+    "message": "Quit (nothing is saved)"
+  },
+  "pxProgress": {
+    "message": "Session progress"
+  },
+  "pxEndTitle": {
+    "message": "Session complete!"
+  },
+  "pxEndPerfect": {
+    "message": "Perfect session!"
+  },
+  "pxEndXp": {
+    "message": "XP earned"
+  },
+  "pxEndAccuracy": {
+    "message": "Accuracy"
+  },
+  "pxEndWords": {
+    "message": "Words strengthened"
+  },
+  "pxGoalLine": {
+    "message": "$XP$ / $GOAL$ XP today",
+    "placeholders": {
+      "xp": {
+        "content": "$1"
+      },
+      "goal": {
+        "content": "$2"
+      }
+    }
+  },
+  "pxSaveFailed": {
+    "message": "Couldn't save this session: $ERROR$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "pxAgain": {
+    "message": "Practice again"
+  },
+  "pxDone": {
+    "message": "Done"
+  },
+  "fieldSoundEffects": {
+    "message": "Sound effects in practice"
   }
 }

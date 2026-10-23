@@ -325,6 +325,17 @@ export function Settings({ snapshot, settings, t, send, onRefresh }: SettingsPro
           <span>{t('fieldShowNativeOnPage')}</span>
         </label>
 
+        <label class="field-row" for="pref-sound-effects">
+          <input
+            id="pref-sound-effects"
+            data-testid="pref-sound-effects"
+            type="checkbox"
+            checked={settings.soundEffects !== false}
+            onChange={(e) => updateSetting({ soundEffects: (e.currentTarget as HTMLInputElement).checked })}
+          />
+          <span>{t('fieldSoundEffects')}</span>
+        </label>
+
         <label class="field-row" for="pref-camera">
           <input
             id="pref-camera"

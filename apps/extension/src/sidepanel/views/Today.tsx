@@ -19,6 +19,7 @@ export interface TodayProps {
   send: PanelSend;
   onRefresh: () => Promise<void>;
   onOpenReview: () => void;
+  onOpenPractice?: () => void;
   native?: NativeTranslations;
 }
 
@@ -52,7 +53,7 @@ export function taskIcon(type: TaskType): string {
   }
 }
 
-export function Today({ snapshot, uiLocale, t, send, onRefresh, onOpenReview, native }: TodayProps) {
+export function Today({ snapshot, uiLocale, t, send, onRefresh, onOpenReview, onOpenPractice, native }: TodayProps) {
   const [seed, setSeed] = useState(0);
   const [copied, setCopied] = useState(false);
   const [filled, setFilled] = useState(false);
@@ -79,6 +80,10 @@ export function Today({ snapshot, uiLocale, t, send, onRefresh, onOpenReview, na
   const currentTheme = themes[0] ?? '';
 
   function handleTaskAction(task: PlanTask) {
+    if (task.type === 'review' && onOpenPractice) {
+      onOpenPractice(); // a finished practice session completes today's review task
+      return;
+    }
     if (task.type === 'review' || task.type === 'quiz') {
       onOpenReview();
       return;
@@ -145,6 +150,23 @@ export function Today({ snapshot, uiLocale, t, send, onRefresh, onOpenReview, na
           {doneCount}/{totalCount}
         </div>
       </section>
+
+      {onOpenPractice && (
+        <button type="button" class="practice-cta" data-testid="btn-practice-now" onClick={onOpenPractice}>
+          <span class="practice-cta-icon" aria-hidden="true">
+            🎯
+          </span>
+          <span class="practice-cta-text">
+            <strong>{t('pxCtaTitle')}</strong>
+            <span>
+              {snapshot.dueCount > 0 ? t('pxCtaDue', String(snapshot.dueCount)) : t('pxCtaBody')}
+            </span>
+          </span>
+          <span class="practice-cta-arrow" aria-hidden="true">
+            →
+          </span>
+        </button>
+      )}
 
       {native && <NativeBanner native={native} t={t} uiLocale={uiLocale} />}
 

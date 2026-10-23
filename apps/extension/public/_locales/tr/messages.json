@@ -504,5 +504,194 @@
   },
   "nativeDismiss": {
     "message": "Gizle"
+  },
+  "tabPractice": {
+    "message": "Pratik"
+  },
+  "pxCtaTitle": {
+    "message": "Şimdi pratik yap"
+  },
+  "pxCtaDue": {
+    "message": "$COUNT$ kelime seni bekliyor · yaklaşık 3 dakika",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "pxCtaBody": {
+    "message": "Kendi kelimelerinle hızlı ve eğlenceli bir tur"
+  },
+  "pxStartTitle": {
+    "message": "Pratiğe hazır mısın?"
+  },
+  "pxStatDue": {
+    "message": "tekrar zamanı"
+  },
+  "pxStatWords": {
+    "message": "destendeki kelime"
+  },
+  "pxStartBody": {
+    "message": "Topladığın kelimelerle $COUNT$ kısa alıştırma. Yanlışlar sonda bir kez daha gelir, böylece onları da kaparsın.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "pxKindsLabel": {
+    "message": "Alıştırma türleri"
+  },
+  "pxKindMeaning": {
+    "message": "Anlamlar"
+  },
+  "pxKindListen": {
+    "message": "Dinleme"
+  },
+  "pxKindMatch": {
+    "message": "Eşleştirme"
+  },
+  "pxKindType": {
+    "message": "Yazma"
+  },
+  "pxKindBlank": {
+    "message": "Boşluk doldurma"
+  },
+  "pxStart": {
+    "message": "Pratiğe başla"
+  },
+  "pxEmptyTitle": {
+    "message": "Önce birkaç kelime toplayalım"
+  },
+  "pxEmptyBody": {
+    "message": "En az $COUNT$ kelime toplamak için bir Tiny Lesson yap — sonra buraya dönüp pratik et.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "pxEmptyCta": {
+    "message": "Tiny Lesson'ı aç"
+  },
+  "pxAskMeaning": {
+    "message": "Bu ne anlama geliyor?"
+  },
+  "pxAskReverse": {
+    "message": "Doğru kelimeyi seç"
+  },
+  "pxAskListen": {
+    "message": "Ne duyuyorsun?"
+  },
+  "pxAskBlank": {
+    "message": "Boşluğu doldur"
+  },
+  "pxBlankGap": {
+    "message": "boşluk"
+  },
+  "pxAskMatch": {
+    "message": "Eşleri bul"
+  },
+  "pxMatchWords": {
+    "message": "Kelimeler"
+  },
+  "pxMatchMeanings": {
+    "message": "Anlamlar"
+  },
+  "pxAskType": {
+    "message": "Hedef dilinde yaz"
+  },
+  "pxTypePlaceholder": {
+    "message": "Cevabını yaz"
+  },
+  "pxCheck": {
+    "message": "Kontrol et"
+  },
+  "pxContinue": {
+    "message": "Devam"
+  },
+  "pxPraise1": {
+    "message": "Harika!"
+  },
+  "pxPraise2": {
+    "message": "Çok iyi!"
+  },
+  "pxPraise3": {
+    "message": "Bildin!"
+  },
+  "pxWrongTitle": {
+    "message": "Tam değil"
+  },
+  "pxCorrectAnswer": {
+    "message": "Doğru cevap:"
+  },
+  "pxAlmostTitle": {
+    "message": "Az kaldı!"
+  },
+  "pxAlmostBody": {
+    "message": "Yazımına dikkat:"
+  },
+  "pxMatchAlmost": {
+    "message": "Hepsi eşleşti — birkaç küçük hata"
+  },
+  "pxRetry": {
+    "message": "Bir deneme daha"
+  },
+  "pxCombo": {
+    "message": "Üst üste $COUNT$",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "pxQuit": {
+    "message": "Çık (hiçbir şey kaydedilmez)"
+  },
+  "pxProgress": {
+    "message": "Oturum ilerlemesi"
+  },
+  "pxEndTitle": {
+    "message": "Oturum tamam!"
+  },
+  "pxEndPerfect": {
+    "message": "Kusursuz oturum!"
+  },
+  "pxEndXp": {
+    "message": "Kazanılan XP"
+  },
+  "pxEndAccuracy": {
+    "message": "Doğruluk"
+  },
+  "pxEndWords": {
+    "message": "Güçlenen kelime"
+  },
+  "pxGoalLine": {
+    "message": "Bugün $XP$ / $GOAL$ XP",
+    "placeholders": {
+      "xp": {
+        "content": "$1"
+      },
+      "goal": {
+        "content": "$2"
+      }
+    }
+  },
+  "pxSaveFailed": {
+    "message": "Bu oturum kaydedilemedi: $ERROR$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "pxAgain": {
+    "message": "Tekrar pratik yap"
+  },
+  "pxDone": {
+    "message": "Bitti"
+  },
+  "fieldSoundEffects": {
+    "message": "Pratikte ses efektleri"
   }
 }

@@ -83,7 +83,7 @@ describe('background router', () => {
   it('settings default, merge and validate', async () => {
     const { call } = setup();
     const d = await call<{ autoSave: boolean; uiLanguage: string }>({ type: 'getSettings' });
-    expect(d.data).toEqual({ autoSave: true, reminderTime: null, uiLanguage: 'auto', hasCamera: false, showNativeOnPage: true });
+    expect(d.data).toEqual({ autoSave: true, reminderTime: null, uiLanguage: 'auto', hasCamera: false, showNativeOnPage: true, soundEffects: true });
     const s = await call<{ reminderTime: string; autoSave: boolean }>({
       type: 'setSettings',
       settings: { reminderTime: '19:30' },
@@ -101,14 +101,14 @@ describe('background router', () => {
       call({ type: 'setSettings', settings: { hasCamera: true } }),
     ]);
     const r = await call({ type: 'getSettings' });
-    expect(r.data).toEqual({ autoSave: false, reminderTime: '08:00', uiLanguage: 'auto', hasCamera: true, showNativeOnPage: true });
+    expect(r.data).toEqual({ autoSave: false, reminderTime: '08:00', uiLanguage: 'auto', hasCamera: true, showNativeOnPage: true, soundEffects: true });
   });
 
   it('falls back to defaults per bad stored settings field', async () => {
     const { call, area } = setup();
     area.data.set('langcoach:settings', { autoSave: 'yes', reminderTime: '07:15', uiLanguage: 5, hasCamera: true });
     const r = await call({ type: 'getSettings' });
-    expect(r.data).toEqual({ autoSave: true, reminderTime: '07:15', uiLanguage: 'auto', hasCamera: true, showNativeOnPage: true });
+    expect(r.data).toEqual({ autoSave: true, reminderTime: '07:15', uiLanguage: 'auto', hasCamera: true, showNativeOnPage: true, soundEffects: true });
   });
 
   it.each<[string, unknown]>([
