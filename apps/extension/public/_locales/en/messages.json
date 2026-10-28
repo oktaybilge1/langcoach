@@ -883,5 +883,93 @@
         "content": "$2"
       }
     }
+  },
+  "todayGoalMet": {
+    "message": "Daily goal reached!"
+  },
+  "streakFreezesLabel": {
+    "message": "Streak freezes: $COUNT$ (protect a missed day)",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "bannerFreezeUsed": {
+    "message": "A streak freeze kept your streak alive on $DATE$.",
+    "placeholders": {
+      "date": {
+        "content": "$1"
+      }
+    }
+  },
+  "bannerFreezeEarned": {
+    "message": "7 days in a row! You earned a streak freeze."
+  },
+  "bannerDismiss": {
+    "message": "Dismiss"
+  },
+  "practiceTheseWords": {
+    "message": "Practice these $COUNT$ new words",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "practiceTheseBody": {
+    "message": "Fresh from your last lesson: lock them in now."
+  },
+  "scenariosHeading": {
+    "message": "Start a lesson"
+  },
+  "scenariosBody": {
+    "message": "Pick a situation: LangCoach opens Tiny Lesson, fills it in and presses Generate for you."
+  },
+  "scenariosMore": {
+    "message": "More ideas"
+  },
+  "scenarioStart": {
+    "message": "Start"
+  },
+  "scenarioStarting": {
+    "message": "Starting…"
+  },
+  "scenarioStartLabel": {
+    "message": "Start a Tiny Lesson: $THEME$",
+    "placeholders": {
+      "theme": {
+        "content": "$1"
+      }
+    }
+  },
+  "scenarioCopyLabel": {
+    "message": "Copy: $THEME$",
+    "placeholders": {
+      "theme": {
+        "content": "$1"
+      }
+    }
+  },
+  "scenarioOpenTiny": {
+    "message": "Open Tiny Lesson"
+  },
+  "scenarioStarted": {
+    "message": "Your lesson is being generated in the Tiny Lesson tab."
+  },
+  "scenarioHintSplash": {
+    "message": "Tiny Lesson shows its welcome screen first. Click Start there (and accept the notice), then try again."
+  },
+  "scenarioHintLanguage": {
+    "message": "Couldn't pick your language on the page. Choose it there, then press Start again, or copy the theme."
+  },
+  "scenarioHintGenerate": {
+    "message": "The theme is filled in, but Generate wasn't ready. Press Generate on the page."
+  },
+  "scenarioHintGeneric": {
+    "message": "Couldn't start it automatically. Copy the theme and paste it into Tiny Lesson."
+  },
+  "todayTasksHeading": {
+    "message": "Today's plan"
   }
 }

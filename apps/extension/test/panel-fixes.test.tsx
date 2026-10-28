@@ -241,25 +241,12 @@ describe('Today', () => {
     return { writeText, sendMessage };
   }
 
-  it('Fill shows "Filled" only when the page reports filled:true', async () => {
-    const { writeText, sendMessage } = stubChrome({ filled: true });
+  it('the old Fill button is gone (scenario cards replace it)', async () => {
+    stubChrome({ filled: true });
     const { send } = mount((m) => (m.type === 'getSnapshot' ? snapshot() : null));
     await renderApp(send);
-    await click(byTestId('btn-fill-theme'));
-    expect(sendMessage).toHaveBeenCalledWith(9, { type: 'fillTheme', theme: expect.any(String) });
-    expect(byTestId('btn-fill-theme')!.textContent).toContain(t('btnFilled'));
-    expect(writeText).not.toHaveBeenCalled();
-  });
-
-  it('when the page is not filled, copies the theme and says to paste it', async () => {
-    const { writeText } = stubChrome({ filled: false });
-    const { send } = mount((m) => (m.type === 'getSnapshot' ? snapshot() : null));
-    await renderApp(send);
-    const theme = byTestId('today-theme')!.textContent!.replace(/[“”]/g, '');
-    await click(byTestId('btn-fill-theme'));
-    expect(writeText).toHaveBeenCalledWith(theme);
-    expect(host.textContent).toContain(t('themeCopiedPaste'));
-    expect(byTestId('btn-fill-theme')!.textContent).not.toContain(t('btnFilled'));
+    expect(byTestId('btn-fill-theme')).toBeNull();
+    expect(host.querySelectorAll('[data-testid="scenario-card"]')).toHaveLength(3);
   });
 });
 

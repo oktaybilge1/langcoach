@@ -883,5 +883,93 @@
         "content": "$2"
       }
     }
+  },
+  "todayGoalMet": {
+    "message": "Objectif du jour atteint !"
+  },
+  "streakFreezesLabel": {
+    "message": "Gels de série : $COUNT$ (protègent un jour manqué)",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "bannerFreezeUsed": {
+    "message": "Un gel de série a sauvé ta série le $DATE$.",
+    "placeholders": {
+      "date": {
+        "content": "$1"
+      }
+    }
+  },
+  "bannerFreezeEarned": {
+    "message": "7 jours d'affilée ! Tu as gagné un gel de série."
+  },
+  "bannerDismiss": {
+    "message": "Fermer"
+  },
+  "practiceTheseWords": {
+    "message": "Entraîne-toi sur ces $COUNT$ nouveaux mots",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "practiceTheseBody": {
+    "message": "Tout frais de ta dernière leçon : ancre-les maintenant."
+  },
+  "scenariosHeading": {
+    "message": "Lance une leçon"
+  },
+  "scenariosBody": {
+    "message": "Choisis une situation : LangCoach ouvre Tiny Lesson, la remplit et clique sur Générer pour toi."
+  },
+  "scenariosMore": {
+    "message": "Autres idées"
+  },
+  "scenarioStart": {
+    "message": "Lancer"
+  },
+  "scenarioStarting": {
+    "message": "Lancement…"
+  },
+  "scenarioStartLabel": {
+    "message": "Lancer Tiny Lesson : $THEME$",
+    "placeholders": {
+      "theme": {
+        "content": "$1"
+      }
+    }
+  },
+  "scenarioCopyLabel": {
+    "message": "Copier : $THEME$",
+    "placeholders": {
+      "theme": {
+        "content": "$1"
+      }
+    }
+  },
+  "scenarioOpenTiny": {
+    "message": "Ouvrir Tiny Lesson"
+  },
+  "scenarioStarted": {
+    "message": "Ta leçon est en cours de création dans l'onglet Tiny Lesson."
+  },
+  "scenarioHintSplash": {
+    "message": "Tiny Lesson affiche d'abord son écran d'accueil. Clique sur Commencer (et accepte l'avis), puis réessaie."
+  },
+  "scenarioHintLanguage": {
+    "message": "Impossible de choisir ta langue sur la page. Choisis-la là-bas puis relance, ou copie le thème."
+  },
+  "scenarioHintGenerate": {
+    "message": "Le thème est rempli, mais Générer n'était pas prêt. Clique sur Générer sur la page."
+  },
+  "scenarioHintGeneric": {
+    "message": "Impossible de lancer automatiquement. Copie le thème et colle-le dans Tiny Lesson."
+  },
+  "todayTasksHeading": {
+    "message": "Programme du jour"
   }
 }

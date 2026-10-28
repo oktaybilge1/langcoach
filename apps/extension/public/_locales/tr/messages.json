@@ -883,5 +883,93 @@
         "content": "$2"
       }
     }
+  },
+  "todayGoalMet": {
+    "message": "Günlük hedefe ulaştın!"
+  },
+  "streakFreezesLabel": {
+    "message": "Seri dondurma: $COUNT$ (kaçırılan bir günü korur)",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "bannerFreezeUsed": {
+    "message": "$DATE$ tarihinde bir seri dondurma serini korudu.",
+    "placeholders": {
+      "date": {
+        "content": "$1"
+      }
+    }
+  },
+  "bannerFreezeEarned": {
+    "message": "7 gün üst üste! Bir seri dondurma kazandın."
+  },
+  "bannerDismiss": {
+    "message": "Kapat"
+  },
+  "practiceTheseWords": {
+    "message": "Bu $COUNT$ yeni kelimeyi çalış",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "practiceTheseBody": {
+    "message": "Son dersinden taze: şimdi pekiştir."
+  },
+  "scenariosHeading": {
+    "message": "Bir ders başlat"
+  },
+  "scenariosBody": {
+    "message": "Bir durum seç: LangCoach Tiny Lesson'ı açar, doldurur ve senin için Oluştur'a basar."
+  },
+  "scenariosMore": {
+    "message": "Başka fikirler"
+  },
+  "scenarioStart": {
+    "message": "Başla"
+  },
+  "scenarioStarting": {
+    "message": "Başlatılıyor…"
+  },
+  "scenarioStartLabel": {
+    "message": "Tiny Lesson başlat: $THEME$",
+    "placeholders": {
+      "theme": {
+        "content": "$1"
+      }
+    }
+  },
+  "scenarioCopyLabel": {
+    "message": "Kopyala: $THEME$",
+    "placeholders": {
+      "theme": {
+        "content": "$1"
+      }
+    }
+  },
+  "scenarioOpenTiny": {
+    "message": "Tiny Lesson'ı aç"
+  },
+  "scenarioStarted": {
+    "message": "Dersin Tiny Lesson sekmesinde oluşturuluyor."
+  },
+  "scenarioHintSplash": {
+    "message": "Tiny Lesson önce karşılama ekranını gösteriyor. Orada Başla'ya tıkla (ve bildirimi onayla), sonra tekrar dene."
+  },
+  "scenarioHintLanguage": {
+    "message": "Sayfada dilin seçilemedi. Orada seç ve tekrar Başla'ya bas ya da konuyu kopyala."
+  },
+  "scenarioHintGenerate": {
+    "message": "Konu dolduruldu ama Oluştur düğmesi hazır değildi. Sayfada Oluştur'a bas."
+  },
+  "scenarioHintGeneric": {
+    "message": "Otomatik başlatılamadı. Konuyu kopyalayıp Tiny Lesson'a yapıştır."
+  },
+  "todayTasksHeading": {
+    "message": "Bugünün planı"
   }
 }

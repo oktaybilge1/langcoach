@@ -883,5 +883,93 @@
         "content": "$2"
       }
     }
+  },
+  "todayGoalMet": {
+    "message": "¡Meta diaria cumplida!"
+  },
+  "streakFreezesLabel": {
+    "message": "Protectores de racha: $COUNT$ (cubren un día perdido)",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "bannerFreezeUsed": {
+    "message": "Un protector de racha salvó tu racha el $DATE$.",
+    "placeholders": {
+      "date": {
+        "content": "$1"
+      }
+    }
+  },
+  "bannerFreezeEarned": {
+    "message": "¡7 días seguidos! Ganaste un protector de racha."
+  },
+  "bannerDismiss": {
+    "message": "Cerrar"
+  },
+  "practiceTheseWords": {
+    "message": "Practica estas $COUNT$ palabras nuevas",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "practiceTheseBody": {
+    "message": "Recién salidas de tu última lección: fíjalas ahora."
+  },
+  "scenariosHeading": {
+    "message": "Empieza una lección"
+  },
+  "scenariosBody": {
+    "message": "Elige una situación: LangCoach abre Tiny Lesson, la completa y pulsa Generar por ti."
+  },
+  "scenariosMore": {
+    "message": "Más ideas"
+  },
+  "scenarioStart": {
+    "message": "Empezar"
+  },
+  "scenarioStarting": {
+    "message": "Empezando…"
+  },
+  "scenarioStartLabel": {
+    "message": "Empezar Tiny Lesson: $THEME$",
+    "placeholders": {
+      "theme": {
+        "content": "$1"
+      }
+    }
+  },
+  "scenarioCopyLabel": {
+    "message": "Copiar: $THEME$",
+    "placeholders": {
+      "theme": {
+        "content": "$1"
+      }
+    }
+  },
+  "scenarioOpenTiny": {
+    "message": "Abrir Tiny Lesson"
+  },
+  "scenarioStarted": {
+    "message": "Tu lección se está generando en la pestaña de Tiny Lesson."
+  },
+  "scenarioHintSplash": {
+    "message": "Tiny Lesson muestra primero su pantalla de bienvenida. Pulsa Empezar allí (y acepta el aviso) y vuelve a intentarlo."
+  },
+  "scenarioHintLanguage": {
+    "message": "No se pudo elegir tu idioma en la página. Elígelo allí y vuelve a pulsar Empezar, o copia el tema."
+  },
+  "scenarioHintGenerate": {
+    "message": "El tema está escrito, pero Generar no estaba listo. Pulsa Generar en la página."
+  },
+  "scenarioHintGeneric": {
+    "message": "No se pudo empezar automáticamente. Copia el tema y pégalo en Tiny Lesson."
+  },
+  "todayTasksHeading": {
+    "message": "Plan de hoy"
   }
 }
