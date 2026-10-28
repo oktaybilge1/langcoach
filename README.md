@@ -70,12 +70,13 @@ The first time, Claude interviews you (native language, target language, CEFR le
 
 ### Tools
 
-Claude uses these tools for you: `set_profile`, `get_weekly_plan`, `get_today`, `save_lesson`, `complete_task`, `get_due_reviews`, `submit_review`, `get_progress`, `export_data`, `import_data`.
+Claude uses these tools for you: `set_profile`, `get_weekly_plan`, `get_today`, `save_lesson`, `complete_task`, `get_due_reviews`, `submit_review`, `get_progress`, `export_cards`, `export_data`, `import_data`.
 
 ## Your data
 
 Everything lives in one JSON file: `~/.langcoach/data.json`. Set the `LANGCOACH_HOME` environment variable to use a different folder.
 
+- **Export to Anki / Quizlet / CSV:** ask Claude to run `export_cards`, or use Settings > Export cards in the extension. See the [Anki, Quizlet and CSV guide](https://github.com/oktaybilge1/langcoach/blob/main/docs/ANKI.md).
 - **Export / import:** ask Claude to run `export_data` for a backup or to move to another machine, and `import_data` to restore it.
 - Writes are atomic, so a crash cannot leave a half-written file.
 - Parallel tool calls and several Claude Code sessions take turns through a short-lived `data.json.lock` file, so no update is lost.

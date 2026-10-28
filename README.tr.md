@@ -70,12 +70,13 @@ Claude Code'da `tutor` istemini çalıştır. MCP istemleri `/mcp__langcoach__tu
 
 ### Araçlar
 
-Claude bu araçları senin için kullanır: `set_profile`, `get_weekly_plan`, `get_today`, `save_lesson`, `complete_task`, `get_due_reviews`, `submit_review`, `get_progress`, `export_data`, `import_data`.
+Claude bu araçları senin için kullanır: `set_profile`, `get_weekly_plan`, `get_today`, `save_lesson`, `complete_task`, `get_due_reviews`, `submit_review`, `get_progress`, `export_cards`, `export_data`, `import_data`.
 
 ## Verin
 
 Her şey tek bir JSON dosyasında durur: `~/.langcoach/data.json`. Farklı bir klasör için `LANGCOACH_HOME` ortam değişkenini ayarla.
 
+- **Anki / Quizlet / CSV'ye aktarma:** Claude'dan `export_cards` çalıştırmasını iste ya da uzantıda Ayarlar > Kartları dışa aktar'ı kullan. [Anki, Quizlet ve CSV rehberi](https://github.com/oktaybilge1/langcoach/blob/main/docs/ANKI.tr.md).
 - **Dışa / içe aktarma:** yedek almak ya da başka bir makineye taşınmak için Claude'dan `export_data`, geri yüklemek için `import_data` çalıştırmasını iste.
 - Yazma işlemleri atomiktir; bir çökme yarım yazılmış dosya bırakmaz.
 - Paralel araç çağrıları ve birden fazla Claude Code oturumu, kısa ömürlü bir `data.json.lock` dosyasıyla sırayla yazar; hiçbir güncelleme kaybolmaz.
