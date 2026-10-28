@@ -971,5 +971,50 @@
   },
   "todayTasksHeading": {
     "message": "Plano de hoje"
+  },
+  "levelToNext": {
+    "message": "$XP$ XP para $NEXT$",
+    "placeholders": {
+      "xp": {
+        "content": "$1"
+      },
+      "next": {
+        "content": "$2"
+      }
+    }
+  },
+  "levelMax": {
+    "message": "Nível máximo alcançado. Lendário!"
+  },
+  "levelProgressLabel": {
+    "message": "Progresso para o próximo nível: $PCT$%",
+    "placeholders": {
+      "pct": {
+        "content": "$1"
+      }
+    }
+  },
+  "weekChartHeading": {
+    "message": "Esta semana"
+  },
+  "weekChartLabel": {
+    "message": "XP dos últimos 7 dias: $TOTAL$ no total, meta diária $GOAL$",
+    "placeholders": {
+      "total": {
+        "content": "$1"
+      },
+      "goal": {
+        "content": "$2"
+      }
+    }
+  },
+  "statFreezes": {
+    "message": "Congelamentos"
+  },
+  "achUnlocked": {
+    "message": "desbloqueada"
+  },
+  "achLocked": {
+    "message": "bloqueada"
   }
 }

@@ -231,7 +231,7 @@ export function App({ send = defaultSend, initialTab, translator = panelTranslat
         ) : tab === 'plan' ? (
           <Plan snapshot={snapshot} t={t} />
         ) : tab === 'progress' ? (
-          <Progress snapshot={snapshot} t={t} />
+          <Progress snapshot={snapshot} t={t} uiLocale={locale} />
         ) : (
           <Settings snapshot={snapshot} settings={settings} t={t} send={send} onRefresh={refresh} />
         )}

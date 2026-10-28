@@ -971,5 +971,50 @@
   },
   "todayTasksHeading": {
     "message": "Bugünün planı"
+  },
+  "levelToNext": {
+    "message": "$NEXT$ seviyesine $XP$ XP kaldı",
+    "placeholders": {
+      "xp": {
+        "content": "$1"
+      },
+      "next": {
+        "content": "$2"
+      }
+    }
+  },
+  "levelMax": {
+    "message": "En üst seviyedesin. Efsanesin!"
+  },
+  "levelProgressLabel": {
+    "message": "Sonraki seviyeye ilerleme: %$PCT$",
+    "placeholders": {
+      "pct": {
+        "content": "$1"
+      }
+    }
+  },
+  "weekChartHeading": {
+    "message": "Bu hafta"
+  },
+  "weekChartLabel": {
+    "message": "Son 7 günde XP: toplam $TOTAL$, günlük hedef $GOAL$",
+    "placeholders": {
+      "total": {
+        "content": "$1"
+      },
+      "goal": {
+        "content": "$2"
+      }
+    }
+  },
+  "statFreezes": {
+    "message": "Seri dondurma"
+  },
+  "achUnlocked": {
+    "message": "açıldı"
+  },
+  "achLocked": {
+    "message": "kilitli"
   }
 }
