@@ -6,6 +6,7 @@ import { render } from 'preact';
 import { act } from 'preact/test-utils';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Message, MessageMap, MessageType, ResponseOf, Settings, Snapshot } from '../src/shared/messages';
+import { suggestThemes } from '../src/lib/themes';
 import { App, type PanelSend } from '../src/sidepanel/App';
 
 const flush = async () => {
@@ -87,7 +88,7 @@ afterEach(() => {
 });
 
 describe('side panel UI', () => {
-  it('onboarding prefills target language from pendingTargetLanguage and calls setProfile + createPlan with chosen values', async () => {
+  it('onboarding prefills target language from pendingTargetLanguage and calls setProfile with the plan theme (one atomic call)', async () => {
     const calls: Message[] = [];
     let currentSnap: Snapshot = makeSnapshot({ profile: null, today: null, plan: null });
     const send: PanelSend = vi.fn(async <K extends MessageType>(msg: { type: K } & MessageMap[K]['request']) => {
@@ -154,8 +155,9 @@ describe('side panel UI', () => {
         minutesPerDay: 20,
         daysPerWeek: 4,
       },
+      theme: suggestThemes('work', 'A2', 'en', 0)[0],
     });
-    expect(calls.some((c) => c.type === 'createPlan')).toBe(true);
+    expect(calls.some((c) => c.type === 'createPlan')).toBe(false);
   });
 
   it('Today renders tasks from a snapshot fixture and allows Undo on last capture', async () => {

@@ -36,7 +36,8 @@ type LoadError = { kind: 'corrupt'; message: string; preservedAt?: string } | { 
 export function toLoadError(e: unknown): LoadError {
   const err = (e ?? {}) as { name?: string; message?: string; preservedAt?: string };
   const message = typeof err.message === 'string' && err.message ? err.message : String(e);
-  if (err.name === 'CorruptDataError' || typeof err.preservedAt === 'string') {
+  // Schema-invalid stored data (InvalidDataError from getSnapshot) needs the same Import / Reset recovery.
+  if (err.name === 'CorruptDataError' || err.name === 'InvalidDataError' || typeof err.preservedAt === 'string') {
     return { kind: 'corrupt', message, ...(err.preservedAt ? { preservedAt: err.preservedAt } : {}) };
   }
   return { kind: 'generic', message };

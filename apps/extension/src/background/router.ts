@@ -1,13 +1,10 @@
 import {
   CorruptDataError,
-  DEFAULT_DAILY_GOAL,
   InvalidDataError,
-  dailyXp,
   isDue,
   isoWeek,
-  streak,
+  progressOf,
   toLocalDate,
-  weeklyGoal,
   type Coach,
   type State,
   type Store,
@@ -15,6 +12,7 @@ import {
 import { suggestThemes, type Goal } from '../lib/themes';
 import {
   DEFAULT_SETTINGS,
+  type Banner,
   type ErrorInfo,
   type LastCapture,
   type Message,
@@ -30,6 +28,11 @@ import type { StorageAreaLike } from './store';
 
 export { LAST_CAPTURE_KEY, PENDING_GRAMMAR_KEY } from './capture';
 export const SETTINGS_KEY = 'langcoach:settings';
+/** Pending one-time rollover banners (Banner[]), removed when dismissed. */
+export const BANNERS_KEY = 'langcoach:banners';
+/** Local date (YYYY-MM-DD) of the last rollover, so the panel triggers it at most once per day. */
+export const ROLLOVER_KEY = 'langcoach:rolloverDate';
+const MAX_BANNERS = 10;
 
 export interface RouterDeps {
   coach: Coach;
@@ -89,6 +92,10 @@ export function validateMessage(m: Record<string, unknown>): void {
       break;
     case 'setProfile':
       if (!isObj(m.profile)) bad('profile must be an object');
+      if (m.theme !== undefined) id(m.theme, 'theme');
+      break;
+    case 'dismissBanner':
+      id(m.id, 'id');
       break;
     case 'createPlan':
       id(m.theme, 'theme');
@@ -286,13 +293,54 @@ export function createRouter(deps: RouterDeps) {
     return store.load();
   }
 
+  const isBanner = (b: unknown): b is Banner =>
+    isObj(b) &&
+    typeof b.id === 'string' &&
+    ((b.kind === 'freezeUsed' && typeof b.date === 'string') ||
+      (b.kind === 'freezeEarned' && typeof b.count === 'number'));
+
+  async function readBanners(): Promise<Banner[]> {
+    const raw = (await area.get(BANNERS_KEY))[BANNERS_KEY];
+    return Array.isArray(raw) ? raw.filter(isBanner) : [];
+  }
+
+  /**
+   * Applies streak freezes for today (Coach.rollover) and queues one-time banners for what changed.
+   * Idempotent per day; never throws (startup/alarm callers must not crash the worker).
+   */
+  async function rollover(): Promise<Banner[]> {
+    try {
+      const today = toLocalDate(clock());
+      const r = await coach.rollover();
+      const added: Banner[] = [
+        ...r.consumed.map((date): Banner => ({ id: `freezeUsed:${date}`, kind: 'freezeUsed', date })),
+        ...(r.earned > 0 ? [{ id: `freezeEarned:${today}`, kind: 'freezeEarned', count: r.earned } as Banner] : []),
+      ];
+      await serialized(async () => {
+        const items: Record<string, unknown> = { [ROLLOVER_KEY]: today };
+        if (added.length > 0) {
+          const cur = await readBanners();
+          const ids = new Set(cur.map((b) => b.id));
+          items[BANNERS_KEY] = [...cur, ...added.filter((b) => !ids.has(b.id))].slice(-MAX_BANNERS);
+        }
+        await area.set(items);
+      });
+      return added;
+    } catch (e) {
+      log('LangCoach: daily rollover failed', e);
+      return [];
+    }
+  }
+
   async function snapshot(): Promise<Snapshot> {
-    const [state, lc] = await Promise.all([ensurePlan(), area.get(LAST_CAPTURE_KEY)]);
+    const now0 = clock();
+    if ((await area.get(ROLLOVER_KEY))[ROLLOVER_KEY] !== toLocalDate(now0)) await rollover();
+    const [state, lc, banners] = await Promise.all([ensurePlan(), area.get(LAST_CAPTURE_KEY), readBanners()]);
     // Everything below is computed from this one load (Coach.today/progress would each load and validate again).
     const now = clock();
     const date = toLocalDate(now);
     const plan = state.plans[isoWeek(now)] ?? null;
-    const dueCount = state.cards.filter((c) => isDue(c.srs, now)).length;
+    const p = progressOf(state, now);
     return {
       profile: state.profile,
       today: state.profile
@@ -300,15 +348,18 @@ export function createRouter(deps: RouterDeps) {
         : null,
       plan,
       progress: {
-        streak: streak(state.log, date),
-        totalXp: state.log.reduce((sum, e) => sum + e.xp, 0),
-        weekly: weeklyGoal(plan ?? undefined),
-        dueCount,
-        todayXp: dailyXp(state.log, date),
-        dailyGoalXp: state.profile?.dailyGoalXp ?? DEFAULT_DAILY_GOAL,
+        streak: p.streak,
+        totalXp: p.totalXp,
+        weekly: p.weekly,
+        dueCount: p.dueCount,
+        todayXp: p.todayXp,
+        dailyGoalXp: p.dailyGoalXp,
+        streakFreezes: p.streakFreezes,
+        weekXp: p.weekXp,
       },
-      dueCount,
+      dueCount: p.dueCount,
       lastCapture: (lc[LAST_CAPTURE_KEY] as LastCapture | undefined) ?? null,
+      banners,
       state,
     };
   }
@@ -327,7 +378,9 @@ export function createRouter(deps: RouterDeps) {
       return null;
     },
     getSnapshot: () => snapshot(),
-    setProfile: (m) => coach.setProfile(m.profile),
+    setProfile: (m) =>
+      // With a theme, the plan is created in the same transaction: no ensurePlan race in onboarding.
+      coach.setProfile(m.profile, m.theme !== undefined ? { theme: m.theme } : {}),
     createPlan: (m) => coach.weekPlan(m.theme),
     completeReview: (m) => coach.autoComplete('review', { cardsReviewed: m.cardsReviewed }),
     getDue: (m) => coach.dueReviews(m.limit),
@@ -375,9 +428,17 @@ export function createRouter(deps: RouterDeps) {
         .map((x) => x.c);
     },
     recordPractice: (m) => coach.recordPractice({ sessionId: m.sessionId, results: m.results }),
+    dismissBanner: (m) =>
+      serialized(async () => {
+        const cur = await readBanners();
+        await area.set({ [BANNERS_KEY]: cur.filter((b) => b.id !== m.id) });
+        return null;
+      }),
   };
 
   return {
+    /** Applies streak freezes for today and queues one-time banners. Never throws. */
+    rollover,
     /** Creates this week's plan if a profile exists and the week has none (startup, alarms). Never throws. */
     async ensurePlan(): Promise<void> {
       try {

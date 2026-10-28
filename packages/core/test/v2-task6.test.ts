@@ -176,3 +176,30 @@ describe('progressOf: one source of truth for progress numbers', () => {
     });
   });
 });
+
+describe('setProfile with a theme creates the week plan atomically', () => {
+  test('profile and plan land in the same save, with the chosen theme', async () => {
+    const saves: State[] = [];
+    const origSave = store.save.bind(store);
+    store.save = async (s: State) => {
+      saves.push(structuredClone(s));
+      return origSave(s);
+    };
+    await coach.setProfile(profile, { theme: 'ordering tapas' });
+    expect(saves).toHaveLength(1);
+    expect(saves[0]!.profile).not.toBeNull();
+    expect(saves[0]!.plans[isoWeek(now)]!.theme).toBe('ordering tapas');
+  });
+
+  test('an existing week plan is kept (no second plan, theme unchanged)', async () => {
+    await coach.setProfile(profile);
+    await coach.weekPlan('first');
+    await coach.setProfile(profile, { theme: 'second' });
+    expect((await state()).plans[isoWeek(now)]!.theme).toBe('first');
+  });
+
+  test('a blank theme is rejected before anything is saved', async () => {
+    await expect(coach.setProfile(profile, { theme: ' ' })).rejects.toThrow(/theme/);
+    expect((await state()).profile).toBeNull();
+  });
+});

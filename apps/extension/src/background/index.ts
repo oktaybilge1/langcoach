@@ -3,7 +3,13 @@ import { Coach } from '@langcoach/core/browser';
 import { isMessage } from '../shared/messages';
 import { createMenuClickHandler, registerMenus } from './menu';
 import { isAllowed } from './policy';
-import { createReminderAlarmHandler, createReminderClickHandler, scheduleReminder } from './reminder';
+import {
+  createReminderAlarmHandler,
+  createReminderClickHandler,
+  createRolloverAlarmHandler,
+  scheduleReminder,
+  scheduleRollover,
+} from './reminder';
 import { createRouter } from './router';
 import { ChromeStorageStore } from './store';
 
@@ -43,17 +49,25 @@ const syncReminder = () =>
     .then((r) => (r.ok ? scheduleReminder(r.data, chrome.alarms) : undefined))
     .catch((e) => log('LangCoach: reminder schedule failed', e));
 
+const syncRollover = () => scheduleRollover(chrome.alarms).catch((e) => log('LangCoach: rollover schedule failed', e));
+
 chrome.runtime.onInstalled.addListener(() => {
   void chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true });
   void setupMenus();
   void syncReminder();
+  void syncRollover();
   void router.ensurePlan();
 });
 chrome.runtime.onStartup.addListener(() => {
   void setupMenus();
   void syncReminder();
+  void syncRollover();
   void router.ensurePlan();
 });
+
+// Every service-worker start (browser start, wake-up for an event): apply streak freezes for today.
+// Idempotent per day; banners are queued once and shown by the panel until dismissed.
+void router.rollover();
 
 const onMenuClick = createMenuClickHandler({ coach, tabs: chrome.tabs, log });
 chrome.contextMenus.onClicked.addListener((info, tab) => void onMenuClick(info, tab));
@@ -64,12 +78,18 @@ const onAlarm = createReminderAlarmHandler({
   t: (k) => chrome.i18n.getMessage(k),
   iconUrl: chrome.runtime.getURL('icons/128.png'),
   ensurePlan: () => router.ensurePlan(),
+  reschedule: () => syncReminder().then(() => undefined),
 });
-chrome.alarms.onAlarm.addListener((alarm) => void onAlarm(alarm));
+const onRolloverAlarm = createRolloverAlarmHandler({ rollover: () => router.rollover(), reschedule: syncRollover });
+chrome.alarms.onAlarm.addListener((alarm) => {
+  void onAlarm(alarm);
+  void onRolloverAlarm(alarm);
+});
 
 const onNotificationClick = createReminderClickHandler({
   sidePanel: chrome.sidePanel,
   tabs: chrome.tabs,
+  windows: chrome.windows,
   notifications: chrome.notifications,
 });
 chrome.notifications.onClicked.addListener((id) => void onNotificationClick(id));

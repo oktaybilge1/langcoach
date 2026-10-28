@@ -115,7 +115,15 @@ export class Coach {
     private readonly newId: () => string = () => globalThis.crypto.randomUUID(),
   ) {}
 
-  async setProfile(input: Omit<Profile, 'createdAt'>): Promise<Profile> {
+  /**
+   * Save the learner profile. With `opts.theme`, this week's plan is created with that theme in the
+   * same transaction (onboarding), so nothing can create a plan with another theme in between.
+   */
+  async setProfile(input: Omit<Profile, 'createdAt'>, opts: { theme?: string } = {}): Promise<Profile> {
+    const theme = opts?.theme;
+    if (theme !== undefined && (typeof theme !== 'string' || theme.trim() === '')) {
+      throw new InvalidDataError('theme must be a non-empty string');
+    }
     if (input.dailyGoalXp !== undefined && !DAILY_GOALS.includes(input.dailyGoalXp)) {
       throw new InvalidDataError(`dailyGoalXp must be one of ${DAILY_GOALS.join(', ')}`);
     }
@@ -145,6 +153,11 @@ export class Coach {
       const goal: DailyGoalXp | undefined = input.dailyGoalXp ?? s.profile?.dailyGoalXp;
       if (goal !== undefined) profile.dailyGoalXp = goal;
       s.profile = profile;
+      if (theme !== undefined) {
+        const now = this.clock();
+        const week = isoWeek(now);
+        if (!s.plans[week]) s.plans[week] = buildWeekPlan(profile, week, theme, this.newId, toLocalDate(now));
+      }
       return { state: s, result: profile };
     });
   }

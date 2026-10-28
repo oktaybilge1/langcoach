@@ -60,12 +60,23 @@ export interface Snapshot {
     /** XP earned today and the learner's daily goal (for the goal ring). */
     todayXp?: number;
     dailyGoalXp?: number;
+    /** Streak freezes held (0..2). */
+    streakFreezes?: number;
+    /** XP of the last 7 local days, oldest first, ending today. */
+    weekXp?: { date: string; xp: number }[];
   };
   dueCount: number;
   lastCapture: LastCapture | null;
+  /** One-time notices from the daily rollover, shown until dismissed. */
+  banners?: Banner[];
   /** Full learner state for Progress/Achievements/Today grammar display in the side panel. */
   state?: State;
 }
+
+/** One-time rollover notice: a freeze protected `date`, or `count` freezes were earned. */
+export type Banner =
+  | { id: string; kind: 'freezeUsed'; date: string }
+  | { id: string; kind: 'freezeEarned'; count: number };
 
 /** Translator pair (BCP-47 base codes) plus whether the page overlay is on; absent = translation off. */
 export interface NativePair {
@@ -109,7 +120,8 @@ export interface MessageMap {
   undo: { request: { lessonIds: string[] }; response: { removedCards: number } };
   openPanel: { request: Record<never, never>; response: null };
   getSnapshot: { request: Record<never, never>; response: Snapshot };
-  setProfile: { request: { profile: ProfileInput }; response: Profile };
+  /** With `theme` (onboarding), this week's plan is created with it in the same transaction. */
+  setProfile: { request: { profile: ProfileInput; theme?: string }; response: Profile };
   createPlan: { request: { theme: string }; response: WeekPlan };
   completeReview: {
     request: { cardsReviewed: number };
@@ -141,6 +153,8 @@ export interface MessageMap {
     request: { sessionId: string; results: PracticeResult[] };
     response: PracticeSummary;
   };
+  /** Hides a rollover banner for good. */
+  dismissBanner: { request: { id: string }; response: null };
 }
 
 export type MessageType = keyof MessageMap;
@@ -182,6 +196,7 @@ export const MESSAGE_TYPES: readonly MessageType[] = [
   'setNativeTranslations',
   'getPracticeCards',
   'recordPractice',
+  'dismissBanner',
 ];
 
 export const isMessage = (v: unknown): v is Message =>

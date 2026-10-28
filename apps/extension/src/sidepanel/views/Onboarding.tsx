@@ -96,10 +96,10 @@ export function Onboarding({ settings, uiLocale, t, send, onComplete }: Onboardi
         minutesPerDay: chosenMinutes,
         daysPerWeek: chosenDays,
       };
-      await send({ type: 'setProfile', profile });
-      await send({ type: 'setSettings', settings: { hasCamera: camChecked } });
       const theme = suggestThemes(chosenGoal, chosenLevel, uiLocale, 0)[0] ?? 'daily conversation';
-      await send({ type: 'createPlan', theme });
+      await send({ type: 'setSettings', settings: { hasCamera: camChecked } });
+      // Profile and this week's plan (with the chosen theme) are saved in one transaction.
+      await send({ type: 'setProfile', profile, theme });
       await onComplete();
     } finally {
       setBusy(false);

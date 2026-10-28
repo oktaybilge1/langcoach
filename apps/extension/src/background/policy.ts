@@ -31,6 +31,7 @@ const PAGE_TYPES: ReadonlySet<string> = new Set([
   'setNativeTranslations',
   'getPracticeCards',
   'recordPractice',
+  'dismissBanner',
 ]);
 
 const LLL_PREFIX = 'https://labs.google/lll/';

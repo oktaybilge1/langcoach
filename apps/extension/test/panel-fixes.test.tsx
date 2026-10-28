@@ -405,6 +405,25 @@ describe('I4: load errors', () => {
     expect(byTestId('tab-today')).not.toBeNull();
   });
 
+  it('schema-invalid data (InvalidDataError from getSnapshot) shows the same recovery screen', async () => {
+    const { send } = mount((m) => {
+      if (m.type === 'getSnapshot') {
+        throw Object.assign(new Error('Invalid LangCoach data: cards.0.srs.due: Invalid ISO datetime'), {
+          name: 'InvalidDataError',
+          code: 'invalid',
+        });
+      }
+      return null;
+    });
+    await renderApp(send);
+    const screen = byTestId('recovery-screen')!;
+    expect(screen).not.toBeNull();
+    expect(screen.textContent).toContain(t('corruptTitle'));
+    expect(byTestId('btn-import')).not.toBeNull();
+    expect(byTestId('btn-reset')).not.toBeNull();
+    expect(byTestId('load-error')).toBeNull();
+  });
+
   it('a generic error shows a retry banner that reloads', async () => {
     let fail = true;
     const { send } = mount((m) => {

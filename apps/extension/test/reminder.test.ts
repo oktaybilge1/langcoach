@@ -43,7 +43,6 @@ describe('daily reminder', () => {
     await scheduleReminder({ reminderTime: '18:45' }, alarms, now);
     expect(alarms.create).toHaveBeenCalledWith(REMINDER_ALARM, {
       when: nextReminderAt(now, '18:45'),
-      periodInMinutes: 1440,
     });
 
     await scheduleReminder({ reminderTime: null }, alarms, now);
