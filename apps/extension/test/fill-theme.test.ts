@@ -2,6 +2,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fillPurposeField, startIsolated } from '../src/content/isolated';
 import type { Toaster } from '../src/content/toast';
+import { stubLayout } from './layout-stub';
 
 const TINY = '/lll/en/experiments/tiny-lesson';
 
@@ -59,6 +60,7 @@ function livePage() {
 beforeEach(() => {
   document.body.replaceChildren();
   history.pushState({}, '', TINY);
+  stubLayout(); // jsdom has no layout: isUsable relies on getClientRects()
 });
 afterEach(() => {
   history.pushState({}, '', '/');

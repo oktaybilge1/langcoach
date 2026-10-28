@@ -1,10 +1,12 @@
 import { createTranslatorCache, type TranslatorCache } from '../lib/translate';
 import type { CaptureResult, Response } from '../shared/messages';
 import { createNativeOverlay, type NativeOverlay, type OverlayEntry } from './native-overlay';
+import { fillPurposeField, startScenario, type ScenarioResult } from './scenario';
 import { ACK_SOURCE, CAPTURE_SOURCE, NONCE_ATTR } from './protocol';
 import { createToaster, type Toaster } from './toast';
 
 export { NONCE_ATTR } from './protocol';
+export { PURPOSE_MAX, fillPurposeField } from './scenario';
 
 const KINDS = ['terms', 'grammar', 'conversation', 'object-descriptors'];
 
@@ -13,7 +15,10 @@ export interface IsolatedDeps {
   runtimeId: string;
   sendMessage: (msg: unknown) => Promise<unknown>;
   onMessage: {
-    addListener(fn: (msg: unknown, sender: { id?: string }, sendResponse: (response: unknown) => void) => void): void;
+    /** Returning true keeps the response channel open for an asynchronous sendResponse. */
+    addListener(
+      fn: (msg: unknown, sender: { id?: string }, sendResponse: (response: unknown) => void) => boolean | void,
+    ): void;
   };
   /** chrome.i18n.getMessage */
   t: (key: string, substitutions?: string | string[]) => string;
@@ -26,48 +31,6 @@ export interface IsolatedDeps {
 }
 
 const isObj = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null && !Array.isArray(v);
-
-/** LLL caps the Tiny Lesson purpose at 50 characters. */
-export const PURPOSE_MAX = 50;
-const TINY_LESSON_PATH = /^\/lll\/[a-z]{2}(?:[-_][a-z]{2,4})?\/experiments\/tiny-lesson\/?$/i;
-
-function isUsable(win: Window, el: HTMLInputElement): boolean {
-  if (el.disabled || el.hidden || el.closest('[hidden], [aria-hidden="true"]')) return false;
-  const cs = win.getComputedStyle(el);
-  return cs.display !== 'none' && cs.visibility !== 'hidden';
-}
-
-/**
- * The Tiny Lesson purpose field: exactly one usable `input` whose type is text and that is not the
- * language combobox (live markup: no form, no maxLength, no type attribute, rotating placeholder).
- * Anything else is ambiguous, so null; never "the first input on the page".
- */
-function findPurposeField(win: Window): HTMLInputElement | null {
-  const candidates = [...win.document.querySelectorAll('input')].filter(
-    (el) => el.type === 'text' && el.getAttribute('role') !== 'combobox' && isUsable(win, el),
-  );
-  return candidates.length === 1 ? candidates[0]! : null;
-}
-
-/**
- * Writes `theme` into the Tiny Lesson purpose field so that React registers it: the value goes through the
- * element's own prototype setter (bypassing React's instance-level value tracker), then a bubbling `input`
- * event. Returns false (and changes nothing) outside the Tiny Lesson page or when the field is not found.
- */
-export function fillPurposeField(win: Window, theme: string): boolean {
-  const w = win as Window & typeof globalThis;
-  if (!TINY_LESSON_PATH.test(win.location.pathname)) return false;
-  const el = findPurposeField(win);
-  if (!el) return false;
-  const limit = el.maxLength > 0 ? Math.min(el.maxLength, PURPOSE_MAX) : PURPOSE_MAX;
-  const value = [...theme].slice(0, limit).join('');
-  const setter = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(el), 'value')?.set;
-  if (!setter) return false;
-  el.focus();
-  setter.call(el, value);
-  el.dispatchEvent(new w.Event('input', { bubbles: true }));
-  return true;
-}
 
 function randomNonce(win: Window): string {
   const b = new Uint8Array(16);
@@ -251,6 +214,33 @@ export function startIsolated(deps: IsolatedDeps): { nonce: string; dispose: () 
 
   deps.onMessage.addListener((msg, sender, sendResponse) => {
     if (sender?.id !== deps.runtimeId || !isObj(msg)) return;
+    if (msg.type === 'ping') {
+      sendResponse?.({ ready: true });
+      return;
+    }
+    if (msg.type === 'startScenario') {
+      const valid =
+        typeof msg.theme === 'string' &&
+        msg.theme.trim() !== '' &&
+        (msg.targetLabel === undefined || typeof msg.targetLabel === 'string');
+      if (!valid) {
+        sendResponse?.({ ok: false, reason: 'invalid' } satisfies ScenarioResult);
+        return;
+      }
+      void startScenario(win, {
+        theme: msg.theme as string,
+        ...(typeof msg.targetLabel === 'string' && msg.targetLabel ? { targetLabel: msg.targetLabel } : {}),
+      })
+        .catch((): ScenarioResult => ({ ok: false, reason: 'error' }))
+        .then((r) => {
+          try {
+            sendResponse?.(r);
+          } catch {
+            /* the panel went away */
+          }
+        });
+      return true;
+    }
     if (msg.type === 'fillTheme' && typeof msg.theme === 'string') {
       let filled = false;
       try {
