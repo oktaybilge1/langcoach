@@ -419,6 +419,35 @@
   "btnImportReplace": {
     "message": "Remplacer"
   },
+  "exportCardsSection": {
+    "message": "Exporter les cartes"
+  },
+  "exportCardsHint": {
+    "message": "Emportez vos cartes dans d’autres applis. Le calendrier de révision n’est pas exporté ; les cartes y repartent de zéro."
+  },
+  "btnExportAnki": {
+    "message": "Anki"
+  },
+  "btnExportQuizlet": {
+    "message": "Quizlet"
+  },
+  "btnExportCsv": {
+    "message": "CSV"
+  },
+  "exportCardsDone": {
+    "message": "$COUNT$ cartes exportées vers $FILE$.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      },
+      "file": {
+        "content": "$2"
+      }
+    }
+  },
+  "exportCardsNone": {
+    "message": "Aucune carte à exporter pour le moment."
+  },
   "importDone": {
     "message": "$CARDS$ cartes importées depuis $LESSONS$ leçons.",
     "placeholders": {

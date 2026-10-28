@@ -1,4 +1,4 @@
-import type { Cefr } from '@langcoach/core/browser';
+import { exportCards, type Cefr, type State } from '@langcoach/core/browser';
 import { useRef, useState } from 'preact/hooks';
 import { LLL_LANGUAGES } from '../../lib/languages';
 import { GOALS, type Goal } from '../../lib/themes';
@@ -162,6 +162,58 @@ export function DataActions({ t, send, currentCards, onChanged, showExport = tru
         {resetStep === 0 ? t('btnReset') : resetStep === 1 ? t('btnResetConfirm1') : t('btnResetConfirm2')}
       </button>
     </div>
+  );
+}
+
+/** Export the deck as an Anki text import, Quizlet text or CSV (scheduling data is not exported). */
+export function ExportCards({ t, send }: { t: TranslateFn; send: PanelSend }) {
+  const [notice, setNotice] = useState<{ text: string; error: boolean } | null>(null);
+
+  async function run(format: 'anki' | 'quizlet' | 'csv') {
+    try {
+      const { json } = await send({ type: 'exportData' });
+      const out = exportCards(JSON.parse(json) as State, format);
+      if (out.count === 0) {
+        setNotice({ text: t('exportCardsNone'), error: false });
+        return;
+      }
+      const url = URL.createObjectURL(new Blob([out.text], { type: out.mime }));
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = out.filename;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(url), EXPORT_REVOKE_DELAY_MS);
+      setNotice({ text: t('exportCardsDone', [String(out.count), out.filename]), error: false });
+    } catch (e) {
+      setNotice({ text: t('actionFailed', (e as Error).message), error: true });
+    }
+  }
+
+  return (
+    <section class="card form-grid" data-testid="export-cards">
+      <h2>{t('exportCardsSection')}</h2>
+      <p class="muted">{t('exportCardsHint')}</p>
+      <div class="theme-actions">
+        <button type="button" data-testid="btn-export-anki" onClick={() => run('anki')}>
+          {t('btnExportAnki')}
+        </button>
+        <button type="button" data-testid="btn-export-quizlet" onClick={() => run('quizlet')}>
+          {t('btnExportQuizlet')}
+        </button>
+        <button type="button" data-testid="btn-export-csv" onClick={() => run('csv')}>
+          {t('btnExportCsv')}
+        </button>
+      </div>
+      {notice && (
+        <p
+          class={`notice ${notice.error ? 'error' : ''}`}
+          role={notice.error ? 'alert' : 'status'}
+          data-testid="export-cards-notice"
+        >
+          {notice.text}
+        </p>
+      )}
+    </section>
   );
 }
 
@@ -389,6 +441,8 @@ export function Settings({ snapshot, settings, t, send, onRefresh }: SettingsPro
         <h2>{t('settingsDataSection')}</h2>
         <DataActions t={t} send={send} currentCards={snapshot.state?.cards.length ?? null} onChanged={onRefresh} />
       </section>
+
+      <ExportCards t={t} send={send} />
 
       <section class="card form-grid">
         <h2>{t('settingsAboutSection')}</h2>

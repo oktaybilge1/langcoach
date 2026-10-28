@@ -419,6 +419,35 @@
   "btnImportReplace": {
     "message": "Değiştir"
   },
+  "exportCardsSection": {
+    "message": "Kartları dışa aktar"
+  },
+  "exportCardsHint": {
+    "message": "Kartlarını başka uygulamalara taşı. Tekrar zamanlaması aktarılmaz; kartlar orada sıfırdan başlar."
+  },
+  "btnExportAnki": {
+    "message": "Anki"
+  },
+  "btnExportQuizlet": {
+    "message": "Quizlet"
+  },
+  "btnExportCsv": {
+    "message": "CSV"
+  },
+  "exportCardsDone": {
+    "message": "$COUNT$ kart $FILE$ dosyasına aktarıldı.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      },
+      "file": {
+        "content": "$2"
+      }
+    }
+  },
+  "exportCardsNone": {
+    "message": "Henüz aktarılacak kart yok."
+  },
   "importDone": {
     "message": "$LESSONS$ dersten $CARDS$ kart içe aktarıldı.",
     "placeholders": {

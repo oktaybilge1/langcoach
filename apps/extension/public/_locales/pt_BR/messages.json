@@ -419,6 +419,35 @@
   "btnImportReplace": {
     "message": "Substituir"
   },
+  "exportCardsSection": {
+    "message": "Exportar cartões"
+  },
+  "exportCardsHint": {
+    "message": "Leve seus cartões para outros apps. O agendamento de revisão não é exportado; os cartões começam do zero lá."
+  },
+  "btnExportAnki": {
+    "message": "Anki"
+  },
+  "btnExportQuizlet": {
+    "message": "Quizlet"
+  },
+  "btnExportCsv": {
+    "message": "CSV"
+  },
+  "exportCardsDone": {
+    "message": "$COUNT$ cartões exportados para $FILE$.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      },
+      "file": {
+        "content": "$2"
+      }
+    }
+  },
+  "exportCardsNone": {
+    "message": "Ainda não há cartões para exportar."
+  },
   "importDone": {
     "message": "$CARDS$ cartões importados de $LESSONS$ lições.",
     "placeholders": {

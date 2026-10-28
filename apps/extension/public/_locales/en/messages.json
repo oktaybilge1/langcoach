@@ -419,6 +419,35 @@
   "btnImportReplace": {
     "message": "Replace"
   },
+  "exportCardsSection": {
+    "message": "Export cards"
+  },
+  "exportCardsHint": {
+    "message": "Take your cards to other apps. Scheduling is not exported; cards start fresh there."
+  },
+  "btnExportAnki": {
+    "message": "Anki"
+  },
+  "btnExportQuizlet": {
+    "message": "Quizlet"
+  },
+  "btnExportCsv": {
+    "message": "CSV"
+  },
+  "exportCardsDone": {
+    "message": "Exported $COUNT$ cards to $FILE$.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      },
+      "file": {
+        "content": "$2"
+      }
+    }
+  },
+  "exportCardsNone": {
+    "message": "No cards to export yet."
+  },
   "importDone": {
     "message": "Imported $CARDS$ cards from $LESSONS$ lessons.",
     "placeholders": {
