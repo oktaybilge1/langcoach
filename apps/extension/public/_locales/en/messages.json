@@ -701,5 +701,47 @@
         "content": "$1"
       }
     }
+  },
+  "level1": {
+    "message": "Newcomer"
+  },
+  "level2": {
+    "message": "Explorer"
+  },
+  "level3": {
+    "message": "Learner"
+  },
+  "level4": {
+    "message": "Speaker"
+  },
+  "level5": {
+    "message": "Conversationalist"
+  },
+  "level6": {
+    "message": "Storyteller"
+  },
+  "level7": {
+    "message": "Fluent Friend"
+  },
+  "level8": {
+    "message": "Polyglot"
+  },
+  "level9": {
+    "message": "Master"
+  },
+  "level10": {
+    "message": "Legend"
+  },
+  "ach_perfect_session": {
+    "message": "Perfect session"
+  },
+  "ach_xp_100_day": {
+    "message": "100 XP in one day"
+  },
+  "ach_sessions_10": {
+    "message": "10 practice sessions"
+  },
+  "ach_first_match": {
+    "message": "First match game"
   }
 }

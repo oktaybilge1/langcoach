@@ -117,6 +117,10 @@ export interface PracticeSession {
   exercises: number;
   correct: number;
   xp: number;
+  /** Every card ended correct (set since v2 task 6; older sessions lack it). */
+  perfect?: boolean;
+  /** Match-pairs games played in the session. */
+  matchGames?: number;
 }
 
 export interface State {

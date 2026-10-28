@@ -701,5 +701,47 @@
         "content": "$1"
       }
     }
+  },
+  "level1": {
+    "message": "Recién llegado"
+  },
+  "level2": {
+    "message": "Explorador"
+  },
+  "level3": {
+    "message": "Aprendiz"
+  },
+  "level4": {
+    "message": "Hablante"
+  },
+  "level5": {
+    "message": "Conversador"
+  },
+  "level6": {
+    "message": "Narrador"
+  },
+  "level7": {
+    "message": "Amigo fluido"
+  },
+  "level8": {
+    "message": "Políglota"
+  },
+  "level9": {
+    "message": "Maestro"
+  },
+  "level10": {
+    "message": "Leyenda"
+  },
+  "ach_perfect_session": {
+    "message": "Sesión perfecta"
+  },
+  "ach_xp_100_day": {
+    "message": "100 XP en un día"
+  },
+  "ach_sessions_10": {
+    "message": "10 sesiones de práctica"
+  },
+  "ach_first_match": {
+    "message": "Primer juego de parejas"
   }
 }

@@ -26,7 +26,7 @@ function makeStreakLog(days: number, endDay = TODAY): State['log'] {
 }
 
 describe('achievements', () => {
-  it('returns all 8 achievements locked on empty state', () => {
+  it('returns all 12 achievements locked on empty state', () => {
     const list = achievements(emptyState(), TODAY);
     expect(list.map((a) => a.id)).toEqual([
       'first_lesson',
@@ -37,6 +37,10 @@ describe('achievements', () => {
       'cards_100',
       'cards_500',
       'reviews_100',
+      'perfect_session',
+      'xp_100_day',
+      'sessions_10',
+      'first_match',
     ]);
     expect(list.every((a) => !a.unlocked && a.progress === 0)).toBe(true);
   });

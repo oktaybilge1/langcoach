@@ -97,6 +97,13 @@ export function validateMessage(m: Record<string, unknown>): void {
     case 'dismissBanner':
       id(m.id, 'id');
       break;
+    case 'setFavorite':
+      id(m.cardId, 'cardId');
+      if (typeof m.favorite !== 'boolean') bad('favorite must be a boolean');
+      break;
+    case 'markMastered':
+      id(m.cardId, 'cardId');
+      break;
     case 'createPlan':
       id(m.theme, 'theme');
       break;
@@ -155,6 +162,12 @@ export function validateMessage(m: Record<string, unknown>): void {
           bad(`results[${i}].outcome must be one of ${PRACTICE_OUTCOMES.join(', ')}`);
         }
       });
+      if (
+        m.matchGames !== undefined &&
+        (!Number.isInteger(m.matchGames) || (m.matchGames as number) < 0 || (m.matchGames as number) > MAX_PRACTICE_RESULTS)
+      ) {
+        bad(`matchGames must be an integer from 0 to ${MAX_PRACTICE_RESULTS}`);
+      }
       break;
     case 'setNativeTranslations':
       if (!Array.isArray(m.entries) || m.entries.length > MAX_NATIVE_ENTRIES) {
@@ -427,7 +440,14 @@ export function createRouter(deps: RouterDeps) {
         .slice(0, m.limit ?? DEFAULT_PRACTICE_CARDS)
         .map((x) => x.c);
     },
-    recordPractice: (m) => coach.recordPractice({ sessionId: m.sessionId, results: m.results }),
+    recordPractice: (m) =>
+      coach.recordPractice({
+        sessionId: m.sessionId,
+        results: m.results,
+        ...(m.matchGames !== undefined ? { matchGames: m.matchGames } : {}),
+      }),
+    setFavorite: (m) => coach.setFavorite(m.cardId, m.favorite),
+    markMastered: (m) => coach.markMastered(m.cardId),
     dismissBanner: (m) =>
       serialized(async () => {
         const cur = await readBanners();

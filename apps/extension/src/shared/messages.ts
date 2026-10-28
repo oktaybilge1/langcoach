@@ -150,9 +150,13 @@ export interface MessageMap {
   getPracticeCards: { request: { limit?: number }; response: ReviewCard[] };
   /** Records a finished practice session once (idempotent by sessionId). */
   recordPractice: {
-    request: { sessionId: string; results: PracticeResult[] };
+    request: { sessionId: string; results: PracticeResult[]; matchGames?: number };
     response: PracticeSummary;
   };
+  /** Words hub: star a card. */
+  setFavorite: { request: { cardId: string; favorite: boolean }; response: ReviewCard };
+  /** Words hub "I know this": FSRS Easy once, +2 XP only the first time. */
+  markMastered: { request: { cardId: string }; response: { xpAwarded: number } };
   /** Hides a rollover banner for good. */
   dismissBanner: { request: { id: string }; response: null };
 }
@@ -197,6 +201,8 @@ export const MESSAGE_TYPES: readonly MessageType[] = [
   'getPracticeCards',
   'recordPractice',
   'dismissBanner',
+  'setFavorite',
+  'markMastered',
 ];
 
 export const isMessage = (v: unknown): v is Message =>

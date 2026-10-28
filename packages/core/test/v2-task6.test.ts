@@ -203,3 +203,22 @@ describe('setProfile with a theme creates the week plan atomically', () => {
     expect((await state()).profile).toBeNull();
   });
 });
+
+describe('recordPractice stores perfect and match games on the session (achievements)', () => {
+  test('perfect flag and matchGames are kept; matchGames is validated', async () => {
+    await coach.recordPractice({
+      sessionId: 'm',
+      results: [{ cardId: ids[0]!, outcome: 'correct' }],
+      matchGames: 1,
+    });
+    await coach.recordPractice({ sessionId: 'n', results: [{ cardId: ids[1]!, outcome: 'hard' }] });
+    const s = await state();
+    expect(s.sessions!.map((x) => [x.id, x.perfect, x.matchGames])).toEqual([
+      ['m', true, 1],
+      ['n', false, undefined],
+    ]);
+    await expect(
+      coach.recordPractice({ sessionId: 'o', results: [{ cardId: ids[0]!, outcome: 'correct' }], matchGames: -1 }),
+    ).rejects.toThrow(/matchGames/);
+  });
+});

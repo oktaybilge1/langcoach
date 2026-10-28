@@ -26,6 +26,14 @@ function achievementTitle(id: AchievementId, t: TranslateFn): string {
       return t('ach_cards_500');
     case 'reviews_100':
       return t('ach_reviews_100');
+    case 'perfect_session':
+      return t('ach_perfect_session');
+    case 'xp_100_day':
+      return t('ach_xp_100_day');
+    case 'sessions_10':
+      return t('ach_sessions_10');
+    case 'first_match':
+      return t('ach_first_match');
   }
 }
 

@@ -202,7 +202,14 @@ export function Practice({ snapshot, uiLocale, t, send, onRefresh, onDone, sound
   async function record(r: Run, s: Session) {
     setSave({ status: 'saving' });
     try {
-      const data = await send({ type: 'recordPractice', sessionId: s.id, results: results(r) });
+      // Match games actually answered (re-tries of the same exercise count once).
+      const matchGames = new Set(r.queue.filter(({ ex }) => ex.kind === 'match' && r.outcomes[ex.id]).map(({ ex }) => ex.id)).size;
+      const data = await send({
+        type: 'recordPractice',
+        sessionId: s.id,
+        results: results(r),
+        ...(matchGames > 0 ? { matchGames } : {}),
+      });
       if (!mounted.current) return;
       setSave({ status: 'saved', data });
       void onRefresh();

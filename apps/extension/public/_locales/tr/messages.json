@@ -701,5 +701,47 @@
         "content": "$1"
       }
     }
+  },
+  "level1": {
+    "message": "Yeni Başlayan"
+  },
+  "level2": {
+    "message": "Kâşif"
+  },
+  "level3": {
+    "message": "Öğrenci"
+  },
+  "level4": {
+    "message": "Konuşmacı"
+  },
+  "level5": {
+    "message": "Sohbet Ustası"
+  },
+  "level6": {
+    "message": "Hikâye Anlatıcısı"
+  },
+  "level7": {
+    "message": "Akıcı Dost"
+  },
+  "level8": {
+    "message": "Çok Dilli"
+  },
+  "level9": {
+    "message": "Usta"
+  },
+  "level10": {
+    "message": "Efsane"
+  },
+  "ach_perfect_session": {
+    "message": "Kusursuz seans"
+  },
+  "ach_xp_100_day": {
+    "message": "Bir günde 100 XP"
+  },
+  "ach_sessions_10": {
+    "message": "10 alıştırma seansı"
+  },
+  "ach_first_match": {
+    "message": "İlk eşleştirme oyunu"
   }
 }
