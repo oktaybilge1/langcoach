@@ -106,10 +106,19 @@ function quizletRow({ card, term }: Row): string {
   return `${flat(term)}\t${def}`;
 }
 
-/** Cells starting with = + - @ get a leading apostrophe so spreadsheets do not run them as formulas (CSV only). */
-function csvCell(s: string, guard = true): string {
+const ISO_DATETIME = /^\d{4}-\d{2}-\d{2}T[\d:.]+(?:Z|[+-]\d{2}:?\d{2})?$/;
+const LEADING_BLANK = /^[\s\p{Cc}\p{Cf}]*/u; // whitespace, control and format (zero-width, BOM) characters
+
+/**
+ * CSV-only formula guard, applied to every cell except a strict ISO date-time: a cell whose first
+ * significant character (after whitespace, control and zero-width characters) is = + - @, or that starts
+ * with a tab or CR, gets a leading apostrophe. Trade-off: terms like "-ing suffix" are prefixed too.
+ */
+function csvCell(s: string): string {
   let v = s;
-  if (guard && /^[=+\-@]/.test(v)) v = `'${v}`;
+  if (!ISO_DATETIME.test(v) && (/^[\t\r]/.test(v) || /^[=+\-@]/.test(v.slice(LEADING_BLANK.exec(v)![0].length)))) {
+    v = `'${v}`;
+  }
   return /[",\r\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v;
 }
 
@@ -125,7 +134,7 @@ function csvRow({ card, term, lesson, language, note }: Row): string {
     csvCell(language),
     String(card.favorite === true),
     String(card.mastered === true),
-    csvCell(card.srs?.due ?? '', false),
+    csvCell(card.srs?.due ?? ''),
   ].join(',');
 }
 

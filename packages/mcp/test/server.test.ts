@@ -4,7 +4,7 @@ import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js';
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { Coach, JsonFileStore, MemoryStore, type Store } from '@langcoach/core';
+import { Coach, JsonFileStore, MemoryStore, emptyState, type Store } from '@langcoach/core';
 import { createServer } from '../src/server.js';
 import { TUTOR_PROMPT } from '../src/prompt.js';
 
@@ -37,12 +37,13 @@ async function setup(store: Store = new MemoryStore()) {
 }
 
 describe('langcoach MCP server', () => {
-  test('lists exactly the 10 tools and the "tutor" prompt', async () => {
+  test('lists exactly the 11 tools and the "tutor" prompt', async () => {
     const { client } = await setup();
     const tools = (await client.listTools()).tools.map((t) => t.name).sort();
     expect(tools).toEqual(
       [
         'complete_task',
+        'export_cards',
         'export_data',
         'get_due_reviews',
         'get_progress',
@@ -59,6 +60,54 @@ describe('langcoach MCP server', () => {
     const got = await client.getPrompt({ name: 'tutor' });
     const m = got.messages[0]!;
     expect(m.content.type === 'text' && m.content.text).toBe(TUTOR_PROMPT);
+  });
+
+  test('export_cards returns filename, count and text in each format', async () => {
+    const { call } = await setup();
+    await call('set_profile', PROFILE);
+    await call('save_lesson', {
+      kind: 'tiny_lesson',
+      situation: 'Ordering coffee',
+      items: [{ term: 'kawa', translation: 'coffee', example: 'Poprosze kawe.' }],
+    });
+    const anki = JSON.parse((await call('export_cards', { format: 'anki' })).text);
+    expect(anki.count).toBe(1);
+    expect(anki.filename).toMatch(/^langcoach-anki-\d{4}-\d{2}-\d{2}\.txt$/);
+    expect(anki.text).toContain('#separator:tab');
+    expect(anki.text).toContain('kawa');
+    const quizlet = JSON.parse((await call('export_cards', { format: 'quizlet' })).text);
+    expect(quizlet.text).toBe('kawa\tcoffee\n');
+    const csv = JSON.parse((await call('export_cards', { format: 'csv', includeMastered: false })).text);
+    expect(csv.filename).toMatch(/^langcoach-cards-\d{4}-\d{2}-\d{2}\.csv$/);
+    expect(csv.text.split('\r\n')[0]).toMatch(/^term,translation/);
+  });
+
+  test('export_cards rejects unknown formats and describes how to save and import', async () => {
+    const { client, call } = await setup();
+    expect((await call('export_cards', { format: 'pdf' })).isError).toBe(true);
+    const tool = (await client.listTools()).tools.find((t) => t.name === 'export_cards')!;
+    expect(tool.description).toMatch(/save/i);
+    expect(tool.description).toMatch(/Anki/);
+    expect(tool.description).toMatch(/File > Import/);
+  });
+
+  test('export_cards over 2 MB -> isError suggesting a smaller export', async () => {
+    const store = new MemoryStore();
+    const big = 'x'.repeat(5000);
+    const cards = Array.from({ length: 500 }, (_, i) => ({
+      id: `c${i}`,
+      lessonId: 'L',
+      term: `t${i}`,
+      translation: big,
+      example: '',
+      srs: { due: '2026-10-21T00:00:00.000Z', stability: 0, difficulty: 0, elapsed_days: 0, scheduled_days: 0, learning_steps: 0, reps: 0, lapses: 0, state: 0 },
+    }));
+    await store.replace({ ...emptyState(), cards } as never);
+    const { call } = await setup(store);
+    const r = await call('export_cards', { format: 'csv' });
+    expect(r.isError).toBe(true);
+    expect(r.text).toMatch(/2 MB/);
+    expect(r.text).toMatch(/includeMastered|smaller/);
   });
 
   test('get_today before set_profile -> isError, mentions set_profile', async () => {

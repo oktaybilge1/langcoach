@@ -145,6 +145,48 @@ describe('exportCards: csv', () => {
   });
 });
 
+describe('exportCards: csv formula guard (hardened)', () => {
+  const firstCell = (term: string, over: Partial<ReviewCard> = {}) => {
+    const text = exportCards(stateWith([card({ id: 'a', term, translation: 'x', ...over })]), 'csv', { now: NOW }).text;
+    return text.split('\r\n').slice(1).join('\r\n');
+  };
+  test.each([
+    ['space', ' =1+1'],
+    ['tab', '\t=cmd'],
+    ['CR', '\r=1'],
+    ['LF', '\n=1'],
+    ['NBSP', ' +1'],
+    ['zero-width space', '​@x'],
+    ['BOM', '﻿-1'],
+  ])('guards a term with leading %s', (_n, term) => {
+    const row = firstCell(term);
+    const body = row.startsWith('"') ? row.slice(1) : row;
+    expect(body.startsWith("'")).toBe(true);
+  });
+  test('a leading tab or CR is itself dangerous (translation is not trimmed)', () => {
+    expect(firstCell('t', { translation: '\tabc' })).toContain(",'\tabc,");
+    expect(firstCell('t', { translation: '\rabc' }).replace(/\r/g, '')).toContain(",\"'abc");
+  });
+  test('documented trade-off: "-ing suffix" is guarded; em dash and ñandú are not', () => {
+    expect(firstCell('-ing suffix').startsWith("'-ing suffix,")).toBe(true);
+    expect(firstCell('—').startsWith('—,')).toBe(true);
+    expect(firstCell('ñandú').startsWith('ñandú,')).toBe(true);
+  });
+  test('hostile due is guarded; a real ISO date is not', () => {
+    const bad = firstCell('a', { srs: { due: '=HYPERLINK("http://x")' } as ReviewCard['srs'] });
+    expect(bad).toContain(`'=HYPERLINK`);
+    expect(firstCell('a')).toContain(',2026-10-21T08:00:00.000Z');
+    expect(firstCell('a', { srs: { due: '2026-10-21T08:00:00+02:00' } as ReviewCard['srs'] })).toContain(',2026-10-21T08:00:00+02:00');
+  });
+  test('lesson and language cells are guarded too', () => {
+    const s = stateWith([card({ id: 'a', term: 't' })], [lesson({ id: 'L1', situation: '=evil', source: { app: 'lll', targetLanguage: '+x', sourceLanguage: 'e' } })]);
+    expect(exportCards(s, 'csv', { now: NOW }).text).toContain(",'=evil,'+x,");
+  });
+  test('normal Arabic/CJK unchanged', () => {
+    expect(firstCell('مرحبا', { translation: '你好' }).startsWith('مرحبا,你好,')).toBe(true);
+  });
+});
+
 describe('exportCards: common', () => {
   test('Unicode preserved byte-for-byte', () => {
     const terms = ['مرحبا', '你好', 'Ünïcødé 😀'];

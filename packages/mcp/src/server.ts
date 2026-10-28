@@ -1,6 +1,6 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
-import type { Coach } from '@langcoach/core';
+import { exportCards, type Coach } from '@langcoach/core';
 import pkg from '../package.json' with { type: 'json' };
 import { TUTOR_PROMPT } from './prompt.js';
 
@@ -24,6 +24,9 @@ async function run(fn: () => Promise<unknown>): Promise<ToolResult> {
     return fail(err);
   }
 }
+
+/** Largest export returned in one tool reply. */
+const MAX_EXPORT_BYTES = 2 * 1024 * 1024;
 
 const nonEmpty = z.string().trim().min(1);
 
@@ -149,6 +152,29 @@ export function createServer(coach: Coach): McpServer {
       description: 'Export all stored learner data as JSON (backup, or to move to another machine).',
     },
     () => run(() => coach.exportData()),
+  );
+
+  server.registerTool(
+    'export_cards',
+    {
+      description:
+        "Export the learner's review cards for Anki, Quizlet or a spreadsheet. Returns JSON {filename, count, text}. Save `text` to a file named `filename` (UTF-8, keep the line breaks and tabs exactly) and tell the learner where it is. Import: Anki Desktop 2.1.54+ via File > Import, choose the .txt (notetype Basic; GUIDs make re-imports update instead of duplicate); Quizlet via Create > Import, paste the text (tab between term and definition); csv opens in Excel/Sheets (Data > From text, UTF-8). Scheduling data is not exported: cards start fresh. Not a backup; use export_data for that.",
+      inputSchema: {
+        format: z.enum(['anki', 'quizlet', 'csv']),
+        includeMastered: z.boolean().optional(),
+      },
+    },
+    ({ format, includeMastered }) =>
+      run(async () => {
+        const state = await coach.exportData();
+        const { filename, count, text } = exportCards(state, format, { includeMastered: includeMastered ?? true });
+        if (Buffer.byteLength(text, 'utf8') > MAX_EXPORT_BYTES) {
+          throw new Error(
+            `The ${format} export is larger than 2 MB (${count} cards), too big to return in one reply. Try a smaller export: set includeMastered to false, or export in parts.`,
+          );
+        }
+        return { filename, count, text };
+      }),
   );
 
   server.registerTool(
