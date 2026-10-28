@@ -95,7 +95,7 @@ function harness(cards = CARDS, recordImpl?: () => Promise<unknown>) {
       if (recordImpl) return (await recordImpl()) as ResponseOf<K>;
       const r = (msg as MessageMap['recordPractice']['request']).results;
       const correct = r.filter((x) => x.outcome === 'correct').length;
-      const perfect = r.every((x) => x.outcome !== 'wrong');
+      const perfect = r.length > 0 && r.every((x) => x.outcome === 'correct');
       return { xp: correct + 5 + (perfect ? 5 : 0), correct, total: r.length, perfect } as ResponseOf<K>;
     }
     return null as ResponseOf<K>;
@@ -302,6 +302,29 @@ describe('Practice view', () => {
       if (i < 2) await click($('[data-testid="btn-continue"]'));
     }
     expect($('[data-testid="practice-combo"]')!.textContent).toContain('3');
+  });
+
+  it('the end screen trusts the core result: no "perfect" when the core says so', async () => {
+    const h = harness(CARDS, async () => ({ xp: 9, correct: 4, total: 4, perfect: false }));
+    await h.mount();
+    await click($('[data-testid="btn-start-practice"]'));
+    await runAll(h);
+    await flush();
+    expect($('[data-testid="practice-end"]')).not.toBeNull();
+    expect($('[data-testid="confetti"]')).toBeNull();
+    expect($('[data-testid="practice-end"] h1')!.textContent).toBe(t('pxEndTitle'));
+    expect($('[data-testid="practice-perfect-bonus"]')).toBeNull();
+  });
+
+  it('a perfect core result shows confetti, "Perfect session!" and the +5 bonus', async () => {
+    const h = harness(CARDS, async () => ({ xp: 14, correct: 4, total: 4, perfect: true }));
+    await h.mount();
+    await click($('[data-testid="btn-start-practice"]'));
+    await runAll(h);
+    await flush();
+    expect($('[data-testid="confetti"]')).not.toBeNull();
+    expect($('[data-testid="practice-end"] h1')!.textContent).toBe(t('pxEndPerfect'));
+    expect($('[data-testid="practice-perfect-bonus"]')!.textContent).toContain('+5');
   });
 
   it('no confetti under prefers-reduced-motion', async () => {

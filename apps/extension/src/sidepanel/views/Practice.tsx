@@ -1,4 +1,4 @@
-import type { PracticeSummary, ReviewCard } from '@langcoach/core/browser';
+import { PERFECT_BONUS_XP, type PracticeSummary, type ReviewCard } from '@langcoach/core/browser';
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { deeplink, toSiteLang } from '../../lib/deeplink';
 import { resolveLanguage, type ResolvedLanguage } from '../../lib/languages';
@@ -327,15 +327,22 @@ export function Practice({ snapshot, uiLocale, t, send, onRefresh, onDone, sound
   if (phase === 'end') {
     const sum = summary(run);
     const saved = save?.status === 'saved' ? save.data : null;
+    // The core's recordPractice result is the single source of truth for "perfect" (and its bonus).
+    const perfect = saved?.perfect === true;
     const todayXp = snapshot.progress.todayXp ?? 0;
     const goal = snapshot.progress.dailyGoalXp ?? 20;
     return (
       <section class="card px-end" data-testid="practice-end">
-        {sum.perfect && !reduced && <Confetti />}
+        {perfect && !reduced && <Confetti />}
         <div class="px-hero" aria-hidden="true">
-          {sum.perfect ? '🏆' : '🎉'}
+          {perfect ? '🏆' : '🎉'}
         </div>
-        <h1>{sum.perfect ? t('pxEndPerfect') : t('pxEndTitle')}</h1>
+        <h1>{perfect ? t('pxEndPerfect') : t('pxEndTitle')}</h1>
+        {perfect && (
+          <p class="px-perfect-bonus" data-testid="practice-perfect-bonus">
+            {t('pxPerfectBonus', String(PERFECT_BONUS_XP))}
+          </p>
+        )}
         <div class="px-end-stats">
           <div class="px-end-stat xp" data-testid="practice-xp" data-xp={saved ? String(saved.xp) : ''}>
             <span class="muted">{t('pxEndXp')}</span>

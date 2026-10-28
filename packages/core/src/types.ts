@@ -106,6 +106,8 @@ export interface LogEntry {
   taskId: string;
   type: TaskType;
   xp: number;
+  /** Lesson whose capture earned this XP (set by autoComplete); undoing the lesson removes the entry. */
+  lessonId?: string;
 }
 
 export interface PracticeSession {

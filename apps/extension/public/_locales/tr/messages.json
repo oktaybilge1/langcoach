@@ -693,5 +693,13 @@
   },
   "fieldSoundEffects": {
     "message": "Pratikte ses efektleri"
+  },
+  "pxPerfectBonus": {
+    "message": "+$XP$ XP kusursuzluk bonusu",
+    "placeholders": {
+      "xp": {
+        "content": "$1"
+      }
+    }
   }
 }

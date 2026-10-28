@@ -693,5 +693,13 @@
   },
   "fieldSoundEffects": {
     "message": "Efectos de sonido al practicar"
+  },
+  "pxPerfectBonus": {
+    "message": "+$XP$ XP de bonus por sesión perfecta",
+    "placeholders": {
+      "xp": {
+        "content": "$1"
+      }
+    }
   }
 }

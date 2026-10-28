@@ -97,6 +97,7 @@ const logEntry = obj({
   taskId: z.string(),
   type: taskType,
   xp: z.number().min(0),
+  lessonId: z.string().optional(),
 });
 
 const practiceSession = obj({

@@ -693,5 +693,13 @@
   },
   "fieldSoundEffects": {
     "message": "Effets sonores pendant la pratique"
+  },
+  "pxPerfectBonus": {
+    "message": "+$XP$ XP de bonus sans faute",
+    "placeholders": {
+      "xp": {
+        "content": "$1"
+      }
+    }
   }
 }

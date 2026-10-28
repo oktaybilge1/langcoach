@@ -1,14 +1,14 @@
-import { addDays, isoWeek, toLocalDate } from './dates.js';
+import { isoWeek, toLocalDate } from './dates.js';
 import { InvalidDataError, NoProfileError, NotFoundError, ThemeRequiredError } from './errors.js';
 import { buildWeekPlan } from './planner.js';
-import { weeklyGoal, xpFor } from './progress.js';
+import { xpFor } from './progress.js';
 import { parseState } from './schema.js';
 import { isDue, newSrs, reviewSrs, type Rating } from './srs.js';
 import type { Store } from './store-memory.js';
-import { applyFreezes, computeStreak, dailyXp } from './streak.js';
+import { applyFreezes } from './streak.js';
+import { progressOf, type ProgressNumbers } from './summary.js';
 import {
   DAILY_GOALS,
-  DEFAULT_DAILY_GOAL,
   emptyState,
   type Cefr,
   type DailyGoalXp,
@@ -16,6 +16,7 @@ import {
   type Lesson,
   type LessonItem,
   type LessonSource,
+  type LogEntry,
   type PlanTask,
   type PracticeSession,
   type Profile,
@@ -30,9 +31,13 @@ const KINDS = ['tiny_lesson', 'slang_hang', 'word_cam'] as const;
 const TASK_TYPES: readonly TaskType[] = ['tiny_lesson', 'slang_hang', 'review', 'quiz', 'word_cam'];
 const MANUAL_SITUATION = 'Saved manually';
 const OUTCOMES = ['correct', 'hard', 'wrong'] as const;
-const PRACTICE_BONUS = 5;
-const PERFECT_BONUS = 5;
-const MASTERED_XP = 2;
+/** Practice XP: 1 per correct answer + completion bonus + perfect bonus. */
+export const PRACTICE_BONUS_XP = 5;
+export const PERFECT_BONUS_XP = 5;
+/** XP for "I know this", awarded once per card. */
+export const MASTERED_XP = 2;
+const PRACTICE_BONUS = PRACTICE_BONUS_XP;
+const PERFECT_BONUS = PERFECT_BONUS_XP;
 const KEEP_SESSIONS = 500;
 const MAX_TRANSLATIONS = 500;
 const MAX_TRANSLATION_CHARS = 500;
@@ -93,7 +98,11 @@ function requireId(v: unknown, field: string): void {
   if (typeof v !== 'string' || v === '') throw new InvalidDataError(`${field} must be a non-empty string`);
 }
 
-const goalOf = (s: State): number => s.profile?.dailyGoalXp ?? DEFAULT_DAILY_GOAL;
+function logEntry(now: Date, date: string, taskId: string, type: TaskType, xp: number, lessonId?: string): LogEntry {
+  const e: LogEntry = { at: now.toISOString(), date, taskId, type, xp };
+  if (lessonId !== undefined) e.lessonId = lessonId;
+  return e;
+}
 
 function intIn(v: unknown, min: number, max: number): boolean {
   return typeof v === 'number' && Number.isInteger(v) && v >= min && v <= max;
@@ -234,15 +243,34 @@ export class Coach {
     });
   }
 
-  /** Remove a lesson and its never-reviewed cards; reviewed cards are kept. */
-  async undoLesson(lessonId: string): Promise<{ removedCards: number }> {
+  /**
+   * Remove a lesson and its never-reviewed cards; reviewed cards are kept. The XP its capture earned
+   * (log entries `autoComplete` tagged with this lesson) is taken back and the plan task it completed
+   * returns to todo, so capturing again later awards the XP once, not twice.
+   */
+  async undoLesson(lessonId: string): Promise<{ removedCards: number; xpRemoved: number }> {
     return this.store.transaction((s) => {
       const idx = s.lessons.findIndex((l) => l.id === lessonId);
       if (idx < 0) throw new NotFoundError('Lesson', lessonId);
       const before = s.cards.length;
       s.cards = s.cards.filter((c) => !(c.lessonId === lessonId && c.srs.reps === 0));
       s.lessons.splice(idx, 1);
-      return { state: s, result: { removedCards: before - s.cards.length } };
+      const taken = s.log.filter((e) => e.lessonId === lessonId);
+      let xpRemoved = 0;
+      if (taken.length > 0) {
+        s.log = s.log.filter((e) => e.lessonId !== lessonId);
+        const taskIds = new Set(taken.map((e) => e.taskId));
+        for (const plan of Object.values(s.plans)) {
+          for (const t of plan.tasks) {
+            if (!taskIds.has(t.id) || t.status !== 'done' || t.lessonId !== lessonId) continue;
+            t.status = 'todo';
+            delete t.completedAt;
+            delete t.lessonId;
+          }
+        }
+        xpRemoved = taken.reduce((sum, e) => sum + e.xp, 0);
+      }
+      return { state: s, result: { removedCards: before - s.cards.length, xpRemoved } };
     });
   }
 
@@ -345,10 +373,10 @@ export class Coach {
         task.status = 'done';
         task.completedAt = now.toISOString();
         if (opts.lessonId !== undefined) task.lessonId = opts.lessonId;
-        s.log.push({ at: now.toISOString(), date, taskId: task.id, type, xp });
+        s.log.push(logEntry(now, date, task.id, type, xp, opts.lessonId));
         return { state: s, result: { task, xpAwarded: xp } };
       }
-      s.log.push({ at: now.toISOString(), date, taskId: 'unplanned', type, xp });
+      s.log.push(logEntry(now, date, 'unplanned', type, xp, opts.lessonId));
       return { state: s, result: { task: null, xpAwarded: xp } };
     });
   }
@@ -485,11 +513,11 @@ export class Coach {
       const known = answers.filter((r) => cards.has(r.cardId));
       const total = known.length;
       const correct = known.filter((r) => r.outcome === 'correct').length;
-      const perfect = total > 0 && known.every((r) => r.outcome !== 'wrong');
-      const xp = total > 0 ? correct + PRACTICE_BONUS + (perfect ? PERFECT_BONUS : 0) : 0;
-
       const lastOutcome = new Map<string, PracticeOutcome>();
       for (const r of known) lastOutcome.set(r.cardId, r.outcome);
+      // Perfect: every card's final outcome is 'correct' (no hard, no wrong). Single source of truth.
+      const perfect = total > 0 && [...lastOutcome.values()].every((o) => o === 'correct');
+      const xp = total > 0 ? correct + PRACTICE_BONUS + (perfect ? PERFECT_BONUS : 0) : 0;
       for (const [id, outcome] of lastOutcome) {
         const card = cards.get(id)!;
         card.srs = reviewSrs(card.srs, OUTCOME_RATING[outcome], now);
@@ -542,35 +570,10 @@ export class Coach {
     });
   }
 
-  async progress(): Promise<{
-    profile: Profile | null;
-    streak: number;
-    totalXp: number;
-    weekly: { done: number; planned: number };
-    dueCount: number;
-    todayXp: number;
-    dailyGoalXp: number;
-    streakFreezes: number;
-    weekXp: { date: string; xp: number }[];
-  }> {
+  async progress(): Promise<{ profile: Profile | null } & ProgressNumbers> {
     const s = await this.store.load();
-    const now = this.clock();
-    const today = toLocalDate(now);
     // Persisted numbers only: rollover() is what applies and saves freezes.
-    return {
-      profile: s.profile,
-      streak: computeStreak({ log: s.log, today, freezeUsedDates: s.freezeUsedDates ?? [] }),
-      totalXp: s.log.reduce((sum, e) => sum + e.xp, 0),
-      weekly: weeklyGoal(s.plans[isoWeek(now)]),
-      dueCount: s.cards.filter((c) => isDue(c.srs, now)).length,
-      todayXp: dailyXp(s.log, today),
-      dailyGoalXp: goalOf(s),
-      streakFreezes: s.streakFreezes ?? 0,
-      weekXp: Array.from({ length: 7 }, (_, i) => {
-        const date = addDays(today, i - 6);
-        return { date, xp: dailyXp(s.log, date) };
-      }),
-    };
+    return { profile: s.profile, ...progressOf(s, this.clock()) };
   }
 
   async exportData(): Promise<State> {
