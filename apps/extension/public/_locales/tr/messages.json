@@ -743,5 +743,145 @@
   },
   "ach_first_match": {
     "message": "İlk eşleştirme oyunu"
+  },
+  "tabWords": {
+    "message": "Kelimeler"
+  },
+  "wordsHeading": {
+    "message": "Kelimelerin"
+  },
+  "wordsModeLabel": {
+    "message": "Kelimeler nasıl gösterilsin"
+  },
+  "wordsFilterLabel": {
+    "message": "Kelimeleri filtrele"
+  },
+  "wordsFilterAll": {
+    "message": "Tümü"
+  },
+  "wordsFilterDue": {
+    "message": "Tekrar zamanı"
+  },
+  "wordsFilterNew": {
+    "message": "Yeni"
+  },
+  "wordsFilterWeak": {
+    "message": "Zayıf"
+  },
+  "wordsFilterFavorites": {
+    "message": "Favoriler"
+  },
+  "wordsFilterMastered": {
+    "message": "Öğrenildi"
+  },
+  "wordsOtherGroup": {
+    "message": "Diğer kelimeler"
+  },
+  "wordsNoMatch": {
+    "message": "Eşleşen kelime yok. Başka bir arama ya da filtre dene."
+  },
+  "wordsEmptyTitle": {
+    "message": "Henüz kelime yok"
+  },
+  "wordsShowMore": {
+    "message": "Daha fazla göster ($COUNT$ kaldı)",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsFavorite": {
+    "message": "Favori: $TERM$",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsFavoriteAdded": {
+    "message": "$TERM$ favorilere eklendi",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsFavoriteRemoved": {
+    "message": "$TERM$ favorilerden çıkarıldı",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsListenTo": {
+    "message": "Dinle: $TERM$",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsKnowThis": {
+    "message": "Bunu biliyorum"
+  },
+  "wordsKnowThisLabel": {
+    "message": "Bunu biliyorum: $TERM$",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsKnown": {
+    "message": "Biliniyor"
+  },
+  "wordsKnownXp": {
+    "message": "Biliniyor · +$XP$ XP",
+    "placeholders": {
+      "xp": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsKnownStatus": {
+    "message": "$TERM$ biliniyor olarak işaretlendi, +$XP$ XP",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      },
+      "xp": {
+        "content": "$2"
+      }
+    }
+  },
+  "wordsEditNative": {
+    "message": "Benim dilimde"
+  },
+  "wordsEditEnglish": {
+    "message": "Anlam (ders)"
+  },
+  "wordsEditLabel": {
+    "message": "$TERM$ anlamlarını düzenle",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      }
+    }
+  },
+  "placeholderNative": {
+    "message": "Kendi dilindeki anlamı"
+  },
+  "strengthLabel": {
+    "message": "Güç: $VALUE$ / $MAX$",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      },
+      "max": {
+        "content": "$2"
+      }
+    }
   }
 }

@@ -743,5 +743,145 @@
   },
   "ach_first_match": {
     "message": "Primeiro jogo de pares"
+  },
+  "tabWords": {
+    "message": "Palavras"
+  },
+  "wordsHeading": {
+    "message": "Suas palavras"
+  },
+  "wordsModeLabel": {
+    "message": "Como ver suas palavras"
+  },
+  "wordsFilterLabel": {
+    "message": "Filtrar palavras"
+  },
+  "wordsFilterAll": {
+    "message": "Todas"
+  },
+  "wordsFilterDue": {
+    "message": "Para revisar"
+  },
+  "wordsFilterNew": {
+    "message": "Novas"
+  },
+  "wordsFilterWeak": {
+    "message": "Fracas"
+  },
+  "wordsFilterFavorites": {
+    "message": "Favoritas"
+  },
+  "wordsFilterMastered": {
+    "message": "Dominadas"
+  },
+  "wordsOtherGroup": {
+    "message": "Outras palavras"
+  },
+  "wordsNoMatch": {
+    "message": "Nenhuma palavra encontrada. Tente outra busca ou filtro."
+  },
+  "wordsEmptyTitle": {
+    "message": "Ainda sem palavras"
+  },
+  "wordsShowMore": {
+    "message": "Mostrar mais (faltam $COUNT$)",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsFavorite": {
+    "message": "Favorita: $TERM$",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsFavoriteAdded": {
+    "message": "$TERM$ adicionada às favoritas",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsFavoriteRemoved": {
+    "message": "$TERM$ removida das favoritas",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsListenTo": {
+    "message": "Ouvir: $TERM$",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsKnowThis": {
+    "message": "Já sei essa"
+  },
+  "wordsKnowThisLabel": {
+    "message": "Já sei essa: $TERM$",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsKnown": {
+    "message": "Sei"
+  },
+  "wordsKnownXp": {
+    "message": "Sei · +$XP$ XP",
+    "placeholders": {
+      "xp": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsKnownStatus": {
+    "message": "$TERM$ marcada como sabida, +$XP$ XP",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      },
+      "xp": {
+        "content": "$2"
+      }
+    }
+  },
+  "wordsEditNative": {
+    "message": "No meu idioma"
+  },
+  "wordsEditEnglish": {
+    "message": "Significado (lição)"
+  },
+  "wordsEditLabel": {
+    "message": "Editar significados de $TERM$",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      }
+    }
+  },
+  "placeholderNative": {
+    "message": "Significado no seu idioma"
+  },
+  "strengthLabel": {
+    "message": "Força $VALUE$ de $MAX$",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      },
+      "max": {
+        "content": "$2"
+      }
+    }
   }
 }

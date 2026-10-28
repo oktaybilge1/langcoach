@@ -17,14 +17,17 @@ export interface ReviewProps {
   onRefresh: () => Promise<void>;
   initialMode?: ReviewMode;
   native?: NativeTranslations;
+  /** Inside the Words hub: flip cards only (the hub owns the heading, list and mode switch). */
+  embedded?: boolean;
 }
 
 export type ReviewMode = 'list' | 'cards';
 
-export function Review({ snapshot, uiLocale, t, send, onRefresh, initialMode, native }: ReviewProps) {
+export function Review({ snapshot, uiLocale, t, send, onRefresh, initialMode, native, embedded = false }: ReviewProps) {
   const nativeOf = (id: string): string | undefined => native?.nativeOf(id);
   const nativeLang = native?.target ?? undefined;
   const [mode, setModeState] = useState<ReviewMode>(() => {
+    if (embedded) return 'cards';
     if (initialMode) return initialMode;
     if (typeof localStorage !== 'undefined') {
       const saved = localStorage.getItem('langcoach:reviewMode');
@@ -202,12 +205,18 @@ export function Review({ snapshot, uiLocale, t, send, onRefresh, initialMode, na
 
   return (
     <div class="form-grid">
-      <div class="today-summary">
-        <h1>{t('reviewHeading')}</h1>
-        <span class="pill" data-testid="review-due-count">
+      {embedded ? (
+        <p class="muted" data-testid="cards-due-count">
           {t('reviewDueBadge', String(remainingDue))}
-        </span>
-      </div>
+        </p>
+      ) : (
+        <div class="today-summary">
+          <h1>{t('reviewHeading')}</h1>
+          <span class="pill" data-testid="review-due-count">
+            {t('reviewDueBadge', String(remainingDue))}
+          </span>
+        </div>
+      )}
 
       {actionError && (
         <p class="error-text" role="alert" data-testid="review-error">
@@ -215,6 +224,7 @@ export function Review({ snapshot, uiLocale, t, send, onRefresh, initialMode, na
         </p>
       )}
 
+      {!embedded && (
       <div class="segmented-control" role="group">
         <button
           type="button"
@@ -235,6 +245,7 @@ export function Review({ snapshot, uiLocale, t, send, onRefresh, initialMode, na
           🎴 {t('tabModeCards')} ({remainingDue})
         </button>
       </div>
+      )}
 
       {mode === 'list' ? (
         <section class="card vocab-section">

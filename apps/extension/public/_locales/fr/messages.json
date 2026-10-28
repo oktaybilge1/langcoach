@@ -743,5 +743,145 @@
   },
   "ach_first_match": {
     "message": "Premier jeu d'association"
+  },
+  "tabWords": {
+    "message": "Mots"
+  },
+  "wordsHeading": {
+    "message": "Tes mots"
+  },
+  "wordsModeLabel": {
+    "message": "Affichage des mots"
+  },
+  "wordsFilterLabel": {
+    "message": "Filtrer les mots"
+  },
+  "wordsFilterAll": {
+    "message": "Tous"
+  },
+  "wordsFilterDue": {
+    "message": "À revoir"
+  },
+  "wordsFilterNew": {
+    "message": "Nouveaux"
+  },
+  "wordsFilterWeak": {
+    "message": "Fragiles"
+  },
+  "wordsFilterFavorites": {
+    "message": "Favoris"
+  },
+  "wordsFilterMastered": {
+    "message": "Maîtrisés"
+  },
+  "wordsOtherGroup": {
+    "message": "Autres mots"
+  },
+  "wordsNoMatch": {
+    "message": "Aucun mot ne correspond. Essaie une autre recherche ou un autre filtre."
+  },
+  "wordsEmptyTitle": {
+    "message": "Pas encore de mots"
+  },
+  "wordsShowMore": {
+    "message": "Afficher plus ($COUNT$ restants)",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsFavorite": {
+    "message": "Favori : $TERM$",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsFavoriteAdded": {
+    "message": "$TERM$ ajouté aux favoris",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsFavoriteRemoved": {
+    "message": "$TERM$ retiré des favoris",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsListenTo": {
+    "message": "Écouter : $TERM$",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsKnowThis": {
+    "message": "Je connais"
+  },
+  "wordsKnowThisLabel": {
+    "message": "Je connais : $TERM$",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsKnown": {
+    "message": "Connu"
+  },
+  "wordsKnownXp": {
+    "message": "Connu · +$XP$ XP",
+    "placeholders": {
+      "xp": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsKnownStatus": {
+    "message": "$TERM$ marqué comme connu, +$XP$ XP",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      },
+      "xp": {
+        "content": "$2"
+      }
+    }
+  },
+  "wordsEditNative": {
+    "message": "Dans ma langue"
+  },
+  "wordsEditEnglish": {
+    "message": "Sens (leçon)"
+  },
+  "wordsEditLabel": {
+    "message": "Modifier les sens de $TERM$",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      }
+    }
+  },
+  "placeholderNative": {
+    "message": "Sens dans ta langue"
+  },
+  "strengthLabel": {
+    "message": "Force $VALUE$ sur $MAX$",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      },
+      "max": {
+        "content": "$2"
+      }
+    }
   }
 }

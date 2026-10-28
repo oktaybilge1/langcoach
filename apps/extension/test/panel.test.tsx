@@ -213,6 +213,11 @@ describe('side panel UI', () => {
       reviewTab.click();
     });
     await flush();
+    // Words opens as the list; flip cards are one tap away
+    await act(async () => {
+      host.querySelector<HTMLButtonElement>('[data-testid="mode-cards"]')!.click();
+    });
+    await flush();
 
     // Front of card 1 visible, answer hidden
     expect(host.querySelector('[data-testid="card-term"]')?.textContent).toBe('hola');
@@ -271,6 +276,10 @@ describe('side panel UI', () => {
 
     await act(async () => {
       host.querySelector<HTMLButtonElement>('[data-testid="tab-review"]')!.click();
+    });
+    await flush();
+    await act(async () => {
+      host.querySelector<HTMLButtonElement>('[data-testid="mode-cards"]')!.click();
     });
     await flush();
 

@@ -743,5 +743,145 @@
   },
   "ach_first_match": {
     "message": "First match game"
+  },
+  "tabWords": {
+    "message": "Words"
+  },
+  "wordsHeading": {
+    "message": "Your words"
+  },
+  "wordsModeLabel": {
+    "message": "How to show your words"
+  },
+  "wordsFilterLabel": {
+    "message": "Filter words"
+  },
+  "wordsFilterAll": {
+    "message": "All"
+  },
+  "wordsFilterDue": {
+    "message": "Due"
+  },
+  "wordsFilterNew": {
+    "message": "New"
+  },
+  "wordsFilterWeak": {
+    "message": "Weak"
+  },
+  "wordsFilterFavorites": {
+    "message": "Favorites"
+  },
+  "wordsFilterMastered": {
+    "message": "Mastered"
+  },
+  "wordsOtherGroup": {
+    "message": "Other words"
+  },
+  "wordsNoMatch": {
+    "message": "No words match. Try another search or filter."
+  },
+  "wordsEmptyTitle": {
+    "message": "No words yet"
+  },
+  "wordsShowMore": {
+    "message": "Show more ($COUNT$ left)",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsFavorite": {
+    "message": "Favorite: $TERM$",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsFavoriteAdded": {
+    "message": "$TERM$ added to favorites",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsFavoriteRemoved": {
+    "message": "$TERM$ removed from favorites",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsListenTo": {
+    "message": "Listen: $TERM$",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsKnowThis": {
+    "message": "I know this"
+  },
+  "wordsKnowThisLabel": {
+    "message": "I know this: $TERM$",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsKnown": {
+    "message": "Known"
+  },
+  "wordsKnownXp": {
+    "message": "Known · +$XP$ XP",
+    "placeholders": {
+      "xp": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsKnownStatus": {
+    "message": "$TERM$ marked as known, +$XP$ XP",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      },
+      "xp": {
+        "content": "$2"
+      }
+    }
+  },
+  "wordsEditNative": {
+    "message": "In my language"
+  },
+  "wordsEditEnglish": {
+    "message": "Meaning (lesson)"
+  },
+  "wordsEditLabel": {
+    "message": "Edit meanings of $TERM$",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      }
+    }
+  },
+  "placeholderNative": {
+    "message": "Meaning in your language"
+  },
+  "strengthLabel": {
+    "message": "Strength $VALUE$ of $MAX$",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      },
+      "max": {
+        "content": "$2"
+      }
+    }
   }
 }
