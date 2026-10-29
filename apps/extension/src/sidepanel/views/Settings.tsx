@@ -1,5 +1,6 @@
 import { DEFAULT_DAILY_GOAL, exportCards, type Cefr, type DailyGoalXp, type State } from '@langcoach/core/browser';
 import { useRef, useState } from 'preact/hooks';
+import { version as EXT_VERSION } from '../../../public/manifest.json';
 import { LLL_LANGUAGES } from '../../lib/languages';
 import { GOALS, type Goal } from '../../lib/themes';
 import type { Settings as SettingsType, Snapshot } from '../../shared/messages';
@@ -468,7 +469,7 @@ export function Settings({ snapshot, settings, t, send, onRefresh }: SettingsPro
 
       <section class="card form-grid">
         <h2>{t('settingsAboutSection')}</h2>
-        <p class="muted">v0.1.0</p>
+        <p class="muted" data-testid="about-version">v{EXT_VERSION}</p>
         <p class="muted">{t('aboutDisclaimer')}</p>
         <div class="theme-actions">
           <a href="https://github.com/oktaybilge1/langcoach" target="_blank" rel="noreferrer">

@@ -1,6 +1,6 @@
 {
   "name": "langcoach",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Language-learning coach MCP server for Claude Code: Claude writes the lessons, LangCoach keeps your weekly plan, streak, XP and spaced-repetition (FSRS) reviews on your machine.",
   "keywords": [
     "language-learning",
