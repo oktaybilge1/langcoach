@@ -15,9 +15,9 @@ import { Onboarding } from './views/Onboarding';
 import { Plan } from './views/Plan';
 import { Practice } from './views/Practice';
 import { Progress } from './views/Progress';
-import { Review } from './views/Review';
 import { DataActions, Settings } from './views/Settings';
 import { Today } from './views/Today';
+import { Words } from './views/Words';
 
 export type PanelSend = <K extends MessageType>(msg: { type: K } & MessageMap[K]['request']) => Promise<ResponseOf<K>>;
 export type TabId = 'today' | 'practice' | 'review' | 'plan' | 'progress' | 'settings';
@@ -179,7 +179,7 @@ export function App({ send = defaultSend, initialTab, translator = panelTranslat
             aria-current={tab === 'review' ? 'page' : undefined}
             onClick={() => setTab('review')}
           >
-            {t('tabReview')} {snapshot.dueCount > 0 ? `(${snapshot.dueCount})` : ''}
+            {t('tabWords')} {snapshot.dueCount > 0 ? `(${snapshot.dueCount})` : ''}
           </button>
           <button
             type="button"
@@ -227,11 +227,11 @@ export function App({ send = defaultSend, initialTab, translator = panelTranslat
             native={native}
           />
         ) : tab === 'practice' ? null : tab === 'review' ? (
-          <Review snapshot={snapshot} uiLocale={locale} t={t} send={send} onRefresh={refresh} native={native} />
+          <Words snapshot={snapshot} uiLocale={locale} t={t} send={send} onRefresh={refresh} native={native} />
         ) : tab === 'plan' ? (
           <Plan snapshot={snapshot} t={t} />
         ) : tab === 'progress' ? (
-          <Progress snapshot={snapshot} t={t} />
+          <Progress snapshot={snapshot} t={t} uiLocale={locale} />
         ) : (
           <Settings snapshot={snapshot} settings={settings} t={t} send={send} onRefresh={refresh} />
         )}

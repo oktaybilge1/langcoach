@@ -161,7 +161,7 @@ describe('recordPractice', () => {
     const s = await state();
     expect(s.log).toEqual([{ at: now.toISOString(), date: '2026-10-22', taskId: 'practice:s1', type: 'review', xp: 13 }]);
     expect(s.sessions).toEqual([
-      { id: 's1', at: now.toISOString(), date: '2026-10-22', exercises: 3, correct: 3, xp: 13 },
+      { id: 's1', at: now.toISOString(), date: '2026-10-22', exercises: 3, correct: 3, xp: 13, perfect: true },
     ]);
     for (const id of ids.slice(0, 3)) expect((await card(id)).srs.reps).toBe(1);
     expect((await card(ids[3]!)).srs.reps).toBe(0); // unanswered card untouched

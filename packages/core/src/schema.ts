@@ -107,6 +107,8 @@ const practiceSession = obj({
   exercises: z.number().int().min(0),
   correct: z.number().int().min(0),
   xp: z.number().min(0),
+  perfect: z.boolean().optional(),
+  matchGames: z.number().int().min(0).optional(),
 });
 
 const stateSchema = obj({

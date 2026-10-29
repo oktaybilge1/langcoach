@@ -730,5 +730,343 @@
         "content": "$1"
       }
     }
+  },
+  "level1": {
+    "message": "Recién llegado"
+  },
+  "level2": {
+    "message": "Explorador"
+  },
+  "level3": {
+    "message": "Aprendiz"
+  },
+  "level4": {
+    "message": "Hablante"
+  },
+  "level5": {
+    "message": "Conversador"
+  },
+  "level6": {
+    "message": "Narrador"
+  },
+  "level7": {
+    "message": "Amigo fluido"
+  },
+  "level8": {
+    "message": "Políglota"
+  },
+  "level9": {
+    "message": "Maestro"
+  },
+  "level10": {
+    "message": "Leyenda"
+  },
+  "ach_perfect_session": {
+    "message": "Sesión perfecta"
+  },
+  "ach_xp_100_day": {
+    "message": "100 XP en un día"
+  },
+  "ach_sessions_10": {
+    "message": "10 sesiones de práctica"
+  },
+  "ach_first_match": {
+    "message": "Primer juego de parejas"
+  },
+  "tabWords": {
+    "message": "Palabras"
+  },
+  "wordsHeading": {
+    "message": "Tus palabras"
+  },
+  "wordsModeLabel": {
+    "message": "Cómo ver tus palabras"
+  },
+  "wordsFilterLabel": {
+    "message": "Filtrar palabras"
+  },
+  "wordsFilterAll": {
+    "message": "Todas"
+  },
+  "wordsFilterDue": {
+    "message": "Para repasar"
+  },
+  "wordsFilterNew": {
+    "message": "Nuevas"
+  },
+  "wordsFilterWeak": {
+    "message": "Débiles"
+  },
+  "wordsFilterFavorites": {
+    "message": "Favoritas"
+  },
+  "wordsFilterMastered": {
+    "message": "Dominadas"
+  },
+  "wordsOtherGroup": {
+    "message": "Otras palabras"
+  },
+  "wordsNoMatch": {
+    "message": "Ninguna palabra coincide. Prueba otra búsqueda o filtro."
+  },
+  "wordsEmptyTitle": {
+    "message": "Aún no hay palabras"
+  },
+  "wordsShowMore": {
+    "message": "Mostrar más (quedan $COUNT$)",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsFavorite": {
+    "message": "Favorita: $TERM$",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsFavoriteAdded": {
+    "message": "$TERM$ añadida a favoritas",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsFavoriteRemoved": {
+    "message": "$TERM$ quitada de favoritas",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsListenTo": {
+    "message": "Escuchar: $TERM$",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsKnowThis": {
+    "message": "Ya me la sé"
+  },
+  "wordsKnowThisLabel": {
+    "message": "Ya me la sé: $TERM$",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsKnown": {
+    "message": "Sabida"
+  },
+  "wordsKnownXp": {
+    "message": "Sabida · +$XP$ XP",
+    "placeholders": {
+      "xp": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsKnownStatus": {
+    "message": "$TERM$ marcada como sabida, +$XP$ XP",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      },
+      "xp": {
+        "content": "$2"
+      }
+    }
+  },
+  "wordsEditNative": {
+    "message": "En mi idioma"
+  },
+  "wordsEditEnglish": {
+    "message": "Significado (lección)"
+  },
+  "wordsEditLabel": {
+    "message": "Editar significados de $TERM$",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      }
+    }
+  },
+  "placeholderNative": {
+    "message": "Significado en tu idioma"
+  },
+  "strengthLabel": {
+    "message": "Fuerza $VALUE$ de $MAX$",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      },
+      "max": {
+        "content": "$2"
+      }
+    }
+  },
+  "todayGoalMet": {
+    "message": "¡Meta diaria cumplida!"
+  },
+  "streakFreezesLabel": {
+    "message": "Protectores de racha: $COUNT$ (cubren un día perdido)",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "bannerFreezeUsed": {
+    "message": "Un protector de racha salvó tu racha el $DATE$.",
+    "placeholders": {
+      "date": {
+        "content": "$1"
+      }
+    }
+  },
+  "bannerFreezeEarned": {
+    "message": "¡7 días seguidos! Ganaste un protector de racha."
+  },
+  "bannerDismiss": {
+    "message": "Cerrar"
+  },
+  "practiceTheseWords": {
+    "message": "Practica estas $COUNT$ palabras nuevas",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "practiceTheseBody": {
+    "message": "Recién salidas de tu última lección: fíjalas ahora."
+  },
+  "scenariosHeading": {
+    "message": "Empieza una lección"
+  },
+  "scenariosBody": {
+    "message": "Elige una situación: LangCoach abre Tiny Lesson, la completa y pulsa Generar por ti."
+  },
+  "scenariosMore": {
+    "message": "Más ideas"
+  },
+  "scenarioStart": {
+    "message": "Empezar"
+  },
+  "scenarioStarting": {
+    "message": "Empezando…"
+  },
+  "scenarioStartLabel": {
+    "message": "Empezar Tiny Lesson: $THEME$",
+    "placeholders": {
+      "theme": {
+        "content": "$1"
+      }
+    }
+  },
+  "scenarioCopyLabel": {
+    "message": "Copiar: $THEME$",
+    "placeholders": {
+      "theme": {
+        "content": "$1"
+      }
+    }
+  },
+  "scenarioOpenTiny": {
+    "message": "Abrir Tiny Lesson"
+  },
+  "scenarioStarted": {
+    "message": "Tu lección se está generando en la pestaña de Tiny Lesson."
+  },
+  "scenarioHintSplash": {
+    "message": "Tiny Lesson muestra primero su pantalla de bienvenida. Pulsa Empezar allí (y acepta el aviso) y vuelve a intentarlo."
+  },
+  "scenarioHintLanguage": {
+    "message": "No se pudo elegir tu idioma en la página. Elígelo allí y vuelve a pulsar Empezar, o copia el tema."
+  },
+  "scenarioHintGenerate": {
+    "message": "El tema está escrito, pero Generar no estaba listo. Pulsa Generar en la página."
+  },
+  "scenarioHintGeneric": {
+    "message": "No se pudo empezar automáticamente. Copia el tema y pégalo en Tiny Lesson."
+  },
+  "todayTasksHeading": {
+    "message": "Plan de hoy"
+  },
+  "levelToNext": {
+    "message": "$XP$ XP para $NEXT$",
+    "placeholders": {
+      "xp": {
+        "content": "$1"
+      },
+      "next": {
+        "content": "$2"
+      }
+    }
+  },
+  "levelMax": {
+    "message": "Nivel máximo alcanzado. ¡Legendario!"
+  },
+  "levelProgressLabel": {
+    "message": "Progreso al siguiente nivel: $PCT$ %",
+    "placeholders": {
+      "pct": {
+        "content": "$1"
+      }
+    }
+  },
+  "weekChartHeading": {
+    "message": "Esta semana"
+  },
+  "weekChartLabel": {
+    "message": "XP de los últimos 7 días: $TOTAL$ en total, meta diaria $GOAL$",
+    "placeholders": {
+      "total": {
+        "content": "$1"
+      },
+      "goal": {
+        "content": "$2"
+      }
+    }
+  },
+  "statFreezes": {
+    "message": "Protectores de racha"
+  },
+  "achUnlocked": {
+    "message": "desbloqueado"
+  },
+  "achLocked": {
+    "message": "bloqueado"
+  },
+  "goalPickerLabel": {
+    "message": "Meta diaria"
+  },
+  "goalCasual": {
+    "message": "Relajada"
+  },
+  "goalRegular": {
+    "message": "Regular"
+  },
+  "goalSerious": {
+    "message": "Seria"
+  },
+  "goalIntense": {
+    "message": "Intensa"
+  },
+  "goalXpPerDay": {
+    "message": "$XP$ XP al día",
+    "placeholders": {
+      "xp": {
+        "content": "$1"
+      }
+    }
   }
 }

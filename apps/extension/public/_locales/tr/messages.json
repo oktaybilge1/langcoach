@@ -730,5 +730,343 @@
         "content": "$1"
       }
     }
+  },
+  "level1": {
+    "message": "Yeni Başlayan"
+  },
+  "level2": {
+    "message": "Kâşif"
+  },
+  "level3": {
+    "message": "Öğrenci"
+  },
+  "level4": {
+    "message": "Konuşmacı"
+  },
+  "level5": {
+    "message": "Sohbet Ustası"
+  },
+  "level6": {
+    "message": "Hikâye Anlatıcısı"
+  },
+  "level7": {
+    "message": "Akıcı Dost"
+  },
+  "level8": {
+    "message": "Çok Dilli"
+  },
+  "level9": {
+    "message": "Usta"
+  },
+  "level10": {
+    "message": "Efsane"
+  },
+  "ach_perfect_session": {
+    "message": "Kusursuz seans"
+  },
+  "ach_xp_100_day": {
+    "message": "Bir günde 100 XP"
+  },
+  "ach_sessions_10": {
+    "message": "10 alıştırma seansı"
+  },
+  "ach_first_match": {
+    "message": "İlk eşleştirme oyunu"
+  },
+  "tabWords": {
+    "message": "Kelimeler"
+  },
+  "wordsHeading": {
+    "message": "Kelimelerin"
+  },
+  "wordsModeLabel": {
+    "message": "Kelimeler nasıl gösterilsin"
+  },
+  "wordsFilterLabel": {
+    "message": "Kelimeleri filtrele"
+  },
+  "wordsFilterAll": {
+    "message": "Tümü"
+  },
+  "wordsFilterDue": {
+    "message": "Tekrar zamanı"
+  },
+  "wordsFilterNew": {
+    "message": "Yeni"
+  },
+  "wordsFilterWeak": {
+    "message": "Zayıf"
+  },
+  "wordsFilterFavorites": {
+    "message": "Favoriler"
+  },
+  "wordsFilterMastered": {
+    "message": "Öğrenildi"
+  },
+  "wordsOtherGroup": {
+    "message": "Diğer kelimeler"
+  },
+  "wordsNoMatch": {
+    "message": "Eşleşen kelime yok. Başka bir arama ya da filtre dene."
+  },
+  "wordsEmptyTitle": {
+    "message": "Henüz kelime yok"
+  },
+  "wordsShowMore": {
+    "message": "Daha fazla göster ($COUNT$ kaldı)",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsFavorite": {
+    "message": "Favori: $TERM$",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsFavoriteAdded": {
+    "message": "$TERM$ favorilere eklendi",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsFavoriteRemoved": {
+    "message": "$TERM$ favorilerden çıkarıldı",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsListenTo": {
+    "message": "Dinle: $TERM$",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsKnowThis": {
+    "message": "Bunu biliyorum"
+  },
+  "wordsKnowThisLabel": {
+    "message": "Bunu biliyorum: $TERM$",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsKnown": {
+    "message": "Biliniyor"
+  },
+  "wordsKnownXp": {
+    "message": "Biliniyor · +$XP$ XP",
+    "placeholders": {
+      "xp": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsKnownStatus": {
+    "message": "$TERM$ biliniyor olarak işaretlendi, +$XP$ XP",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      },
+      "xp": {
+        "content": "$2"
+      }
+    }
+  },
+  "wordsEditNative": {
+    "message": "Benim dilimde"
+  },
+  "wordsEditEnglish": {
+    "message": "Anlam (ders)"
+  },
+  "wordsEditLabel": {
+    "message": "$TERM$ anlamlarını düzenle",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      }
+    }
+  },
+  "placeholderNative": {
+    "message": "Kendi dilindeki anlamı"
+  },
+  "strengthLabel": {
+    "message": "Güç: $VALUE$ / $MAX$",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      },
+      "max": {
+        "content": "$2"
+      }
+    }
+  },
+  "todayGoalMet": {
+    "message": "Günlük hedefe ulaştın!"
+  },
+  "streakFreezesLabel": {
+    "message": "Seri dondurma: $COUNT$ (kaçırılan bir günü korur)",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "bannerFreezeUsed": {
+    "message": "$DATE$ tarihinde bir seri dondurma serini korudu.",
+    "placeholders": {
+      "date": {
+        "content": "$1"
+      }
+    }
+  },
+  "bannerFreezeEarned": {
+    "message": "7 gün üst üste! Bir seri dondurma kazandın."
+  },
+  "bannerDismiss": {
+    "message": "Kapat"
+  },
+  "practiceTheseWords": {
+    "message": "Bu $COUNT$ yeni kelimeyi çalış",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "practiceTheseBody": {
+    "message": "Son dersinden taze: şimdi pekiştir."
+  },
+  "scenariosHeading": {
+    "message": "Bir ders başlat"
+  },
+  "scenariosBody": {
+    "message": "Bir durum seç: LangCoach Tiny Lesson'ı açar, doldurur ve senin için Oluştur'a basar."
+  },
+  "scenariosMore": {
+    "message": "Başka fikirler"
+  },
+  "scenarioStart": {
+    "message": "Başla"
+  },
+  "scenarioStarting": {
+    "message": "Başlatılıyor…"
+  },
+  "scenarioStartLabel": {
+    "message": "Tiny Lesson başlat: $THEME$",
+    "placeholders": {
+      "theme": {
+        "content": "$1"
+      }
+    }
+  },
+  "scenarioCopyLabel": {
+    "message": "Kopyala: $THEME$",
+    "placeholders": {
+      "theme": {
+        "content": "$1"
+      }
+    }
+  },
+  "scenarioOpenTiny": {
+    "message": "Tiny Lesson'ı aç"
+  },
+  "scenarioStarted": {
+    "message": "Dersin Tiny Lesson sekmesinde oluşturuluyor."
+  },
+  "scenarioHintSplash": {
+    "message": "Tiny Lesson önce karşılama ekranını gösteriyor. Orada Başla'ya tıkla (ve bildirimi onayla), sonra tekrar dene."
+  },
+  "scenarioHintLanguage": {
+    "message": "Sayfada dilin seçilemedi. Orada seç ve tekrar Başla'ya bas ya da konuyu kopyala."
+  },
+  "scenarioHintGenerate": {
+    "message": "Konu dolduruldu ama Oluştur düğmesi hazır değildi. Sayfada Oluştur'a bas."
+  },
+  "scenarioHintGeneric": {
+    "message": "Otomatik başlatılamadı. Konuyu kopyalayıp Tiny Lesson'a yapıştır."
+  },
+  "todayTasksHeading": {
+    "message": "Bugünün planı"
+  },
+  "levelToNext": {
+    "message": "$NEXT$ seviyesine $XP$ XP kaldı",
+    "placeholders": {
+      "xp": {
+        "content": "$1"
+      },
+      "next": {
+        "content": "$2"
+      }
+    }
+  },
+  "levelMax": {
+    "message": "En üst seviyedesin. Efsanesin!"
+  },
+  "levelProgressLabel": {
+    "message": "Sonraki seviyeye ilerleme: %$PCT$",
+    "placeholders": {
+      "pct": {
+        "content": "$1"
+      }
+    }
+  },
+  "weekChartHeading": {
+    "message": "Bu hafta"
+  },
+  "weekChartLabel": {
+    "message": "Son 7 günde XP: toplam $TOTAL$, günlük hedef $GOAL$",
+    "placeholders": {
+      "total": {
+        "content": "$1"
+      },
+      "goal": {
+        "content": "$2"
+      }
+    }
+  },
+  "statFreezes": {
+    "message": "Seri dondurma"
+  },
+  "achUnlocked": {
+    "message": "açıldı"
+  },
+  "achLocked": {
+    "message": "kilitli"
+  },
+  "goalPickerLabel": {
+    "message": "Günlük hedef"
+  },
+  "goalCasual": {
+    "message": "Rahat"
+  },
+  "goalRegular": {
+    "message": "Düzenli"
+  },
+  "goalSerious": {
+    "message": "Ciddi"
+  },
+  "goalIntense": {
+    "message": "Yoğun"
+  },
+  "goalXpPerDay": {
+    "message": "Günde $XP$ XP",
+    "placeholders": {
+      "xp": {
+        "content": "$1"
+      }
+    }
   }
 }

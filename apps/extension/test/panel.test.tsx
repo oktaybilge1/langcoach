@@ -154,6 +154,7 @@ describe('side panel UI', () => {
         goal: 'work',
         minutesPerDay: 20,
         daysPerWeek: 4,
+        dailyGoalXp: 20,
       },
       theme: suggestThemes('work', 'A2', 'en', 0)[0],
     });
@@ -211,6 +212,11 @@ describe('side panel UI', () => {
     const reviewTab = host.querySelector<HTMLButtonElement>('[data-testid="tab-review"]')!;
     await act(async () => {
       reviewTab.click();
+    });
+    await flush();
+    // Words opens as the list; flip cards are one tap away
+    await act(async () => {
+      host.querySelector<HTMLButtonElement>('[data-testid="mode-cards"]')!.click();
     });
     await flush();
 
@@ -271,6 +277,10 @@ describe('side panel UI', () => {
 
     await act(async () => {
       host.querySelector<HTMLButtonElement>('[data-testid="tab-review"]')!.click();
+    });
+    await flush();
+    await act(async () => {
+      host.querySelector<HTMLButtonElement>('[data-testid="mode-cards"]')!.click();
     });
     await flush();
 

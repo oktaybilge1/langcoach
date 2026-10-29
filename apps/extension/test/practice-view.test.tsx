@@ -327,6 +327,28 @@ describe('Practice view', () => {
     expect($('[data-testid="practice-perfect-bonus"]')!.textContent).toContain('+5');
   });
 
+  it('records how many match games were played (first_match achievement)', async () => {
+    const five = [...CARDS, card('c5', 'el pan', 'the bread', 'Más pan, por favor.')];
+    const h = harness(five);
+    const matches = h.expected.filter((e) => e.kind === 'match').length;
+    expect(matches).toBeGreaterThan(0);
+    await h.mount();
+    await click($('[data-testid="btn-start-practice"]'));
+    await runAll(h);
+    await flush();
+    expect(h.records()[0]!.matchGames).toBe(matches);
+  });
+
+  it('a session without match games omits matchGames', async () => {
+    const h = harness();
+    expect(h.expected.some((e) => e.kind === 'match')).toBe(false);
+    await h.mount();
+    await click($('[data-testid="btn-start-practice"]'));
+    await runAll(h);
+    await flush();
+    expect('matchGames' in h.records()[0]!).toBe(false);
+  });
+
   it('no confetti under prefers-reduced-motion', async () => {
     const h = harness();
     h.setReduced(true);

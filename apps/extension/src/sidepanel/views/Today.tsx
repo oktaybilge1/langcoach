@@ -1,16 +1,21 @@
 import type { PlanTask, TaskType } from '@langcoach/core/browser';
 import { useEffect, useState } from 'preact/hooks';
 import { deeplink, toSiteLang } from '../../lib/deeplink';
+import { LLL_LANGUAGES, resolveLanguage } from '../../lib/languages';
 import { suggestThemes, type Goal, type UiLocale } from '../../lib/themes';
-import type { Snapshot } from '../../shared/messages';
+import type { Banner, Snapshot } from '../../shared/messages';
 import type { PanelSend } from '../App';
+import { prefersReducedMotion } from '../components/Confetti';
+import { GoalRing } from '../components/GoalRing';
+import { StreakFlame } from '../components/StreakFlame';
 import type { TranslateFn } from '../i18n';
 import { NativeBanner } from '../NativeBanner';
-import { openExperimentUrl, requestFill } from '../tabs';
+import { openExperimentUrl, runScenario, type ScenarioOutcome } from '../tabs';
 import type { NativeTranslations } from '../useNativeTranslations';
 
 /** Same window as the background's undo check (capture.ts UNDO_WINDOW_MS). */
 const UNDO_WINDOW_MS = 10 * 60_000;
+const SCENARIOS = 3;
 
 export interface TodayProps {
   snapshot: Snapshot;
@@ -21,6 +26,8 @@ export interface TodayProps {
   onOpenReview: () => void;
   onOpenPractice?: () => void;
   native?: NativeTranslations;
+  /** Tests pass it; defaults to the prefers-reduced-motion media query. */
+  reducedMotion?: boolean;
 }
 
 export function taskTypeLabel(type: TaskType, t: TranslateFn): string {
@@ -53,11 +60,50 @@ export function taskIcon(type: TaskType): string {
   }
 }
 
-export function Today({ snapshot, uiLocale, t, send, onRefresh, onOpenReview, onOpenPractice, native }: TodayProps) {
+interface ScenarioState {
+  running?: boolean;
+  outcome?: ScenarioOutcome;
+  copied?: boolean;
+}
+
+function hintKey(outcome: ScenarioOutcome): string {
+  if (outcome.ok) return 'scenarioStarted';
+  switch (outcome.reason) {
+    case 'splash':
+      return 'scenarioHintSplash';
+    case 'language':
+      return 'scenarioHintLanguage';
+    case 'generate':
+      return 'scenarioHintGenerate';
+    default:
+      return 'scenarioHintGeneric';
+  }
+}
+
+function bannerText(b: Banner, t: TranslateFn): string {
+  return b.kind === 'freezeUsed' ? t('bannerFreezeUsed', b.date) : t('bannerFreezeEarned');
+}
+
+const localDate = (iso: string): string => {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '';
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+};
+
+export function Today({
+  snapshot,
+  uiLocale,
+  t,
+  send,
+  onRefresh,
+  onOpenReview,
+  onOpenPractice,
+  native,
+  reducedMotion,
+}: TodayProps) {
+  const reduced = reducedMotion ?? prefersReducedMotion();
   const [seed, setSeed] = useState(0);
-  const [copied, setCopied] = useState(false);
-  const [filled, setFilled] = useState(false);
-  const [pasteHint, setPasteHint] = useState(false);
+  const [scenario, setScenario] = useState<Record<string, ScenarioState>>({});
   const [actionError, setActionError] = useState<string | null>(null);
   const [, setTick] = useState(0);
 
@@ -73,11 +119,21 @@ export function Today({ snapshot, uiLocale, t, send, onRefresh, onOpenReview, on
 
   const profile = snapshot.profile!;
   const tasks = snapshot.today?.tasks ?? [];
-  const doneCount = tasks.filter((x) => x.status === 'done').length;
-  const totalCount = tasks.length;
+  const todayXp = snapshot.progress.todayXp ?? 0;
+  const goal = snapshot.progress.dailyGoalXp ?? 20;
+  const goalMet = todayXp >= goal;
+  const siteLang = toSiteLang(uiLocale);
+  const tinyUrl = deeplink(siteLang, 'tiny_lesson');
 
-  const themes = suggestThemes((profile.goal as Goal) || 'travel', profile.level, uiLocale, seed);
-  const currentTheme = themes[0] ?? '';
+  const themes = suggestThemes((profile.goal as Goal) || 'travel', profile.level, uiLocale, seed).slice(0, SCENARIOS);
+  const resolved = resolveLanguage(profile.targetLanguage);
+  const targetLabel = LLL_LANGUAGES.some((l) => l.label === resolved.label) ? resolved.label : undefined;
+
+  const freshCapture =
+    lastCapture !== null &&
+    lastCapture.newCards > 0 &&
+    snapshot.today !== null &&
+    localDate(lastCapture.at) === snapshot.today.date;
 
   function handleTaskAction(task: PlanTask) {
     if (task.type === 'review' && onOpenPractice) {
@@ -88,36 +144,22 @@ export function Today({ snapshot, uiLocale, t, send, onRefresh, onOpenReview, on
       onOpenReview();
       return;
     }
-    const url = deeplink(toSiteLang(uiLocale), task.type);
-    openExperimentUrl(url);
+    void openExperimentUrl(deeplink(siteLang, task.type));
   }
 
-  async function handleFillTheme() {
-    const theme = currentTheme;
-    if (await requestFill(theme)) {
-      setPasteHint(false);
-      setFilled(true);
-      setTimeout(() => setFilled(false), 1800);
-      return;
-    }
-    // Not on the Tiny Lesson page, or its purpose field was not found: hand the theme over via the clipboard.
+  async function startScenario(theme: string) {
+    if (scenario[theme]?.running) return;
+    setScenario((s) => ({ ...s, [theme]: { running: true } }));
+    const outcome = await runScenario({ theme, url: tinyUrl, ...(targetLabel ? { targetLabel } : {}) });
+    setScenario((s) => ({ ...s, [theme]: { outcome } }));
+  }
+
+  async function copyTheme(theme: string) {
     try {
       await navigator.clipboard?.writeText(theme);
+      setScenario((s) => ({ ...s, [theme]: { ...s[theme], copied: true } }));
     } catch {
-      /* clipboard unavailable: the theme is still shown above */
-    }
-    setFilled(false);
-    setPasteHint(true);
-    setTimeout(() => setPasteHint(false), 4000);
-  }
-
-  async function handleCopyTheme() {
-    try {
-      await navigator.clipboard?.writeText(currentTheme);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1800);
-    } catch {
-      /* ignore clipboard error */
+      /* clipboard unavailable: the theme is shown on the card */
     }
   }
 
@@ -132,22 +174,41 @@ export function Today({ snapshot, uiLocale, t, send, onRefresh, onOpenReview, on
     }
   }
 
-  const recentGrammar = (snapshot.state?.lessons ?? [])
-    .filter((l) => l.grammar && l.grammar.length > 0)
-    .slice(-1)[0];
+  async function dismissBanner(id: string) {
+    try {
+      await send({ type: 'dismissBanner', id });
+      await onRefresh();
+    } catch (e) {
+      setActionError(t('actionFailed', (e as Error).message));
+    }
+  }
+
+  const recentGrammar = (snapshot.state?.lessons ?? []).filter((l) => l.grammar && l.grammar.length > 0).slice(-1)[0];
 
   return (
-    <div class="form-grid">
-      <section class="card today-summary" aria-label={t('todayHeading')}>
-        <div>
-          <h1>{t('todayHeading')}</h1>
-          <p class="muted">{snapshot.today?.date ?? ''}</p>
-          <p style={{ margin: '6px 0 0', fontWeight: 600 }}>
-            🔥 <span data-testid="today-streak">{snapshot.progress.streak}</span> {t('todayStreak')}
-          </p>
+    <div class="form-grid today">
+      {(snapshot.banners ?? []).map((b) => (
+        <div key={b.id} class={`rollover-banner ${b.kind}`} role="status" data-testid="rollover-banner">
+          <span aria-hidden="true">{b.kind === 'freezeUsed' ? '🧊' : '❄️'}</span>
+          <span class="rollover-text">{bannerText(b, t)}</span>
+          <button type="button" class="icon-btn" aria-label={t('bannerDismiss')} title={t('bannerDismiss')} onClick={() => void dismissBanner(b.id)}>
+            ✕
+          </button>
         </div>
-        <div class="ring-badge" aria-label={t('todayRingLabel')} data-testid="today-ring">
-          {doneCount}/{totalCount}
+      ))}
+
+      <section class="card today-hero" aria-labelledby="today-heading">
+        <div class="today-hero-text">
+          <h1 id="today-heading">{t('todayHeading')}</h1>
+          <p class="muted">{snapshot.today?.date ?? ''}</p>
+          <StreakFlame streak={snapshot.progress.streak} freezes={snapshot.progress.streakFreezes ?? 0} reduced={reduced} t={t} />
+        </div>
+        <div class="today-goal">
+          <GoalRing value={todayXp} goal={goal} size={84} label={t('pxGoalLine', [String(todayXp), String(goal)])} testId="goal-ring" />
+          <span class="today-goal-text" data-testid="today-goal-text">
+            {t('pxGoalLine', [String(todayXp), String(goal)])}
+          </span>
+          {goalMet && <span class="goal-met-pill">🎉 {t('todayGoalMet')}</span>}
         </div>
       </section>
 
@@ -158,9 +219,22 @@ export function Today({ snapshot, uiLocale, t, send, onRefresh, onOpenReview, on
           </span>
           <span class="practice-cta-text">
             <strong>{t('pxCtaTitle')}</strong>
-            <span>
-              {snapshot.dueCount > 0 ? t('pxCtaDue', String(snapshot.dueCount)) : t('pxCtaBody')}
-            </span>
+            <span>{snapshot.dueCount > 0 ? t('pxCtaDue', String(snapshot.dueCount)) : t('pxCtaBody')}</span>
+          </span>
+          <span class="practice-cta-arrow" aria-hidden="true">
+            →
+          </span>
+        </button>
+      )}
+
+      {freshCapture && onOpenPractice && (
+        <button type="button" class="practice-cta fresh" data-testid="btn-practice-these" onClick={onOpenPractice}>
+          <span class="practice-cta-icon" aria-hidden="true">
+            ✨
+          </span>
+          <span class="practice-cta-text">
+            <strong>{t('practiceTheseWords', String(lastCapture!.newCards))}</strong>
+            <span>{t('practiceTheseBody')}</span>
           </span>
           <span class="practice-cta-arrow" aria-hidden="true">
             →
@@ -170,17 +244,61 @@ export function Today({ snapshot, uiLocale, t, send, onRefresh, onOpenReview, on
 
       {native && <NativeBanner native={native} t={t} uiLocale={uiLocale} />}
 
+      <section class="card scenarios" aria-labelledby="scenarios-heading">
+        <div class="section-head">
+          <h2 id="scenarios-heading">{t('scenariosHeading')}</h2>
+          <button type="button" class="btn-subtle" data-testid="btn-more-scenarios" onClick={() => setSeed((s) => s + SCENARIOS)}>
+            🔄 {t('scenariosMore')}
+          </button>
+        </div>
+        <p class="muted">{t('scenariosBody')}</p>
+        <ul class="scenario-list">
+          {themes.map((theme, i) => {
+            const st = scenario[theme];
+            const outcome = st?.outcome ?? null;
+            const failed = outcome !== null && !outcome.ok;
+            return (
+              <li key={theme} class={`scenario-card tone-${i}`} data-testid="scenario-card">
+                <span class="scenario-theme" dir="auto">
+                  {theme}
+                </span>
+                <div class="theme-actions">
+                  <button
+                    type="button"
+                    class="primary"
+                    data-testid="btn-scenario-start"
+                    disabled={st?.running === true}
+                    aria-label={t('scenarioStartLabel', theme)}
+                    onClick={() => void startScenario(theme)}
+                  >
+                    {st?.running ? t('scenarioStarting') : `▶ ${t('scenarioStart')}`}
+                  </button>
+                  <button type="button" data-testid="btn-scenario-copy" aria-label={t('scenarioCopyLabel', theme)} onClick={() => void copyTheme(theme)}>
+                    {st?.copied ? t('btnCopied') : t('btnCopy')}
+                  </button>
+                  {failed && (
+                    <button type="button" data-testid="btn-scenario-open" onClick={() => void openExperimentUrl(tinyUrl)}>
+                      {t('scenarioOpenTiny')}
+                    </button>
+                  )}
+                </div>
+                <p class={`scenario-status ${failed ? 'warn' : ''}`} role="status">
+                  {st?.copied ? t('themeCopiedPaste') : outcome ? t(hintKey(outcome)) : ''}
+                </p>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
+
       <section class="card">
+        <h2>{t('todayTasksHeading')}</h2>
         {tasks.length === 0 ? (
           <p class="muted">{t('todayNoTasks')}</p>
         ) : (
           <ul class="task-list">
             {tasks.map((task) => (
-              <li
-                key={task.id}
-                class={`task-item ${task.status === 'done' ? 'done' : ''}`}
-                data-testid="today-task"
-              >
+              <li key={task.id} class={`task-item ${task.status === 'done' ? 'done' : ''}`} data-testid="today-task">
                 <div>
                   <div style={{ fontWeight: 600 }}>
                     <span aria-hidden="true">{taskIcon(task.type)} </span>
@@ -197,35 +315,6 @@ export function Today({ snapshot, uiLocale, t, send, onRefresh, onOpenReview, on
               </li>
             ))}
           </ul>
-        )}
-      </section>
-
-      <section class="card theme-chip">
-        <h2>{t('todayThemeLabel')}</h2>
-        <p style={{ margin: 0, fontWeight: 600 }} data-testid="today-theme">
-          “{currentTheme}”
-        </p>
-        <div class="theme-actions">
-          <button type="button" class="primary" data-testid="btn-fill-theme" onClick={handleFillTheme}>
-            {filled ? `✓ ${t('btnFilled')}` : t('btnFillTheme')}
-          </button>
-          <button type="button" onClick={handleCopyTheme}>
-            {copied ? t('btnCopied') : t('btnCopy')}
-          </button>
-          <button type="button" onClick={() => setSeed((s) => s + 1)}>
-            {t('btnNextTheme')}
-          </button>
-          <button
-            type="button"
-            onClick={() => openExperimentUrl(deeplink(toSiteLang(uiLocale), 'tiny_lesson'))}
-          >
-            {t('btnOpenLll')}
-          </button>
-        </div>
-        {pasteHint && (
-          <p class="notice" role="status" data-testid="theme-paste-hint">
-            {t('themeCopiedPaste')}
-          </p>
         )}
       </section>
 

@@ -11,6 +11,7 @@ import type { UiLocale } from '../../lib/themes';
 import type { Snapshot } from '../../shared/messages';
 import type { PanelSend } from '../App';
 import { Confetti, prefersReducedMotion } from '../components/Confetti';
+import { GoalRing } from '../components/GoalRing';
 import { Choice } from '../components/exercises/Choice';
 import { isTypingTarget } from '../components/exercises/keys';
 import { Match } from '../components/exercises/Match';
@@ -202,7 +203,14 @@ export function Practice({ snapshot, uiLocale, t, send, onRefresh, onDone, sound
   async function record(r: Run, s: Session) {
     setSave({ status: 'saving' });
     try {
-      const data = await send({ type: 'recordPractice', sessionId: s.id, results: results(r) });
+      // Match games actually answered (re-tries of the same exercise count once).
+      const matchGames = new Set(r.queue.filter(({ ex }) => ex.kind === 'match' && r.outcomes[ex.id]).map(({ ex }) => ex.id)).size;
+      const data = await send({
+        type: 'recordPractice',
+        sessionId: s.id,
+        results: results(r),
+        ...(matchGames > 0 ? { matchGames } : {}),
+      });
       if (!mounted.current) return;
       setSave({ status: 'saved', data });
       void onRefresh();
@@ -358,7 +366,7 @@ export function Practice({ snapshot, uiLocale, t, send, onRefresh, onDone, sound
           </div>
         </div>
         <div class="px-goal">
-          <GoalRing value={todayXp} goal={goal} />
+          <GoalRing value={todayXp} goal={goal} label={t('pxGoalLine', [String(todayXp), String(goal)])} />
           <div>
             <div style={{ fontWeight: 700 }}>{t('pxGoalLine', [String(Math.min(todayXp, 9999)), String(goal)])}</div>
             <div class="muted">
@@ -604,25 +612,3 @@ function CountUp({ to, instant, prefix = '' }: { to: number; instant: boolean; p
   );
 }
 
-function GoalRing({ value, goal }: { value: number; goal: number }) {
-  const r = 22;
-  const c = 2 * Math.PI * r;
-  const pct = goal > 0 ? Math.min(1, value / goal) : 0;
-  return (
-    <svg class={`goal-ring${pct >= 1 ? ' is-met' : ''}`} width="56" height="56" viewBox="0 0 56 56" role="img" aria-label={`${value}/${goal} XP`}>
-      <circle cx="28" cy="28" r={r} class="goal-ring-track" />
-      <circle
-        cx="28"
-        cy="28"
-        r={r}
-        class="goal-ring-fill"
-        stroke-dasharray={`${c}`}
-        stroke-dashoffset={`${c * (1 - pct)}`}
-        transform="rotate(-90 28 28)"
-      />
-      <text x="28" y="32" text-anchor="middle" class="goal-ring-text">
-        {pct >= 1 ? '✓' : `${Math.round(pct * 100)}%`}
-      </text>
-    </svg>
-  );
-}

@@ -730,5 +730,343 @@
         "content": "$1"
       }
     }
+  },
+  "level1": {
+    "message": "Newcomer"
+  },
+  "level2": {
+    "message": "Explorer"
+  },
+  "level3": {
+    "message": "Learner"
+  },
+  "level4": {
+    "message": "Speaker"
+  },
+  "level5": {
+    "message": "Conversationalist"
+  },
+  "level6": {
+    "message": "Storyteller"
+  },
+  "level7": {
+    "message": "Fluent Friend"
+  },
+  "level8": {
+    "message": "Polyglot"
+  },
+  "level9": {
+    "message": "Master"
+  },
+  "level10": {
+    "message": "Legend"
+  },
+  "ach_perfect_session": {
+    "message": "Perfect session"
+  },
+  "ach_xp_100_day": {
+    "message": "100 XP in one day"
+  },
+  "ach_sessions_10": {
+    "message": "10 practice sessions"
+  },
+  "ach_first_match": {
+    "message": "First match game"
+  },
+  "tabWords": {
+    "message": "Words"
+  },
+  "wordsHeading": {
+    "message": "Your words"
+  },
+  "wordsModeLabel": {
+    "message": "How to show your words"
+  },
+  "wordsFilterLabel": {
+    "message": "Filter words"
+  },
+  "wordsFilterAll": {
+    "message": "All"
+  },
+  "wordsFilterDue": {
+    "message": "Due"
+  },
+  "wordsFilterNew": {
+    "message": "New"
+  },
+  "wordsFilterWeak": {
+    "message": "Weak"
+  },
+  "wordsFilterFavorites": {
+    "message": "Favorites"
+  },
+  "wordsFilterMastered": {
+    "message": "Mastered"
+  },
+  "wordsOtherGroup": {
+    "message": "Other words"
+  },
+  "wordsNoMatch": {
+    "message": "No words match. Try another search or filter."
+  },
+  "wordsEmptyTitle": {
+    "message": "No words yet"
+  },
+  "wordsShowMore": {
+    "message": "Show more ($COUNT$ left)",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsFavorite": {
+    "message": "Favorite: $TERM$",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsFavoriteAdded": {
+    "message": "$TERM$ added to favorites",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsFavoriteRemoved": {
+    "message": "$TERM$ removed from favorites",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsListenTo": {
+    "message": "Listen: $TERM$",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsKnowThis": {
+    "message": "I know this"
+  },
+  "wordsKnowThisLabel": {
+    "message": "I know this: $TERM$",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsKnown": {
+    "message": "Known"
+  },
+  "wordsKnownXp": {
+    "message": "Known · +$XP$ XP",
+    "placeholders": {
+      "xp": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsKnownStatus": {
+    "message": "$TERM$ marked as known, +$XP$ XP",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      },
+      "xp": {
+        "content": "$2"
+      }
+    }
+  },
+  "wordsEditNative": {
+    "message": "In my language"
+  },
+  "wordsEditEnglish": {
+    "message": "Meaning (lesson)"
+  },
+  "wordsEditLabel": {
+    "message": "Edit meanings of $TERM$",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      }
+    }
+  },
+  "placeholderNative": {
+    "message": "Meaning in your language"
+  },
+  "strengthLabel": {
+    "message": "Strength $VALUE$ of $MAX$",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      },
+      "max": {
+        "content": "$2"
+      }
+    }
+  },
+  "todayGoalMet": {
+    "message": "Daily goal reached!"
+  },
+  "streakFreezesLabel": {
+    "message": "Streak freezes: $COUNT$ (protect a missed day)",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "bannerFreezeUsed": {
+    "message": "A streak freeze kept your streak alive on $DATE$.",
+    "placeholders": {
+      "date": {
+        "content": "$1"
+      }
+    }
+  },
+  "bannerFreezeEarned": {
+    "message": "7 days in a row! You earned a streak freeze."
+  },
+  "bannerDismiss": {
+    "message": "Dismiss"
+  },
+  "practiceTheseWords": {
+    "message": "Practice these $COUNT$ new words",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "practiceTheseBody": {
+    "message": "Fresh from your last lesson: lock them in now."
+  },
+  "scenariosHeading": {
+    "message": "Start a lesson"
+  },
+  "scenariosBody": {
+    "message": "Pick a situation: LangCoach opens Tiny Lesson, fills it in and presses Generate for you."
+  },
+  "scenariosMore": {
+    "message": "More ideas"
+  },
+  "scenarioStart": {
+    "message": "Start"
+  },
+  "scenarioStarting": {
+    "message": "Starting…"
+  },
+  "scenarioStartLabel": {
+    "message": "Start a Tiny Lesson: $THEME$",
+    "placeholders": {
+      "theme": {
+        "content": "$1"
+      }
+    }
+  },
+  "scenarioCopyLabel": {
+    "message": "Copy: $THEME$",
+    "placeholders": {
+      "theme": {
+        "content": "$1"
+      }
+    }
+  },
+  "scenarioOpenTiny": {
+    "message": "Open Tiny Lesson"
+  },
+  "scenarioStarted": {
+    "message": "Your lesson is being generated in the Tiny Lesson tab."
+  },
+  "scenarioHintSplash": {
+    "message": "Tiny Lesson shows its welcome screen first. Click Start there (and accept the notice), then try again."
+  },
+  "scenarioHintLanguage": {
+    "message": "Couldn't pick your language on the page. Choose it there, then press Start again, or copy the theme."
+  },
+  "scenarioHintGenerate": {
+    "message": "The theme is filled in, but Generate wasn't ready. Press Generate on the page."
+  },
+  "scenarioHintGeneric": {
+    "message": "Couldn't start it automatically. Copy the theme and paste it into Tiny Lesson."
+  },
+  "todayTasksHeading": {
+    "message": "Today's plan"
+  },
+  "levelToNext": {
+    "message": "$XP$ XP to $NEXT$",
+    "placeholders": {
+      "xp": {
+        "content": "$1"
+      },
+      "next": {
+        "content": "$2"
+      }
+    }
+  },
+  "levelMax": {
+    "message": "Top level reached. Legendary!"
+  },
+  "levelProgressLabel": {
+    "message": "Progress to the next level: $PCT$%",
+    "placeholders": {
+      "pct": {
+        "content": "$1"
+      }
+    }
+  },
+  "weekChartHeading": {
+    "message": "This week"
+  },
+  "weekChartLabel": {
+    "message": "XP over the last 7 days: $TOTAL$ in total, daily goal $GOAL$",
+    "placeholders": {
+      "total": {
+        "content": "$1"
+      },
+      "goal": {
+        "content": "$2"
+      }
+    }
+  },
+  "statFreezes": {
+    "message": "Streak freezes"
+  },
+  "achUnlocked": {
+    "message": "unlocked"
+  },
+  "achLocked": {
+    "message": "locked"
+  },
+  "goalPickerLabel": {
+    "message": "Daily goal"
+  },
+  "goalCasual": {
+    "message": "Casual"
+  },
+  "goalRegular": {
+    "message": "Regular"
+  },
+  "goalSerious": {
+    "message": "Serious"
+  },
+  "goalIntense": {
+    "message": "Intense"
+  },
+  "goalXpPerDay": {
+    "message": "$XP$ XP a day",
+    "placeholders": {
+      "xp": {
+        "content": "$1"
+      }
+    }
   }
 }

@@ -120,6 +120,7 @@ test('6-8. Slang Hang zh with pinyin, Word Cam ja, and Arabic RTL card rendering
     await panel.getByTestId('onboard-submit').click();
 
     await panel.getByTestId('tab-review').click();
+    await panel.getByTestId('mode-cards').click(); // Words opens as the list
     const termEl = panel.getByTestId('card-term');
     await expect(termEl).toHaveAttribute('dir', 'auto');
     await expect(termEl).toHaveAttribute('lang', 'ar');
@@ -150,6 +151,7 @@ test('9-10. manual save via message and reviewing 3 cards auto-completes review 
 
     await panel.reload();
     await panel.getByTestId('tab-review').click();
+    await panel.getByTestId('mode-cards').click(); // Words opens as the list
 
     for (let i = 0; i < 3; i++) {
       await panel.getByTestId('review-show').click();
@@ -200,7 +202,11 @@ test('11-13. export/import round-trip, API shape change graceful no-op, and remi
     );
     const alarm = await panel.evaluate(() => chrome.alarms.get('langcoach-reminder'));
     expect(alarm).toBeTruthy();
-    expect(alarm?.periodInMinutes).toBe(1440);
+    // One-shot (re-scheduled after each firing with nextReminderAt): no 1440-minute DST drift.
+    expect(alarm?.periodInMinutes).toBeUndefined();
+    const at = new Date(alarm!.scheduledTime);
+    expect([at.getHours(), at.getMinutes()]).toEqual([19, 45]);
+    expect(await panel.evaluate(() => chrome.alarms.get('langcoach-rollover'))).toBeTruthy();
   } finally {
     await cleanup();
   }
@@ -347,6 +353,129 @@ test('15. practice: start with captured words -> answer every exercise -> end sc
     await panel.getByTestId('tab-practice').click();
     expect(await xpOf()).toBe(before + earned);
     expect(errors).toEqual([]);
+  } finally {
+    await cleanup();
+  }
+});
+
+test('16. Words hub filters, favorite and "I know this" once; Today goal ring follows the XP', async () => {
+  const { context, extensionId, cleanup } = await launchWithExtension();
+  try {
+    const panel = await context.newPage();
+    const errors: string[] = [];
+    panel.on('pageerror', (e) => errors.push(e.message));
+    await panel.goto(`chrome-extension://${extensionId}/sidepanel.html`);
+    await panel.getByTestId('onboard-target').selectOption('Spanish (Spain)');
+    await panel.getByTestId('goal-option-10').check();
+    await panel.getByTestId('onboard-submit').click();
+    await expect(panel.getByTestId('tab-today')).toBeVisible();
+
+    for (const [term, translation] of [
+      ['la cuenta', 'the bill'],
+      ['la mesa', 'the table'],
+      ['el menú', 'the menu'],
+    ]) {
+      const res = await panel.evaluate(
+        ([t, tr]) => chrome.runtime.sendMessage({ type: 'saveManual', term: t, translation: tr }),
+        [term, translation],
+      );
+      expect(res).toMatchObject({ ok: true });
+    }
+    const snapshot = async () => (await panel.evaluate(() => chrome.runtime.sendMessage({ type: 'getSnapshot' }))).data;
+
+    await panel.getByTestId('tab-today').click();
+    const ring = panel.getByTestId('goal-ring');
+    await expect(ring).toHaveAttribute('aria-valuenow', '0');
+    await expect(ring).toHaveAttribute('aria-valuemax', '10');
+
+    await panel.getByTestId('tab-review').click();
+    await expect(panel.getByTestId('word-item')).toHaveCount(3);
+    await expect(panel.getByTestId('words-filter-new')).toContainText('3');
+
+    // favorite one word
+    const mesa = panel.getByTestId('word-item').filter({ hasText: 'la mesa' });
+    await mesa.getByTestId('btn-favorite').click();
+    await expect(mesa.getByTestId('btn-favorite')).toHaveAttribute('aria-pressed', 'true');
+    await panel.getByTestId('words-filter-favorites').click();
+    await expect(panel.getByTestId('word-item')).toHaveCount(1);
+    await expect(panel.getByTestId('word-item')).toContainText('la mesa');
+    await expect.poll(async () => (await snapshot()).state.cards.filter((c: { favorite?: boolean }) => c.favorite).length).toBe(1);
+
+    // "I know this" once: +2 XP, then disabled; a second press changes nothing
+    await panel.getByTestId('words-filter-all').click();
+    const cuenta = panel.getByTestId('word-item').filter({ hasText: 'la cuenta' });
+    await cuenta.getByTestId('btn-know').click();
+    await expect(cuenta.getByTestId('btn-know')).toBeDisabled();
+    await expect.poll(async () => (await snapshot()).progress.todayXp).toBe(2);
+    await cuenta.getByTestId('btn-know').click({ force: true });
+    const again = await panel.evaluate(async () => {
+      const s = await chrome.runtime.sendMessage({ type: 'getSnapshot' });
+      const id = s.data.state.cards.find((c: { term: string }) => c.term === 'la cuenta').id;
+      return chrome.runtime.sendMessage({ type: 'markMastered', cardId: id });
+    });
+    expect(again).toEqual({ ok: true, data: { xpAwarded: 0 } });
+    expect((await snapshot()).progress.todayXp).toBe(2);
+    await panel.getByTestId('words-filter-mastered').click();
+    await expect(panel.getByTestId('word-item')).toHaveCount(1);
+
+    // Today's goal ring now shows 2 of 10
+    await panel.getByTestId('tab-today').click();
+    await expect(panel.getByTestId('goal-ring')).toHaveAttribute('aria-valuenow', '2');
+    await expect(panel.getByTestId('today-goal-text')).toContainText('2 / 10');
+    await expect(panel.getByTestId('today-streak')).toHaveText('1');
+    expect(errors).toEqual([]);
+  } finally {
+    await cleanup();
+  }
+});
+
+test('17. startScenario on the Tiny Lesson page: picks the language, fills the purpose, presses Generate -> capture', async () => {
+  const { context, extensionId, cleanup } = await launchWithExtension();
+  try {
+    const panel = await context.newPage();
+    await panel.goto(`chrome-extension://${extensionId}/sidepanel.html`);
+    await panel.getByTestId('onboard-target').selectOption('Spanish (Spain)');
+    await panel.getByTestId('onboard-submit').click();
+    await expect(panel.getByTestId('tab-today')).toBeVisible();
+
+    const page = await context.newPage();
+    const pageErrors: string[] = [];
+    page.on('pageerror', (e) => pageErrors.push(e.message));
+    await page.goto(`${mock.url}/lll/en/experiments/tiny-lesson?scenario=1`);
+    await expect(page.locator('#generate')).toBeDisabled();
+
+    // Same relay the panel's runScenario uses: ping, then startScenario via chrome.tabs.sendMessage.
+    const result = await panel.evaluate(async () => {
+      const tabs = await chrome.tabs.query({ url: ['http://localhost/*', 'http://127.0.0.1/*'] });
+      const tab = tabs.find((t) => t.url?.includes('scenario=1'))!;
+      const pong = await chrome.tabs.sendMessage(tab.id!, { type: 'ping' });
+      const res = await chrome.tabs.sendMessage(tab.id!, {
+        type: 'startScenario',
+        theme: 'ordering tapas with friends',
+        targetLabel: 'Spanish (Spain)',
+      });
+      return { pong, res };
+    });
+    expect(result).toEqual({ pong: { ready: true }, res: { ok: true } });
+
+    await expect(page.locator('.lll-select__single-value')).toHaveText('Spanish (Spain)');
+    await expect(page.locator('#purpose')).toHaveValue('ordering tapas with friends');
+    expect(await page.evaluate(() => (window as unknown as { __generated: string[] }).__generated)).toEqual([
+      'Spanish (Spain)|ordering tapas with friends',
+    ]);
+    // Generate's request is captured like any lesson
+    await expect(page.locator('[data-langcoach-toast]')).toContainText('words saved to LangCoach');
+
+    // On a page without the form (welcome screen-like): a clear reason, nothing thrown into the page
+    const other = await context.newPage();
+    await other.goto(`${mock.url}/lll/en/experiments/slang-hang`);
+    const notTiny = await panel.evaluate(async () => {
+      const tabs = await chrome.tabs.query({ url: ['http://localhost/*', 'http://127.0.0.1/*'] });
+      const tab = tabs.find((t) => t.url?.includes('slang-hang'))!;
+      return chrome.tabs.sendMessage(tab.id!, { type: 'startScenario', theme: 'x' });
+    });
+    expect(notTiny).toEqual({ ok: false, reason: 'not_tiny_lesson' });
+    expect(pageErrors).toEqual([]);
   } finally {
     await cleanup();
   }

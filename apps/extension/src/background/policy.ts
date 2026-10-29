@@ -32,6 +32,8 @@ const PAGE_TYPES: ReadonlySet<string> = new Set([
   'getPracticeCards',
   'recordPractice',
   'dismissBanner',
+  'setFavorite',
+  'markMastered',
 ]);
 
 const LLL_PREFIX = 'https://labs.google/lll/';

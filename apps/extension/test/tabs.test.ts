@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { openExperimentUrl, requestFill, runScenario, type TabsApi } from '../src/sidepanel/tabs';
+import { openExperimentUrl, runScenario, type TabsApi } from '../src/sidepanel/tabs';
 
 type Tab = { id: number; windowId: number; url?: string; active?: boolean };
 
@@ -50,25 +50,6 @@ describe('openExperimentUrl (I3)', () => {
     const api = fakeApi([{ id: 6, windowId: 1, url: 'https://labs.google/lll/en/experiments/tiny-lesson-old' }]);
     await openExperimentUrl(TINY_EN, api);
     expect(api.tabs.create).toHaveBeenCalledWith({ url: TINY_EN });
-  });
-});
-
-describe('requestFill (I2)', () => {
-  it('returns true only when the content script answers {filled:true}', async () => {
-    const api = fakeApi([{ id: 7, windowId: 1, url: TINY_EN, active: true }]);
-    api.tabs.sendMessage.mockResolvedValueOnce({ filled: true });
-    expect(await requestFill('hotel', api)).toBe(true);
-    expect(api.tabs.sendMessage).toHaveBeenCalledWith(7, { type: 'fillTheme', theme: 'hotel' });
-    api.tabs.sendMessage.mockResolvedValueOnce({ filled: false });
-    expect(await requestFill('hotel', api)).toBe(false);
-    api.tabs.sendMessage.mockRejectedValueOnce(new Error('Receiving end does not exist'));
-    expect(await requestFill('hotel', api)).toBe(false);
-  });
-
-  it('returns false without an active LLL tab', async () => {
-    const api = fakeApi([{ id: 8, windowId: 1, url: 'https://example.com/', active: true }]);
-    expect(await requestFill('hotel', api)).toBe(false);
-    expect(api.tabs.sendMessage).not.toHaveBeenCalled();
   });
 });
 

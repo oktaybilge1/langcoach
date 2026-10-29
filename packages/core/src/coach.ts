@@ -492,9 +492,17 @@ export class Coach {
    * answered card (last outcome wins), one log entry carrying the session XP, and today's
    * review task marked done (without extra XP).
    */
-  async recordPractice(input: { sessionId: string; results: PracticeResult[] }): Promise<PracticeSummary> {
+  async recordPractice(input: {
+    sessionId: string;
+    results: PracticeResult[];
+    /** Match-pairs games played (for the "first match" achievement). */
+    matchGames?: number;
+  }): Promise<PracticeSummary> {
     if (!isObj(input)) throw new InvalidDataError('input must be an object');
-    const { sessionId, results } = input as { sessionId: unknown; results: unknown };
+    const { sessionId, results, matchGames } = input as { sessionId: unknown; results: unknown; matchGames: unknown };
+    if (matchGames !== undefined && !intIn(matchGames, 0, 50)) {
+      throw new InvalidDataError('matchGames must be an integer from 0 to 50');
+    }
     if (typeof sessionId !== 'string' || sessionId.trim() === '' || sessionId.length > 100) {
       throw new InvalidDataError('sessionId must be a non-empty string of at most 100 characters');
     }
@@ -513,7 +521,8 @@ export class Coach {
     return this.store.transaction<PracticeSummary>((s) => {
       const prior = s.sessions?.find((x) => x.id === sessionId);
       if (prior) {
-        const perfect = prior.exercises > 0 && prior.xp === prior.correct + PRACTICE_BONUS + PERFECT_BONUS;
+        const perfect =
+          prior.perfect ?? (prior.exercises > 0 && prior.xp === prior.correct + PRACTICE_BONUS + PERFECT_BONUS);
         return { result: { xp: prior.xp, correct: prior.correct, total: prior.exercises, perfect } };
       }
       // Session record aged out of the 500 kept: the log entry still proves it was rewarded.
@@ -537,7 +546,8 @@ export class Coach {
       }
 
       if (xp > 0) s.log.push({ at: now.toISOString(), date, taskId, type: 'review', xp });
-      const session: PracticeSession = { id: sessionId, at: now.toISOString(), date, exercises: total, correct, xp };
+      const session: PracticeSession = { id: sessionId, at: now.toISOString(), date, exercises: total, correct, xp, perfect };
+      if (typeof matchGames === 'number' && matchGames > 0) session.matchGames = matchGames;
       s.sessions = [...(s.sessions ?? []), session].slice(-KEEP_SESSIONS);
 
       if (total > 0 && s.profile) {

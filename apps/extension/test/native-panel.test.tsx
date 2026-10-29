@@ -228,7 +228,11 @@ describe('native translations in the side panel', () => {
       render(<App send={h.send} initialTab="review" translator={createTranslatorCache(undefined, () => undefined)} />, host);
     });
     await flush(10);
-    // card mode: flip the first card
+    // card mode (Words opens as the list): flip the first card
+    await act(async () => {
+      host.querySelector<HTMLButtonElement>('[data-testid="mode-cards"]')!.click();
+    });
+    await flush(10);
     await act(async () => {
       host.querySelector<HTMLButtonElement>('[data-testid="review-show"]')!.click();
     });

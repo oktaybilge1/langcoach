@@ -118,16 +118,3 @@ export async function runScenario(
     return { ok: false, reason: 'unreachable' };
   }
 }
-
-/** Asks the active tab's content script to fill the Tiny Lesson purpose field; true only if it did. */
-export async function requestFill(theme: string, api: TabsApi | null = chromeApi()): Promise<boolean> {
-  if (!api) return false;
-  try {
-    const [tab] = await api.tabs.query({ active: true, currentWindow: true });
-    if (tab?.id === undefined || experimentSlug(tab.url) === null) return false;
-    const res = (await api.tabs.sendMessage(tab.id, { type: 'fillTheme', theme })) as { filled?: unknown } | undefined;
-    return res?.filled === true;
-  } catch {
-    return false; // no content script (tab not reloaded since install) or the tab went away
-  }
-}
