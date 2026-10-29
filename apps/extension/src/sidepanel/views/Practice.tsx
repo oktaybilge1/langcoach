@@ -28,6 +28,8 @@ export interface PracticeDeps {
   uuid?: () => string;
   now?: () => Date;
   reducedMotion?: () => boolean;
+  /** Pause before the one automatic retry of a failed save (default 400 ms). */
+  retryDelayMs?: number;
 }
 
 export interface PracticeProps {
@@ -116,6 +118,8 @@ export function Practice({ snapshot, uiLocale, t, send, onRefresh, onDone, sound
   const [feedback, setFeedbackState] = useState<Feedback | null>(null);
   const [save, setSave] = useState<Save | null>(null);
   const [startError, setStartError] = useState<string | null>(null);
+  /** The end-screen action the learner pressed once while the session was unsaved (pressing it again leaves). */
+  const [leaveWarn, setLeaveWarn] = useState<'done' | 'again' | null>(null);
 
   const runRef = useRef<Run | null>(null);
   const feedbackRef = useRef<Feedback | null>(null);
@@ -124,6 +128,8 @@ export function Practice({ snapshot, uiLocale, t, send, onRefresh, onDone, sound
   const startingRef = useRef(false);
   const mounted = useRef(true);
   const continueBtn = useRef<HTMLButtonElement>(null);
+  const endHeading = useRef<HTMLHeadingElement>(null);
+  const exerciseCard = useRef<HTMLElement>(null);
   useEffect(() => {
     mounted.current = true;
     warmVoices();
@@ -131,6 +137,8 @@ export function Practice({ snapshot, uiLocale, t, send, onRefresh, onDone, sound
       mounted.current = false;
     };
   }, []);
+  // Release the Web Audio context when the panel view goes away.
+  useEffect(() => () => sounds.close(), [sounds]);
 
   const setRun = (r: Run | null) => {
     runRef.current = r;
@@ -151,6 +159,7 @@ export function Practice({ snapshot, uiLocale, t, send, onRefresh, onDone, sound
     if (startingRef.current) return;
     startingRef.current = true;
     setStartError(null);
+    setLeaveWarn(null);
     setPhase('loading');
     try {
       const fetched = await send({ type: 'getPracticeCards' });
@@ -200,22 +209,37 @@ export function Practice({ snapshot, uiLocale, t, send, onRefresh, onDone, sound
     sounds.play(state === 'wrong' ? 'wrong' : 'correct');
   }
 
-  async function record(r: Run, s: Session) {
+  /**
+   * Save the session. recordPractice is idempotent by session id, so the first automatic save
+   * retries once on its own (e.g. the service worker was restarting); a manual Retry tries once.
+   */
+  async function record(r: Run, s: Session, autoRetry = false) {
     setSave({ status: 'saving' });
-    try {
-      // Match games actually answered (re-tries of the same exercise count once).
-      const matchGames = new Set(r.queue.filter(({ ex }) => ex.kind === 'match' && r.outcomes[ex.id]).map(({ ex }) => ex.id)).size;
-      const data = await send({
-        type: 'recordPractice',
-        sessionId: s.id,
-        results: results(r),
-        ...(matchGames > 0 ? { matchGames } : {}),
-      });
-      if (!mounted.current) return;
-      setSave({ status: 'saved', data });
-      void onRefresh();
-    } catch (e) {
-      if (mounted.current) setSave({ status: 'error', message: (e as Error).message });
+    // Match games actually answered (re-tries of the same exercise count once).
+    const matchGames = new Set(r.queue.filter(({ ex }) => ex.kind === 'match' && r.outcomes[ex.id]).map(({ ex }) => ex.id)).size;
+    for (let attempt = 0; ; attempt++) {
+      try {
+        const data = await send({
+          type: 'recordPractice',
+          sessionId: s.id,
+          results: results(r),
+          ...(matchGames > 0 ? { matchGames } : {}),
+        });
+        if (!mounted.current) return;
+        setSave({ status: 'saved', data });
+        setLeaveWarn(null);
+        void onRefresh();
+        return;
+      } catch (e) {
+        if (!mounted.current) return;
+        if (autoRetry && attempt === 0) {
+          await new Promise((res) => setTimeout(res, deps.retryDelayMs ?? 400));
+          if (!mounted.current) return;
+          continue;
+        }
+        setSave({ status: 'error', message: (e as Error).message });
+        return;
+      }
     }
   }
 
@@ -225,7 +249,7 @@ export function Practice({ snapshot, uiLocale, t, send, onRefresh, onDone, sound
     recordedRef.current = s.id;
     setPhase('end');
     sounds.play('complete');
-    void record(r, s);
+    void record(r, s, true);
   }
 
   const nextRef = useRef(() => {});
@@ -267,6 +291,34 @@ export function Practice({ snapshot, uiLocale, t, send, onRefresh, onDone, sound
   useEffect(() => {
     if (feedback && active) continueBtn.current?.focus({ preventScroll: true });
   }, [feedback, active]);
+
+  // The end screen takes the focus to its heading, so it is read out and Tab reaches its actions.
+  useEffect(() => {
+    if (phase === 'end' && active) endHeading.current?.focus({ preventScroll: true });
+  }, [phase]);
+
+  // A new match game puts the focus on its first word (Choice and TypeAnswer focus themselves).
+  const exKey = phase === 'run' && run && !isDone(run) ? `${run.pos}-${current(run)?.ex.id ?? ''}` : '';
+  useEffect(() => {
+    const el = exerciseCard.current;
+    if (!exKey || !active || feedbackRef.current || !el || el.getAttribute('data-kind') !== 'match') return;
+    if (!el.contains(document.activeElement)) el.querySelector<HTMLElement>('[data-testid="match-term-0"]')?.focus({ preventScroll: true });
+  }, [exKey]);
+
+  /** Done / Practice again: with an unsaved session, the first press warns and the second leaves. */
+  function leave(action: 'done' | 'again') {
+    if (save?.status === 'error' && leaveWarn !== action) {
+      setLeaveWarn(action);
+      return;
+    }
+    setLeaveWarn(null);
+    if (action === 'again') {
+      void start();
+    } else {
+      quit();
+      onDone();
+    }
+  }
 
   const tinyLesson = () => void openExperimentUrl(deeplink(toSiteLang(uiLocale), 'tiny_lesson')).catch(() => undefined);
 
@@ -345,7 +397,9 @@ export function Practice({ snapshot, uiLocale, t, send, onRefresh, onDone, sound
         <div class="px-hero" aria-hidden="true">
           {perfect ? '🏆' : '🎉'}
         </div>
-        <h1>{perfect ? t('pxEndPerfect') : t('pxEndTitle')}</h1>
+        <h1 ref={endHeading} tabIndex={-1} class="px-end-title">
+          {perfect ? t('pxEndPerfect') : t('pxEndTitle')}
+        </h1>
         {perfect && (
           <p class="px-perfect-bonus" data-testid="practice-perfect-bonus">
             {t('pxPerfectBonus', String(PERFECT_BONUS_XP))}
@@ -382,25 +436,22 @@ export function Practice({ snapshot, uiLocale, t, send, onRefresh, onDone, sound
             </button>
           </div>
         )}
+        {leaveWarn && save?.status === 'error' && (
+          <p class="error-text" role="alert" data-testid="practice-leave-warning">
+            {t('pxLeaveUnsaved')}
+          </p>
+        )}
         <div class="px-end-actions">
           <button
             type="button"
             class="primary px-big-btn"
             data-testid="btn-practice-again"
             disabled={save?.status === 'saving'}
-            onClick={() => void start()}
+            onClick={() => leave('again')}
           >
             {t('pxAgain')}
           </button>
-          <button
-            type="button"
-            class="px-big-btn"
-            data-testid="btn-practice-done"
-            onClick={() => {
-              quit();
-              onDone();
-            }}
-          >
+          <button type="button" class="px-big-btn" data-testid="btn-practice-done" onClick={() => leave('done')}>
             {t('pxDone')}
           </button>
         </div>
@@ -422,6 +473,27 @@ export function Practice({ snapshot, uiLocale, t, send, onRefresh, onDone, sound
   const onSingle = (result: CheckResult | 'correct' | 'wrong', given: string) =>
     answered({ kind: 'single', result }, result, given);
 
+  const feedbackTitle = !feedback
+    ? ''
+    : feedback.state === 'correct'
+      ? run.pos % 3 === 0
+        ? t('pxPraise1')
+        : run.pos % 3 === 1
+          ? t('pxPraise2')
+          : t('pxPraise3')
+      : feedback.state === 'almost'
+        ? ex.kind === 'match'
+          ? t('pxMatchAlmost')
+          : t('pxAlmostTitle')
+        : t('pxWrongTitle');
+  const announcement = !feedback
+    ? ''
+    : feedback.state === 'almost' && ex.kind === 'type'
+      ? `${feedbackTitle} ${t('pxAlmostBody')} ${expectedVariants(ex.answer as string).join(' / ')}`
+      : feedback.state === 'wrong' && ex.kind !== 'match'
+        ? `${feedbackTitle} ${t('pxCorrectAnswer')} ${ex.answer as string}`
+        : feedbackTitle;
+
   return (
     <div class="px-run" data-testid="practice-run">
       <div class="px-top">
@@ -439,7 +511,7 @@ export function Practice({ snapshot, uiLocale, t, send, onRefresh, onDone, sound
         >
           <div class="px-progress-fill" style={{ width: `${Math.round((shown / total) * 100)}%` }} />
         </div>
-        <span class={`px-combo${run.combo >= 3 ? ' is-on' : ''}`} data-testid={run.combo >= 3 ? 'practice-combo' : undefined} aria-live="polite">
+        <span class={`px-combo${run.combo >= 3 ? ' is-on' : ''}`} data-testid={run.combo >= 3 ? 'practice-combo' : undefined}>
           {run.combo >= 3 ? `🔥 ${t('pxCombo', String(run.combo))}` : ''}
         </span>
       </div>
@@ -449,6 +521,7 @@ export function Practice({ snapshot, uiLocale, t, send, onRefresh, onDone, sound
       <section
         class="card px-card"
         key={key}
+        ref={exerciseCard}
         data-testid="practice-exercise"
         data-exercise-id={ex.id}
         data-kind={ex.kind}
@@ -459,7 +532,6 @@ export function Practice({ snapshot, uiLocale, t, send, onRefresh, onDone, sound
             exercise={ex}
             lang={bcp}
             t={t}
-            active={active && !feedback}
             onPair={(ok) => sounds.play(ok ? 'correct' : 'wrong')}
             onDone={(perCard) => {
               const clean = Object.values(perCard).every((o) => o === 'correct');
@@ -494,26 +566,19 @@ export function Practice({ snapshot, uiLocale, t, send, onRefresh, onDone, sound
         )}
       </section>
 
+      {/* Persistent polite live region: it exists before any answer, so every feedback change is announced. */}
+      <p class="sr-only" role="status" aria-live="polite" aria-atomic="true" data-testid="practice-announcer">
+        {feedback ? announcement : ''}
+      </p>
+
       <div class={`px-sheet${feedback ? ` is-open is-${feedback.state}` : ''}`} aria-hidden={feedback ? undefined : 'true'}>
         {feedback && (
-          <div role="status" aria-live="polite" data-testid="practice-feedback" data-state={feedback.state}>
+          <div data-testid="practice-feedback" data-state={feedback.state}>
             <div class="px-sheet-head">
               <span class="px-sheet-icon" aria-hidden="true">
                 {feedback.state === 'correct' ? '✓' : feedback.state === 'almost' ? '≈' : '✕'}
               </span>
-              <strong>
-                {feedback.state === 'correct'
-                  ? run.pos % 3 === 0
-                    ? t('pxPraise1')
-                    : run.pos % 3 === 1
-                      ? t('pxPraise2')
-                      : t('pxPraise3')
-                  : feedback.state === 'almost'
-                    ? ex.kind === 'match'
-                      ? t('pxMatchAlmost')
-                      : t('pxAlmostTitle')
-                    : t('pxWrongTitle')}
-              </strong>
+              <strong>{feedbackTitle}</strong>
             </div>
             {feedback.state === 'almost' && ex.kind === 'type' && (
               <p class="px-sheet-line">

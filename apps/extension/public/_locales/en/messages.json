@@ -720,6 +720,9 @@
   "pxDone": {
     "message": "Done"
   },
+  "pxLeaveUnsaved": {
+    "message": "Your results aren't saved yet. Press again to leave without saving, or tap Retry."
+  },
   "fieldSoundEffects": {
     "message": "Sound effects in practice"
   },

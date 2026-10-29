@@ -81,6 +81,39 @@ describe('sound effects', () => {
     expect(create).not.toHaveBeenCalled();
   });
 
+  it('close() closes the audio context once; a later play creates a fresh one', () => {
+    const f = fakeContext();
+    const close = vi.fn(async () => undefined);
+    const create = vi.fn(() => ({ ...f.ctx, close }));
+    const s = createSounds({ enabled: () => true, createContext: create });
+    s.close(); // nothing created yet: no-op
+    expect(close).not.toHaveBeenCalled();
+    s.play('correct');
+    s.close();
+    s.close();
+    expect(close).toHaveBeenCalledTimes(1);
+    s.play('wrong');
+    expect(create).toHaveBeenCalledTimes(2);
+  });
+
+  it('close() never throws, even if the context refuses', () => {
+    const f = fakeContext();
+    const s = createSounds({
+      enabled: () => true,
+      createContext: () => ({
+        ...f.ctx,
+        close: () => {
+          throw new Error('nope');
+        },
+      }),
+    });
+    s.play('correct');
+    expect(() => s.close()).not.toThrow();
+    const r = createSounds({ enabled: () => true, createContext: () => ({ ...f.ctx, close: () => Promise.reject(new Error('x')) }) });
+    r.play('correct');
+    expect(() => r.close()).not.toThrow();
+  });
+
   it('never throws without Web Audio', () => {
     const s = createSounds({ enabled: () => true, createContext: () => null });
     expect(() => s.play('correct')).not.toThrow();

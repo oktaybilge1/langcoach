@@ -720,6 +720,9 @@
   "pxDone": {
     "message": "Listo"
   },
+  "pxLeaveUnsaved": {
+    "message": "Tus resultados aún no se han guardado. Pulsa de nuevo para salir sin guardar o toca Reintentar."
+  },
   "fieldSoundEffects": {
     "message": "Efectos de sonido al practicar"
   },

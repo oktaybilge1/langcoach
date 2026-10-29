@@ -720,6 +720,9 @@
   "pxDone": {
     "message": "Bitti"
   },
+  "pxLeaveUnsaved": {
+    "message": "Sonuçların henüz kaydedilmedi. Kaydetmeden çıkmak için tekrar bas ya da Tekrar dene'ye dokun."
+  },
   "fieldSoundEffects": {
     "message": "Pratikte ses efektleri"
   },

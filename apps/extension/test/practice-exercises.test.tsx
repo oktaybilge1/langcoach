@@ -73,7 +73,7 @@ describe('Choice exercise', () => {
       render(<Choice exercise={meaningEx} lang="es-ES" t={t} canSpeak={false} onSpeak={() => {}} onAnswer={onAnswer} active />, host);
     });
     await click($('[data-testid="choice-option-1"]'));
-    expect($('[data-testid="choice-option-1"]')!.getAttribute('aria-pressed')).toBe('true');
+    expect($('[data-testid="choice-option-1"]')!.getAttribute('aria-checked')).toBe('true');
     await click($('[data-testid="btn-check"]'));
     expect(onAnswer).toHaveBeenCalledWith('correct', 'the bill');
     // locked afterwards: the right option is marked, a second Check does nothing
@@ -90,11 +90,55 @@ describe('Choice exercise', () => {
     // target-language options carry lang + dir
     expect($('[data-testid="choice-option-0"] .option-text')!.getAttribute('lang')).toBe('es-ES');
     await key('1');
-    expect($('[data-testid="choice-option-0"]')!.getAttribute('aria-pressed')).toBe('true');
+    expect($('[data-testid="choice-option-0"]')!.getAttribute('aria-checked')).toBe('true');
     await key('Enter');
     expect(onAnswer).toHaveBeenCalledWith('wrong', 'la mesa');
     expect($('[data-testid="choice-option-0"]')!.className).toContain('is-wrong');
     expect($('[data-testid="choice-option-2"]')!.className).toContain('is-correct');
+  });
+
+  it('options are a radiogroup of radios with aria-checked (no aria-pressed)', async () => {
+    await act(async () => {
+      render(<Choice exercise={meaningEx} lang="es-ES" t={t} canSpeak={false} onSpeak={() => {}} onAnswer={() => {}} active />, host);
+    });
+    const group = host.querySelector('[role="radiogroup"]')!;
+    expect(group).not.toBeNull();
+    expect(group.getAttribute('aria-label')).toBe(t('pxAskMeaning'));
+    const radios = $$('[data-testid^="choice-option-"]');
+    expect(radios.every((r) => r.getAttribute('role') === 'radio')).toBe(true);
+    expect(radios.every((r) => r.getAttribute('aria-checked') === 'false')).toBe(true);
+    expect(radios.some((r) => r.hasAttribute('aria-pressed'))).toBe(false);
+    await click(radios[2]!);
+    expect(radios.map((r) => r.getAttribute('aria-checked'))).toEqual(['false', 'false', 'true', 'false']);
+    // roving tabindex: only the checked radio is a tab stop
+    expect(radios.map((r) => r.getAttribute('tabindex'))).toEqual(['-1', '-1', '0', '-1']);
+  });
+
+  it('focuses the first option on mount (when active); arrow keys move the selection', async () => {
+    await act(async () => {
+      render(<Choice exercise={meaningEx} lang="es-ES" t={t} canSpeak={false} onSpeak={() => {}} onAnswer={() => {}} active />, host);
+    });
+    const radios = $$('[data-testid^="choice-option-"]');
+    expect(document.activeElement).toBe(radios[0]);
+    expect(radios[0]!.getAttribute('tabindex')).toBe('0');
+    await key('ArrowDown', radios[0]!);
+    expect(radios[1]!.getAttribute('aria-checked')).toBe('true');
+    expect(document.activeElement).toBe(radios[1]);
+    await key('ArrowUp', radios[1]!);
+    await key('ArrowUp', radios[0]!);
+    expect(radios[3]!.getAttribute('aria-checked')).toBe('true'); // wraps around
+    expect(document.activeElement).toBe(radios[3]);
+  });
+
+  it('does not steal focus while inactive', async () => {
+    const outside = document.createElement('button');
+    document.body.appendChild(outside);
+    outside.focus();
+    await act(async () => {
+      render(<Choice exercise={meaningEx} lang="es-ES" t={t} canSpeak={false} onSpeak={() => {}} onAnswer={() => {}} active={false} />, host);
+    });
+    expect(document.activeElement).toBe(outside);
+    outside.remove();
   });
 
   it('ignores keys while inactive', async () => {
@@ -149,7 +193,7 @@ describe('Match exercise', () => {
     const onDone = vi.fn();
     const onPair = vi.fn();
     await act(async () => {
-      render(<Match exercise={matchEx} lang="es-ES" t={t} onDone={onDone} onPair={onPair} active />, host);
+      render(<Match exercise={matchEx} lang="es-ES" t={t} onDone={onDone} onPair={onPair} />, host);
     });
     expect(termBtn('uno').getAttribute('lang')).toBe('es-ES');
     await click(termBtn('uno'));
@@ -181,13 +225,21 @@ describe('Match exercise', () => {
   it('tapping the same column twice switches the selection', async () => {
     const onPair = vi.fn();
     await act(async () => {
-      render(<Match exercise={matchEx} lang="es-ES" t={t} onDone={() => {}} onPair={onPair} active />, host);
+      render(<Match exercise={matchEx} lang="es-ES" t={t} onDone={() => {}} onPair={onPair} />, host);
     });
     await click(termBtn('uno'));
     await click(termBtn('dos'));
     expect(termBtn('dos').getAttribute('aria-pressed')).toBe('true');
     expect(termBtn('uno').getAttribute('aria-pressed')).toBe('false');
     expect(onPair).not.toHaveBeenCalled();
+  });
+
+  it('has no unused `active` prop (type-checked)', async () => {
+    await act(async () => {
+      // @ts-expect-error `active` was removed from MatchProps: it was never read.
+      render(<Match exercise={matchEx} lang="es-ES" t={t} onDone={() => {}} active />, host);
+    });
+    expect($$('[data-testid^="match-term-"]')).toHaveLength(5);
   });
 });
 

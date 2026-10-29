@@ -36,10 +36,31 @@ export function Choice({ exercise, lang, t, canSpeak, onSpeak, onAnswer, active 
   const targetOptions = kind !== 'meaning';
   const langAttr = lang && lang !== 'und' ? lang : undefined;
 
+  const optionEls = useRef<(HTMLButtonElement | null)[]>([]);
+  const activeRef = useRef(active);
+  activeRef.current = active;
+
   // Listening exercises play once when they appear.
   useEffect(() => {
     if (kind === 'listen' && prompt.speak) onSpeak(prompt.speak);
   }, [exercise.id]);
+
+  // A new exercise takes the focus to its first option (keyboard and screen-reader users start right there).
+  useEffect(() => {
+    if (activeRef.current) optionEls.current[0]?.focus({ preventScroll: true });
+  }, [exercise.id]);
+
+  /** Radio-group arrow keys: move (and wrap) the selection and the focus together. */
+  function onOptionKey(e: KeyboardEvent, i: number) {
+    if (checkedRef.current || options.length === 0) return;
+    const step = e.key === 'ArrowDown' || e.key === 'ArrowRight' ? 1 : e.key === 'ArrowUp' || e.key === 'ArrowLeft' ? -1 : 0;
+    if (!step) return;
+    e.preventDefault();
+    const from = selectedRef.current ?? i;
+    const to = (from + step + options.length) % options.length;
+    setSelected(to);
+    optionEls.current[to]?.focus({ preventScroll: true });
+  }
 
   function check() {
     const idx = selectedRef.current;
@@ -141,19 +162,27 @@ export function Choice({ exercise, lang, t, canSpeak, onSpeak, onAnswer, active 
         )}
       </div>
 
-      <div class="option-grid" role="group" aria-label={ask}>
+      <div class="option-grid" role="radiogroup" aria-label={ask}>
         {options.map((opt, i) => {
           const isAnswer = opt === answer;
           const state = checked ? (isAnswer ? ' is-correct' : i === selected ? ' is-wrong' : ' is-dim') : '';
+          // Roving tabindex: the checked option (or the first one) is the group's single tab stop.
+          const tabStop = selected === null ? i === 0 : selected === i;
           return (
             <button
               key={`${exercise.id}-${i}`}
+              ref={(el) => {
+                optionEls.current[i] = el;
+              }}
               type="button"
+              role="radio"
               class={`option${selected === i ? ' is-selected' : ''}${state}`}
               data-testid={`choice-option-${i}`}
-              aria-pressed={selected === i ? 'true' : 'false'}
+              aria-checked={selected === i ? 'true' : 'false'}
+              tabIndex={tabStop ? 0 : -1}
               disabled={checked}
               onClick={() => setSelected(i)}
+              onKeyDown={(e) => onOptionKey(e as unknown as KeyboardEvent, i)}
             >
               <span class="option-key" aria-hidden="true">
                 {i + 1}

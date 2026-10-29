@@ -720,6 +720,9 @@
   "pxDone": {
     "message": "Concluir"
   },
+  "pxLeaveUnsaved": {
+    "message": "Seus resultados ainda não foram salvos. Toque de novo para sair sem salvar ou toque em Tentar novamente."
+  },
   "fieldSoundEffects": {
     "message": "Efeitos sonoros na prática"
   },

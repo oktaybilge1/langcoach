@@ -100,7 +100,7 @@ function harness(cards = CARDS, recordImpl?: () => Promise<unknown>) {
     }
     return null as ResponseOf<K>;
   }) as unknown as PanelSend;
-  const sounds = { play: vi.fn() };
+  const sounds = { play: vi.fn(), close: vi.fn() };
   let reduced = false;
   const deps: PracticeDeps = {
     sounds,
@@ -109,6 +109,7 @@ function harness(cards = CARDS, recordImpl?: () => Promise<unknown>) {
     uuid: () => 'session-uuid-1',
     now: () => NOW,
     reducedMotion: () => reduced,
+    retryDelayMs: 0,
   };
   const onRefresh = vi.fn(async () => {});
   const onDone = vi.fn();
@@ -360,7 +361,7 @@ describe('Practice view', () => {
     expect($('[data-testid="confetti"]')).toBeNull();
   });
 
-  it('a failed save can be retried with the same session id', async () => {
+  it('a failed save is retried once automatically, then can be retried by hand with the same session id', async () => {
     let fail = true;
     const h = harness(CARDS, async () => {
       if (fail) throw new Error('boom');
@@ -370,14 +371,81 @@ describe('Practice view', () => {
     await click($('[data-testid="btn-start-practice"]'));
     await runAll(h);
     await flush();
+    await flush();
+    expect(h.records()).toHaveLength(2); // first try + one automatic retry
     expect($('[data-testid="practice-save-error"]')).not.toBeNull();
     fail = false;
     await click($('[data-testid="btn-retry-save"]'));
     await flush();
     const recs = h.records();
-    expect(recs).toHaveLength(2);
-    expect(recs[1]!.sessionId).toBe(recs[0]!.sessionId);
+    expect(recs).toHaveLength(3);
+    expect(new Set(recs.map((r) => r.sessionId)).size).toBe(1);
     expect($('[data-testid="practice-xp"]')!.getAttribute('data-xp')).toBe('14');
+  });
+
+  it('a single transient save failure is healed by the automatic retry (no error shown)', async () => {
+    let n = 0;
+    const h = harness(CARDS, async () => {
+      if (n++ === 0) throw new Error('worker restarting');
+      return { xp: 14, correct: 4, total: 4, perfect: true };
+    });
+    await h.mount();
+    await click($('[data-testid="btn-start-practice"]'));
+    await runAll(h);
+    await flush();
+    await flush();
+    expect(h.records()).toHaveLength(2);
+    expect($('[data-testid="practice-save-error"]')).toBeNull();
+    expect($('[data-testid="practice-xp"]')!.getAttribute('data-xp')).toBe('14');
+  });
+
+  it('with an unsaved session, Done and Practice again warn first and only leave on a second press', async () => {
+    const h = harness(CARDS, async () => {
+      throw new Error('boom');
+    });
+    let n = 0;
+    h.deps.uuid = () => `s-${++n}`;
+    await h.mount();
+    await click($('[data-testid="btn-start-practice"]'));
+    await runAll(h);
+    await flush();
+    await flush();
+    expect($('[data-testid="practice-save-error"]')).not.toBeNull();
+
+    await click($('[data-testid="btn-practice-done"]'));
+    expect(h.onDone).not.toHaveBeenCalled();
+    const warn = $('[data-testid="practice-leave-warning"]')!;
+    expect(warn).not.toBeNull();
+    expect(warn.getAttribute('role')).toBe('alert');
+    expect(warn.textContent).toBe(t('pxLeaveUnsaved'));
+    expect($('[data-testid="practice-end"]')).not.toBeNull();
+    await click($('[data-testid="btn-practice-done"]'));
+    expect(h.onDone).toHaveBeenCalledTimes(1);
+
+    // Practice again: same rule
+    await h.mount();
+    await click($('[data-testid="btn-start-practice"]'));
+    await runAll(h);
+    await flush();
+    await flush();
+    const before = h.calls.filter((c) => c.type === 'getPracticeCards').length;
+    await click($('[data-testid="btn-practice-again"]'));
+    expect($('[data-testid="practice-leave-warning"]')).not.toBeNull();
+    expect(h.calls.filter((c) => c.type === 'getPracticeCards').length).toBe(before);
+    await click($('[data-testid="btn-practice-again"]'));
+    expect(h.calls.filter((c) => c.type === 'getPracticeCards').length).toBe(before + 1);
+    expect($('[data-testid="practice-exercise"]')).not.toBeNull();
+  });
+
+  it('a saved session leaves on the first press (no warning)', async () => {
+    const h = harness();
+    await h.mount();
+    await click($('[data-testid="btn-start-practice"]'));
+    await runAll(h);
+    await flush();
+    await click($('[data-testid="btn-practice-done"]'));
+    expect($('[data-testid="practice-leave-warning"]')).toBeNull();
+    expect(h.onDone).toHaveBeenCalledTimes(1);
   });
 
   it('"Practice again" starts a new session id; "Done" leaves', async () => {
@@ -410,5 +478,87 @@ describe('Practice view', () => {
     await h.mount(snapshotWith(CARDS), false);
     await key('Enter');
     expect(h.calls.some((c) => c.type === 'getPracticeCards')).toBe(false);
+  });
+});
+
+describe('Practice accessibility', () => {
+  const announcer = () => $('[data-testid="practice-announcer"]');
+
+  it('a persistent polite live region announces the feedback (the region exists before any answer)', async () => {
+    const h = harness();
+    await h.mount();
+    await click($('[data-testid="btn-start-practice"]'));
+    const region = announcer()!;
+    expect(region).not.toBeNull();
+    expect(region.getAttribute('role')).toBe('status');
+    expect(region.getAttribute('aria-live')).toBe('polite');
+    expect(region.textContent).toBe('');
+    await answer(h.expected, false);
+    // same node, now filled: screen readers announce changes of a region that already existed
+    expect(announcer()).toBe(region);
+    expect(region.textContent).toContain(t('pxWrongTitle'));
+    expect(region.textContent).toContain(t('pxCorrectAnswer'));
+    // the visual sheet is not a second live region (no double announcement)
+    const fb = $('[data-testid="practice-feedback"]')!;
+    expect(fb.hasAttribute('aria-live')).toBe(false);
+    expect(fb.getAttribute('role')).toBeNull();
+    await click($('[data-testid="btn-continue"]'));
+    expect(announcer()).toBe(region);
+    expect(region.textContent).toBe('');
+  });
+
+  it('the combo counter is not a live region', async () => {
+    const h = harness();
+    await h.mount();
+    await click($('[data-testid="btn-start-practice"]'));
+    for (let i = 0; i < 3; i++) {
+      await answer(h.expected, true);
+      if (i < 2) await click($('[data-testid="btn-continue"]'));
+    }
+    const combo = $('[data-testid="practice-combo"]')!;
+    expect(combo.hasAttribute('aria-live')).toBe(false);
+    expect($('.px-combo[aria-live]')).toBeNull();
+  });
+
+  it('focus moves into each new exercise (first option, input or first match word) and to Continue after an answer', async () => {
+    const five = [...CARDS, card('c5', 'el pan', 'the bread', 'Más pan, por favor.')];
+    const h = harness(five);
+    await h.mount();
+    await click($('[data-testid="btn-start-practice"]'));
+    const kinds = new Set<string>();
+    for (let guard = 0; guard < 40 && !$('[data-testid="practice-end"]'); guard++) {
+      const card = $('[data-testid="practice-exercise"]')!;
+      const kind = card.getAttribute('data-kind')!;
+      kinds.add(kind);
+      expect(card.contains(document.activeElement), `focus inside a ${kind} exercise`).toBe(true);
+      if (kind === 'match') expect(document.activeElement!.getAttribute('data-testid')).toBe('match-term-0');
+      else if (kind === 'type') expect(document.activeElement!.getAttribute('data-testid')).toBe('type-input');
+      else expect(document.activeElement!.getAttribute('data-testid')).toBe('choice-option-0');
+      await answer(h.expected, true);
+      expect(document.activeElement).toBe($('[data-testid="btn-continue"]'));
+      await click($('[data-testid="btn-continue"]'));
+    }
+    expect(kinds.has('match')).toBe(true);
+  });
+
+  it('the end screen focuses its heading', async () => {
+    const h = harness();
+    await h.mount();
+    await click($('[data-testid="btn-start-practice"]'));
+    await runAll(h);
+    await flush();
+    const heading = $('[data-testid="practice-end"] h1')!;
+    expect(heading.getAttribute('tabindex')).toBe('-1');
+    expect(document.activeElement).toBe(heading);
+  });
+
+  it('closes the audio context when Practice unmounts', async () => {
+    const h = harness();
+    await h.mount();
+    expect(h.sounds.close).not.toHaveBeenCalled();
+    await act(async () => {
+      render(null, host);
+    });
+    expect(h.sounds.close).toHaveBeenCalledTimes(1);
   });
 });

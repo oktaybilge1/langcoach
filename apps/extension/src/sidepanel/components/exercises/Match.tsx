@@ -10,7 +10,6 @@ export interface MatchProps {
   onDone: (perCard: Record<string, 'correct' | 'hard'>) => void;
   /** Each attempted pair (for sounds). */
   onPair?: (ok: boolean) => void;
-  active: boolean;
 }
 
 type Side = 'term' | 'meaning';

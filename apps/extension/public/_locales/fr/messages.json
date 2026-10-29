@@ -720,6 +720,9 @@
   "pxDone": {
     "message": "Terminé"
   },
+  "pxLeaveUnsaved": {
+    "message": "Tes résultats ne sont pas encore enregistrés. Appuie de nouveau pour quitter sans enregistrer, ou touche Réessayer."
+  },
   "fieldSoundEffects": {
     "message": "Effets sonores pendant la pratique"
   },

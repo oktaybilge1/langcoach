@@ -723,6 +723,10 @@ button:focus-visible, select:focus-visible, input:focus-visible {
   transform: translateY(3px);
   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.15);
 }
+/* Focused by script (tabindex=-1) so it is announced; no ring unless the keyboard put it there. */
+.px-end-title:focus:not(:focus-visible) {
+  outline: none;
+}
 .px-end-actions {
   display: grid;
   gap: 10px;

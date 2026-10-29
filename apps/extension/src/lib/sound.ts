@@ -4,6 +4,8 @@ export type SoundName = 'correct' | 'wrong' | 'complete';
 export interface Sounds {
   /** Call from a user-gesture handler: the audio context is created on the first play. Never throws. */
   play(name: SoundName): void;
+  /** Release the audio context (call on unmount). A later play creates a new one. Never throws. */
+  close(): void;
 }
 
 interface ParamLike {
@@ -20,6 +22,7 @@ export interface AudioContextLike {
   state?: string;
   destination: unknown;
   resume?: () => Promise<unknown>;
+  close?: () => Promise<unknown> | void;
   createOscillator(): NodeLike & { type: string; frequency: ParamLike; start(t?: number): void; stop(t?: number): void };
   createGain(): NodeLike & { gain: ParamLike };
 }
@@ -95,6 +98,17 @@ export function createSounds(opts: {
         }
       } catch {
         failed = true; // no audio on this device: stay quiet
+      }
+    },
+    close() {
+      const c = ctx;
+      ctx = null;
+      if (!c) return;
+      try {
+        const p = c.close?.();
+        if (p && typeof (p as Promise<unknown>).catch === 'function') void (p as Promise<unknown>).catch(() => undefined);
+      } catch {
+        // already closed or unsupported: nothing to release
       }
     },
   };
