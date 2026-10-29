@@ -6,29 +6,35 @@
 [![npm](https://img.shields.io/npm/v/langcoach)](https://www.npmjs.com/package/langcoach)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/oktaybilge1/langcoach/blob/main/LICENSE)
 
-**[Little Language Lessons](https://labs.google/lll/en) ve Claude Code için kişisel dil koçun: haftalık plan, günlük görevler, aralıklı tekrar kartları (FSRS), seri ve XP.**
+**[Little Language Lessons](https://labs.google/lll/en) ve Claude Code için kişisel dil koçun: haftalık plan, günlük görevler, alıştırma oturumları, aralıklı tekrar (FSRS), seri ve XP.**
 
-<!-- TODO: Chrome uzantısı yan panel + Tiny Lesson yakalama tanıtım GIF dosyası buraya gelecek: docs/media/extension-demo.gif -->
+<!-- Tanıtım GIF'i ve ekran görüntülerini proje sahibi kaydedecek; çekim listesi docs/media/README.md içinde. docs/media/extension-demo.gif hazır olunca görsel buraya eklenecek. -->
 
-Tek seferlik yapay zekâ dil alıştırmaları harika ama sekmeyi kapattığın anda seni unutuyor. **LangCoach**, eksik olan yapıyı—kişisel haftalık çalışma planı, otomatik kelime yakalama, FSRS tekrar kartları, günlük seri ve XP—iki farklı kapıdan sunar:
+Tek seferlik yapay zekâ dil alıştırmaları harika ama sekmeyi kapattığın anda seni unutuyor. **LangCoach** eksik olan yapıyı (kişisel haftalık plan, otomatik kelime yakalama, alıştırma oturumları, FSRS tekrarları, günlük hedef, seri ve XP) iki kapıdan sunar:
 
-1. **Tarayıcı Uzantısı (Chrome / Edge / Brave):** [Google Labs Little Language Lessons](https://labs.google/lll/en) sayfasının hemen yanında bir Yan Panel açar; yaptığın Tiny Lesson, Slang Hang ve Word Cam alıştırmalarını otomatik olarak yakalar ve tekrarlarını zamanlar.
-2. **Claude Code MCP Sunucusu:** Terminalde Claude Code'a derslerin, tekrarların ve haftalık planın için kalıcı bir hafıza kazandırır.
+1. **Tarayıcı uzantısı (Chrome / Edge / Brave):** [Google Labs Little Language Lessons](https://labs.google/lll/en) sayfasının hemen yanında bir yan panel açar; ürettiğin her Tiny Lesson, Slang Hang ve Word Cam sonucunu yakalar, alıştırmaya ve tekrara dönüştürür.
+2. **Claude Code MCP sunucusu:** Terminalde Claude Code'a derslerin, tekrarların ve haftalık planın için kalıcı bir hafıza kazandırır.
 
 - **API anahtarı, hesap ya da sunucu yok.**
-- **%100 yerel:** Verin bilgisayarından dışarı çıkmaz ([Gizlilik Politikası](https://github.com/oktaybilge1/langcoach/blob/main/docs/PRIVACY.md)).
+- **Yerel veri:** LangCoach hiçbir ağ isteği yapmaz; verin bilgisayarında kalır ([Gizlilik Politikası](https://github.com/oktaybilge1/langcoach/blob/main/docs/PRIVACY.md)).
 
-## 1. Tarayıcı Uzantısı (Little Language Lessons Koçu)
+## 1. Tarayıcı uzantısı (Little Language Lessons koçu)
 
 <!-- TODO: Mağaza onayından sonra Chrome Web Mağazası ve Edge rozetleriyle değiştirilecek -->
-**[Chrome'a Ekle (Yakında)](https://github.com/oktaybilge1/langcoach/blob/main/docs/extension/INSTALL.tr.md)** · **[ZIP / Paketlenmemiş Öğe Kurulum Rehberi](https://github.com/oktaybilge1/langcoach/blob/main/docs/extension/INSTALL.tr.md)**
+**Chrome'a Ekle (yakında)** · **[ZIP'ten kurulum (Paketlenmemiş öğe yükle)](https://github.com/oktaybilge1/langcoach/blob/main/docs/extension/INSTALL.tr.md)**
 
-- **Otomatik yakalama:** `https://labs.google/lll/*` üzerinde Tiny Lesson, Slang Hang veya Word Cam kullandığında kelimeleri, deyimleri ve dilbilgisi notlarını otomatik olarak kartlara dönüştürür (tek tıkla Geri Al ve sağ tıkla "LangCoach'a kaydet" desteğiyle).
-- **Yan panel koçu:** Bugünün görevleri, FSRS kart tekrarı (`Boşluk` ile çevir, `1–4` ile puanla, sesli telaffuz), haftalık plan, seri, XP ve rozetler.
-- **23 hedef dil ve 5 arayüz dili:** Türkçe, English, Español, Français, Português (Brasil) ve tam RTL kart desteği.
-- **Ağ isteği yok:** Uzantının kendisi hiçbir ağ isteği yapmaz; desten `chrome.storage.local` içinde kalır. 🔊 düğmesi tarayıcının konuşma seslerini kullanır; bazı seslerde okunan metin tarayıcı üreticisinin sunucularında işlenebilir.
+- **Otomatik yakalama:** `https://labs.google/lll/*` üzerinde Tiny Lesson, Slang Hang veya Word Cam kullandığında kelimeler, ifadeler, telaffuz ve dilbilgisi notları destene kart olarak eklenir; tek tıkla Geri Al ve seçili her metin için sağ tıkla "LangCoach'a kaydet" var.
+- **Bugün:** günlük XP hedef halkası, seri alevin ve seri dondurma hakların, haftalık plandan bugünün görevleri ve **tek dokunuşla başlatılan** üç senaryo önerisi (LangCoach Tiny Lesson'da dilini seçer, durumu yazar ve Generate'e basar; sayfa hazır değilse metni senin için kopyalar).
+- **Alıştırma oturumları:** altı türde yaklaşık on kısa alıştırma (anlamı seç, kelimeyi seç, dinle ve seç, eşleştir, kelimeyi yaz, boşluğu doldur); büyük/küçük harf, aksan, tek harflik hata ve romanizasyona karşı hoşgörülü kontrol; bilemediğin kelimeler sonda tekrar gelir; kombo sayacı, isteğe bağlı sesler ve kusursuz oturum bonusu.
+- **Kelimeler merkezi:** tüm kelimelerin ders durumuna göre gruplanmış; arama, filtreler (Tümü / Tekrar zamanı / Yeni / Zayıf / Favoriler / Öğrenildi), FSRS takviminden güç göstergesi, favoriler, 🔊, kendi çevirini yerinde düzenleme, "Bunu biliyorum" ve kart çevirme modu (`Boşluk` ile çevir, `1–4` ile puanla).
+- **Günlük hedef ve seri dondurma:** günde Rahat 10 / Düzenli 20 / Ciddi 30 / Yoğun 50 XP seç. Serinin her 7 gününde bir dondurma hakkı kazanırsın; elindeki hak kaçırdığın bir günü otomatik olarak korur.
+- **Seviyeler ve rozetler:** toplam XP'ye göre adlandırılmış seviyeler, 7 günlük XP grafiği ve rozetler (ilk ders, seriler, deste büyüklüğü, kusursuz oturum, bir günde 100 XP ve daha fazlası).
+- **Ana diline cihaz üzerinde çeviri:** masaüstü Chrome'da yerleşik Translator API ile (Chrome 138+), yakalanan kelimeler kendi dilinde de bir anlam alır; panelde ve ders sayfasında kelimelerin altında görünür. Çeviri tarayıcıda yapılır; LangCoach hiçbir yere bir şey göndermez. API yoksa kartlar dersin verdiği anlamla kalır.
+- **Dışa aktarma:** Ayarlar'dan Anki (metin içe aktarma), Quizlet ve CSV dosyaları ile tekrar içe aktarabileceğin bir JSON yedeği. Dosyalar yerelde oluşturulur.
+- **23 LLL hedef dili ve 5 arayüz dili:** Türkçe, English, Español, Français, Português (Brasil); RTL kart desteğiyle.
+- **Ağ isteği yok:** uzantının kendisi hiçbir ağ isteği yapmaz ve analiz aracı içermez; desten `chrome.storage.local` içinde kalır. 🔊 düğmesi tarayıcının konuşma seslerini kullanır; bazı seslerde okunan metin tarayıcı üreticisinin sunucularında işlenebilir.
 
-## 2. Claude Code MCP Sunucusu
+## 2. Claude Code MCP sunucusu
 
 [Node.js](https://nodejs.org) 20+ ve [Claude Code](https://docs.anthropic.com/en/docs/claude-code) (oturumu açık) gerekir.
 
@@ -48,7 +54,7 @@ claude mcp add --scope user langcoach "--" cmd /c npx -y langcoach
 
 Ya da bu depo bağlantısını Claude Code'a yapıştır ve şunu söyle: *LangCoach'u benim için kur*
 
-Ayrıntılar, doğrulama, güncelleme, kaldırma ve sorun giderme: [docs/INSTALL.tr.md](https://github.com/oktaybilge1/langcoach/blob/main/docs/INSTALL.tr.md). `langcoach` paketi henüz npm'de yok; yayınlanana kadar o rehberdeki "Kaynaktan çalıştırma" bölümüne bak.
+Ayrıntılar, doğrulama, güncelleme, kaldırma ve sorun giderme: [docs/INSTALL.tr.md](https://github.com/oktaybilge1/langcoach/blob/main/docs/INSTALL.tr.md).
 
 ## Kullanım
 
@@ -58,7 +64,19 @@ Claude Code'da `tutor` istemini çalıştır. MCP istemleri `/mcp__langcoach__tu
 
 İlk seferde Claude sana birkaç soru sorar (ana dil, hedef dil, CEFR seviyesi, hedef, günlük dakika, haftada kaç gün) ve profilini kaydeder. Sonrasında bu haftanın planını çıkarır, bugünkü görevleri söyler, dersi anlatır, vadesi gelen kartlardan seni yoklar ve her şeyi kaydeder.
 
-## Özellikler
+## Neden doğrudan bir sohbet botuna sormuyorum?
+
+Sorabilirsin; bir sohbet botu tek bir konuşma için iyi bir öğretmendir. Kendi başına yapmadığı şey, seni haftalar boyunca takip etmek. LangCoach hatırlayan kısımdır:
+
+- **Kalıcı bir plan.** Profilin ve bu haftanın planı kaydedilir; yarın boş bir sohbetten değil, bugün kaldığın yerden başlarsın.
+- **Zamanlanmış tekrarlar.** Her kelimeye bir aralıklı tekrar algoritması olan [FSRS](https://github.com/open-spaced-repetition/ts-fsrs) ile bir tekrar tarihi verilir; kelimeyi rastgele değil, büyük olasılıkla unutmadan biraz önce yeniden görürsün.
+- **Dürüst sayılar.** Seri, XP, vadesi gelen kartlar ve ilerleme, gerçekten yaptığın ve kaydedilen şeylerden hesaplanır; bir model tarafından tahmin edilmez ya da uydurulmaz.
+- **Verin yerelde kalır.** Her şey bilgisayarındaki bir dosyada (MCP) ya da tarayıcının depolamasında (uzantı) durur ve istediğin zaman dışa aktarabilirsin.
+- **Kendi hayatından dersler.** Dersler gerçek durumlarından başlar (gelecek ayki gezin, yarınki toplantın): tarayıcıda Tiny Lesson ile ya da terminalde Claude ile.
+
+LangCoach bir öğretmenin ya da kursun yerini tutmaz ve konuşmanı puanlamaz.
+
+## Özellikler (MCP sunucusu)
 
 - **Kişisel profil:** ana dil, hedef dil, seviye (A1-C2), hedef, günlük dakika ve haftalık çalışma günü.
 - **Haftalık plan:** ISO haftasına yayılan çalışma günleri; günlük süreni ve hedefinden seçilen bir temayı esas alır.
@@ -83,6 +101,8 @@ Her şey tek bir JSON dosyasında durur: `~/.langcoach/data.json`. Farklı bir k
 - Veri dosyası bozuksa `data.corrupt-<zaman-damgası>.json` olarak saklanır ve net bir hata alırsın.
 - İçe aktarma verini değiştirmeden önce mevcut dosya `data.backup-<zaman-damgası>.json` olarak yedeklenir.
 
+Uzantı kendi destesini tarayıcıda tutar; ikisi senkronize olmaz. Kelimeleri aralarında ve başka uygulamalara taşımak için dışa aktarmayı kullan.
+
 ## Yol haritası
 
 Planlanıyor, henüz yapılmadı:
@@ -90,6 +110,8 @@ Planlanıyor, henüz yapılmadı:
 - [ ] Kendi Gemini API anahtarınla tarayıcıda çalışan web uygulaması (PWA) ve GitHub Pages üzerinde canlı demo
 - [ ] Word Cam tarzı kamerayla kelime öğrenme (web uygulaması)
 - [ ] Topluluk PR'larıyla daha fazla arayüz dili
+
+Her sürümde nelerin değiştiği için [CHANGELOG](https://github.com/oktaybilge1/langcoach/blob/main/CHANGELOG.md) dosyasına bak.
 
 ## Katkı
 
