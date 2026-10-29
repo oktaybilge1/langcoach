@@ -52,4 +52,8 @@ Rules:
 - Push, publish (npm) and open PRs only with the owner's approval.
 - READMEs ship to npm, so use absolute `https://github.com/oktaybilge1/langcoach/blob/main/...` URLs for links in them.
 
+Gotcha: inside a clone of this repo, `npx -y langcoach` (and so `claude mcp list` started from the clone) resolves to the local workspace package `packages/mcp`, not the published one. Without a build its `dist/` is missing and the server fails to connect. Check the installed server from any other folder, or run `npm run build` first. To test your local build, register it with `node /absolute/path/to/langcoach/packages/mcp/dist/index.js`.
+
+Release notes go in [CHANGELOG.md](CHANGELOG.md). The extension package, its `manifest.json` and `packages/mcp` share one version (`apps/extension/test/version.test.tsx` checks the extension pair).
+
 See also [CONTRIBUTING.md](CONTRIBUTING.md).

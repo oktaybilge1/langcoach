@@ -109,6 +109,7 @@ Add `--scope user` if you added it with that flag. Optionally delete the data fo
 | Windows: `spawn npx ENOENT`, or the server fails to start | Use the `cmd /c` form: `claude mcp add --scope user langcoach "--" cmd /c npx -y langcoach` |
 | Windows PowerShell: `error: unknown option` when adding | PowerShell drops a bare `--`. Keep the quotes: `"--"` (works in PowerShell and CMD). |
 | `claude mcp list` shows `langcoach` as failed | Run `npx -y langcoach` in a terminal. It should wait silently (it speaks MCP over stdin); press Ctrl+C to stop. If it prints an error instead, that is the cause. |
+| `claude mcp list` shows `langcoach` as failed, or `npx -y langcoach` fails, only inside a clone of this repo | Inside the LangCoach repository, npm resolves `langcoach` to the local workspace package (`packages/mcp`), not the published one, and its `dist/` may not exist yet, so the server cannot start. Run `claude mcp list` / `npx -y langcoach` from any other folder, or run `npm install` and `npm run build` in the clone first. |
 | npm registry blocked or corporate proxy | Configure npm to use your proxy (see https://docs.npmjs.com/cli/configuring-npm/npmrc), then retry. |
 | "data folder is not writable" | Fix permissions on `~/.langcoach`, or set `LANGCOACH_HOME` to a folder you can write to. |
 | "data file is busy" | Another session is writing right now. Wait a moment and retry. |
@@ -116,7 +117,7 @@ Add `--scope user` if you added it with that flag. Optionally delete the data fo
 
 ## Run from source
 
-Until the `langcoach` package is published to npm, install from source:
+To run the latest code from this repository instead of the npm package:
 
 ```bash
 git clone https://github.com/oktaybilge1/langcoach.git

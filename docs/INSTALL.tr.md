@@ -109,6 +109,7 @@ claude mcp remove langcoach
 | Windows: `spawn npx ENOENT` ya da sunucu başlamıyor | `cmd /c` biçimini kullan: `claude mcp add --scope user langcoach "--" cmd /c npx -y langcoach` |
 | Windows PowerShell: eklerken `error: unknown option` | PowerShell tırnaksız `--` işaretini siler. Tırnaklı yaz: `"--"` (PowerShell ve CMD'de çalışır). |
 | `claude mcp list` içinde `langcoach` başarısız (failed) görünüyor | Terminalde `npx -y langcoach` çalıştır. Sessizce beklemesi gerekir (stdin üzerinden MCP konuşur); durdurmak için Ctrl+C bas. Bunun yerine hata yazarsa nedeni odur. |
+| `claude mcp list` içinde `langcoach` başarısız görünüyor ya da `npx -y langcoach` hata veriyor, ama yalnızca bu deponun bir kopyasının içindeyken | LangCoach deposunun içinde npm, `langcoach` adını yayınlanmış paket yerine yerel çalışma alanı paketine (`packages/mcp`) çözer; onun `dist/` klasörü henüz yoksa sunucu başlayamaz. `claude mcp list` / `npx -y langcoach` komutunu başka herhangi bir klasörden çalıştır ya da önce kopyada `npm install` ve `npm run build` çalıştır. |
 | npm kayıt sunucusu engelli ya da kurumsal proxy | npm'i proxy'ne göre ayarla (bkz. https://docs.npmjs.com/cli/configuring-npm/npmrc), sonra tekrar dene. |
 | "data folder is not writable" | `~/.langcoach` üzerindeki izinleri düzelt ya da `LANGCOACH_HOME` ile yazabildiğin bir klasör göster. |
 | "data file is busy" | Şu an başka bir oturum yazıyor. Biraz bekleyip tekrar dene. |
@@ -116,7 +117,7 @@ claude mcp remove langcoach
 
 ## Kaynaktan çalıştırma
 
-`langcoach` paketi npm'de yayınlanana kadar kaynaktan kur:
+npm paketi yerine bu depodaki en güncel kodu çalıştırmak için:
 
 ```bash
 git clone https://github.com/oktaybilge1/langcoach.git
