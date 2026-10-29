@@ -8,12 +8,13 @@ import { afterEach, describe, expect, it } from 'vitest';
 const ZIP = fileURLToPath(new URL('../scripts/zip.mjs', import.meta.url));
 const dirs: string[] = [];
 
-function run(manifest: Record<string, unknown>) {
+function run(manifest: Record<string, unknown>, extra: Record<string, string> = {}) {
   const root = mkdtempSync(join(tmpdir(), 'lc-zip-'));
   dirs.push(root);
   const dist = join(root, 'dist');
   mkdirSync(dist);
   writeFileSync(join(dist, 'manifest.json'), JSON.stringify(manifest));
+  for (const [name, body] of Object.entries(extra)) writeFileSync(join(dist, name), body);
   const out = join(root, 'out.zip');
   const r = spawnSync(process.execPath, [ZIP], {
     env: { ...process.env, LANGCOACH_DIST: dist, LANGCOACH_ZIP_OUT: out },
@@ -48,5 +49,22 @@ describe('zip.mjs (I8)', () => {
     expect(r.stderr).toMatch(/localhost|127\.0\.0\.1/);
     expect(r.stderr).toMatch(/npm run build/);
     expect(existsSync(r.out)).toBe(false);
+  });
+
+  it.each([
+    ['an e2e answer attribute', { 'sidepanel.js': 'el.setAttribute("data-e2e-answer", x);' }],
+    ['an e2e translator hook', { 'content-isolated.js': 'const A = "data-langcoach-e2e-translate";' }],
+    ['a localhost dev host', { 'background.js': 'const hosts = ["localhost", "127.0.0.1"];' }],
+  ])('refuses a bundle that still contains %s', (_n, files) => {
+    const r = run(prod, files);
+    expect(r.status).not.toBe(0);
+    expect(r.stderr).toMatch(/e2e|localhost|127\.0\.0\.1/);
+    expect(r.stderr).toMatch(/npm run build/);
+    expect(existsSync(r.out)).toBe(false);
+  });
+
+  it('accepts clean bundle files', () => {
+    const r = run(prod, { 'background.js': 'console.log("ok");', 'sidepanel.html': '<!doctype html>' });
+    expect(r.status, r.stderr).toBe(0);
   });
 });

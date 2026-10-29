@@ -1,9 +1,10 @@
 import type { Coach } from '@langcoach/core/browser';
+import { DEV_HOSTNAMES } from '../shared/dev-hosts';
 import type { ToastMessage } from '../shared/messages';
 
 export const MENU_ID = 'langcoach-save-selection';
 const LLL_PATTERNS = ['https://labs.google/lll/*'];
-const LOCAL_PATTERNS = ['http://localhost/*', 'http://127.0.0.1/*'];
+const DEV_PATTERNS = DEV_HOSTNAMES.map((h) => `http://${h}/*`);
 
 export interface MenusLike {
   removeAll(): Promise<void>;
@@ -17,7 +18,7 @@ export async function registerMenus(menus: MenusLike, t: (key: string) => string
     id: MENU_ID,
     title: t('menuSave'),
     contexts: ['selection'],
-    documentUrlPatterns: e2e ? [...LLL_PATTERNS, ...LOCAL_PATTERNS] : LLL_PATTERNS,
+    documentUrlPatterns: e2e ? [...LLL_PATTERNS, ...DEV_PATTERNS] : LLL_PATTERNS,
   });
 }
 

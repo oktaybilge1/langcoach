@@ -6,7 +6,7 @@ const WRAPPED = Symbol.for('langcoach.fetchWrapped');
  * MAIN-world entry (document_start): wraps window.fetch and posts lesson captures to the isolated
  * content script. Never throws into the page.
  */
-export function startMain(win: Window, opts: { allowLocalhost: boolean }): void {
+export function startMain(win: Window, opts: { allowDevHosts: boolean }): void {
   try {
     const current = win.fetch as typeof fetch & { [WRAPPED]?: true };
     if (typeof current !== 'function' || current[WRAPPED]) return;
@@ -37,7 +37,7 @@ export function startMain(win: Window, opts: { allowLocalhost: boolean }): void 
     };
     const wrapped = wrapFetch(current, onCapture, {
       base: () => win.location.href,
-      allowLocalhost: opts.allowLocalhost,
+      allowDevHosts: opts.allowDevHosts,
     }) as typeof fetch & { [WRAPPED]?: true };
     wrapped[WRAPPED] = true;
     win.fetch = wrapped;

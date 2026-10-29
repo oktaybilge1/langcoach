@@ -126,7 +126,7 @@ describe('wrapFetch', () => {
     await wrapFetch((async () => json({})) as unknown as typeof fetch, onCapture)(local, { body: reqBody });
     await flush();
     expect(onCapture).not.toHaveBeenCalled();
-    await wrapFetch((async () => json({})) as unknown as typeof fetch, onCapture, { allowLocalhost: true })(local, {
+    await wrapFetch((async () => json({})) as unknown as typeof fetch, onCapture, { allowDevHosts: true })(local, {
       body: reqBody,
     });
     await flush();

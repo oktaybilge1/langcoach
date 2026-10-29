@@ -1,4 +1,5 @@
 import type { Lesson } from '@langcoach/core/browser';
+import { isDevHostUrl } from '../shared/dev-hosts';
 
 export type CaptureKind = 'terms' | 'grammar' | 'conversation' | 'object-descriptors';
 
@@ -15,14 +16,11 @@ export interface ParsedCapture {
 const KINDS: readonly string[] = ['terms', 'grammar', 'conversation', 'object-descriptors'];
 const PATH_RE = /^\/lll\/api\/insights\/([a-z-]+)$/;
 
-export function kindFromUrl(url: string, opts?: { allowLocalhost?: boolean }): CaptureKind | null {
+export function kindFromUrl(url: string, opts?: { allowDevHosts?: boolean }): CaptureKind | null {
   try {
     const u = new URL(url);
     const prod = u.protocol === 'https:' && u.hostname === 'labs.google' && u.port === '';
-    const local =
-      !!opts?.allowLocalhost &&
-      (u.protocol === 'https:' || u.protocol === 'http:') &&
-      (u.hostname === 'localhost' || u.hostname === '127.0.0.1');
+    const local = !!opts?.allowDevHosts && isDevHostUrl(url);
     if (!prod && !local) return null;
     const kind = PATH_RE.exec(u.pathname)?.[1];
     return kind && KINDS.includes(kind) ? (kind as CaptureKind) : null;

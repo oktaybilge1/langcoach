@@ -1,3 +1,5 @@
+import { isDevHostUrl } from '../shared/dev-hosts';
+
 export interface SenderLike {
   id?: string;
   url?: string;
@@ -38,14 +40,6 @@ const PAGE_TYPES: ReadonlySet<string> = new Set([
 
 const LLL_PREFIX = 'https://labs.google/lll/';
 
-function isLocalDev(url: string): boolean {
-  try {
-    const u = new URL(url);
-    return (u.protocol === 'http:' || u.protocol === 'https:') && (u.hostname === 'localhost' || u.hostname === '127.0.0.1');
-  } catch {
-    return false;
-  }
-}
 
 /** Pure sender policy for runtime messages. */
 export function isAllowed(
@@ -60,7 +54,7 @@ export function isAllowed(
   if (PAGE_TYPES.has(type) && url !== '' && url.startsWith(extensionOrigin)) return true;
   if (CONTENT_TYPES.has(type)) {
     if (!sender.tab) return false;
-    return url.startsWith(LLL_PREFIX) || (e2e && isLocalDev(url));
+    return url.startsWith(LLL_PREFIX) || (e2e && isDevHostUrl(url));
   }
   return false;
 }

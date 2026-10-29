@@ -12,7 +12,7 @@ export interface WrapOptions {
   /** Base for relative URLs (the page's current location.href; a getter follows SPA navigation). */
   base?: string | (() => string);
   /** E2E builds also observe the local mock server. */
-  allowLocalhost?: boolean;
+  allowDevHosts?: boolean;
 }
 
 function urlOf(input: unknown, base: WrapOptions['base']): string {
@@ -51,7 +51,7 @@ export function wrapFetch(
     const p = original.apply(this, args);
     try {
       const url = urlOf(args[0], opts.base);
-      const kind = kindFromUrl(url, { allowLocalhost: opts.allowLocalhost });
+      const kind = kindFromUrl(url, { allowDevHosts: opts.allowDevHosts });
       if (kind) {
         const body = args[1]?.body;
         // Registered before the page's own handlers, so the clone happens before the page reads the body.

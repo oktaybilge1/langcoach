@@ -178,7 +178,7 @@ describe('main-world script', () => {
   it('reads the nonce, acknowledges it, and posts captures to the same origin', async () => {
     document.documentElement.setAttribute(NONCE_ATTR, 'n'.repeat(32));
     window.fetch = okFetch();
-    startMain(window, { allowLocalhost: false });
+    startMain(window, { allowDevHosts: false });
     expect(posted[0]).toEqual([{ source: 'langcoach-ack', nonce: 'n'.repeat(32) }, location.origin]);
     const res = await window.fetch(TERMS, { method: 'POST', body: JSON.stringify(req) });
     expect(res).toBeInstanceOf(Response);
@@ -191,7 +191,7 @@ describe('main-world script', () => {
 
   it('reads the nonce lazily if the isolated script ran later', async () => {
     window.fetch = okFetch();
-    startMain(window, { allowLocalhost: false });
+    startMain(window, { allowDevHosts: false });
     expect(posted).toEqual([]);
     document.documentElement.setAttribute(NONCE_ATTR, 'm'.repeat(32));
     await window.fetch(TERMS, { method: 'POST', body: JSON.stringify(req) });
@@ -201,7 +201,7 @@ describe('main-world script', () => {
 
   it('drops captures when no nonce exists and never throws into the page', async () => {
     window.fetch = okFetch();
-    startMain(window, { allowLocalhost: false });
+    startMain(window, { allowDevHosts: false });
     await window.fetch(TERMS, { method: 'POST', body: JSON.stringify(req) });
     await flush();
     expect(posted).toEqual([]);
@@ -211,7 +211,7 @@ describe('main-world script', () => {
       throw new DOMException('could not be cloned', 'DataCloneError');
     });
     window.fetch = okFetch();
-    startMain(window, { allowLocalhost: false });
+    startMain(window, { allowDevHosts: false });
     await expect(window.fetch(TERMS, { method: 'POST', body: JSON.stringify(req) })).resolves.toBeInstanceOf(Response);
     await flush();
   });
@@ -220,9 +220,9 @@ describe('main-world script', () => {
     document.documentElement.setAttribute(NONCE_ATTR, 'n'.repeat(32));
     const f = okFetch();
     window.fetch = f;
-    startMain(window, { allowLocalhost: false });
+    startMain(window, { allowDevHosts: false });
     const wrapped = window.fetch;
-    startMain(window, { allowLocalhost: false });
+    startMain(window, { allowDevHosts: false });
     expect(window.fetch).toBe(wrapped);
     expect(window.fetch).not.toBe(f);
   });

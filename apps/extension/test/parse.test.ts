@@ -27,16 +27,16 @@ describe('kindFromUrl', () => {
   it('requires https and no port in production', () => {
     expect(kindFromUrl('http://labs.google/lll/api/insights/terms')).toBeNull();
     expect(kindFromUrl('https://labs.google:8443/lll/api/insights/terms')).toBeNull();
-    expect(kindFromUrl('http://labs.google/lll/api/insights/terms', { allowLocalhost: true })).toBeNull();
-    expect(kindFromUrl('ftp://localhost/lll/api/insights/terms', { allowLocalhost: true })).toBeNull();
-    expect(kindFromUrl('https://localhost:5173/lll/api/insights/terms', { allowLocalhost: true })).toBe('terms');
+    expect(kindFromUrl('http://labs.google/lll/api/insights/terms', { allowDevHosts: true })).toBeNull();
+    expect(kindFromUrl('ftp://localhost/lll/api/insights/terms', { allowDevHosts: true })).toBeNull();
+    expect(kindFromUrl('https://localhost:5173/lll/api/insights/terms', { allowDevHosts: true })).toBe('terms');
   });
-  it('accepts localhost only with allowLocalhost', () => {
+  it('accepts localhost only with allowDevHosts', () => {
     const u = 'http://localhost:5173/lll/api/insights/terms';
     expect(kindFromUrl(u)).toBeNull();
-    expect(kindFromUrl(u, { allowLocalhost: true })).toBe('terms');
-    expect(kindFromUrl('http://127.0.0.1:9/lll/api/insights/grammar', { allowLocalhost: true })).toBe('grammar');
-    expect(kindFromUrl('http://evil.test/lll/api/insights/grammar', { allowLocalhost: true })).toBeNull();
+    expect(kindFromUrl(u, { allowDevHosts: true })).toBe('terms');
+    expect(kindFromUrl('http://127.0.0.1:9/lll/api/insights/grammar', { allowDevHosts: true })).toBe('grammar');
+    expect(kindFromUrl('http://evil.test/lll/api/insights/grammar', { allowDevHosts: true })).toBeNull();
   });
 });
 

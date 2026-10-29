@@ -56,6 +56,23 @@ if (local.length) {
   process.exit(1);
 }
 
+// The bundles themselves must be production builds too: no e2e-only hooks, no dev hosts left in the code.
+const FORBIDDEN = /data-e2e-answer|data-langcoach-e2e|localhost|127\.0\.0\.1/i;
+const tainted = [];
+for (const full of files) {
+  const rel = relative(distDir, full).replace(/\\/g, '/');
+  if (!/\.(js|mjs|html|css|json)$/i.test(rel)) continue;
+  const hit = FORBIDDEN.exec(readFileSync(full, 'utf8'));
+  if (hit) tainted.push(`${rel} (${hit[0]})`);
+}
+if (tainted.length) {
+  console.error(
+    `Refusing to package: dist contains e2e/dev-only code: ${tainted.join(', ')}.\n` +
+      'Run the production build first: npm run build -w @langcoach/extension',
+  );
+  process.exit(1);
+}
+
 const localParts = [];
 const centralParts = [];
 let offset = 0;
