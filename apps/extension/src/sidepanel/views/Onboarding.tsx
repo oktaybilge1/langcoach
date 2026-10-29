@@ -1,9 +1,10 @@
-import type { Cefr } from '@langcoach/core/browser';
+import { DEFAULT_DAILY_GOAL, type Cefr, type DailyGoalXp } from '@langcoach/core/browser';
 import { useState } from 'preact/hooks';
 import { LLL_LANGUAGES, resolveLanguage } from '../../lib/languages';
 import { GOALS, suggestThemes, type Goal, type UiLocale } from '../../lib/themes';
 import type { ProfileInput, Settings } from '../../shared/messages';
 import type { PanelSend } from '../App';
+import { GoalPicker } from '../components/GoalPicker';
 import type { TranslateFn } from '../i18n';
 
 const NATIVE_LANGUAGES = [
@@ -67,6 +68,7 @@ export function Onboarding({ settings, uiLocale, t, send, onComplete }: Onboardi
   const [minutesPerDay, setMinutesPerDay] = useState<number>(15);
   const [daysPerWeek, setDaysPerWeek] = useState<number>(5);
   const [hasCamera, setHasCamera] = useState<boolean>(settings.hasCamera);
+  const [dailyGoal, setDailyGoal] = useState<DailyGoalXp>(DEFAULT_DAILY_GOAL);
   const [busy, setBusy] = useState(false);
 
   const goalLabel = (g: Goal) => goalLabelText(g, t);
@@ -95,6 +97,7 @@ export function Onboarding({ settings, uiLocale, t, send, onComplete }: Onboardi
         goal: chosenGoal,
         minutesPerDay: chosenMinutes,
         daysPerWeek: chosenDays,
+        dailyGoalXp: dailyGoal,
       };
       const theme = suggestThemes(chosenGoal, chosenLevel, uiLocale, 0)[0] ?? 'daily conversation';
       await send({ type: 'setSettings', settings: { hasCamera: camChecked } });
@@ -210,6 +213,8 @@ export function Onboarding({ settings, uiLocale, t, send, onComplete }: Onboardi
             ))}
           </select>
         </div>
+
+        <GoalPicker name="onboard-goal-xp" value={dailyGoal} onChange={setDailyGoal} t={t} />
 
         <label class="field-row" for="onboard-camera">
           <input

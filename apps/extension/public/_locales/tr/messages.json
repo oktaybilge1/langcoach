@@ -1016,5 +1016,28 @@
   },
   "achLocked": {
     "message": "kilitli"
+  },
+  "goalPickerLabel": {
+    "message": "Günlük hedef"
+  },
+  "goalCasual": {
+    "message": "Rahat"
+  },
+  "goalRegular": {
+    "message": "Düzenli"
+  },
+  "goalSerious": {
+    "message": "Ciddi"
+  },
+  "goalIntense": {
+    "message": "Yoğun"
+  },
+  "goalXpPerDay": {
+    "message": "Günde $XP$ XP",
+    "placeholders": {
+      "xp": {
+        "content": "$1"
+      }
+    }
   }
 }

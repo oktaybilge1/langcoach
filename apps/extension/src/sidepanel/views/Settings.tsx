@@ -1,9 +1,10 @@
-import type { Cefr } from '@langcoach/core/browser';
+import { DEFAULT_DAILY_GOAL, type Cefr, type DailyGoalXp } from '@langcoach/core/browser';
 import { useRef, useState } from 'preact/hooks';
 import { LLL_LANGUAGES } from '../../lib/languages';
 import { GOALS, type Goal } from '../../lib/themes';
 import type { Settings as SettingsType, Snapshot } from '../../shared/messages';
 import type { PanelSend } from '../App';
+import { GoalPicker } from '../components/GoalPicker';
 import type { TranslateFn } from '../i18n';
 import { goalLabelText } from './Onboarding';
 
@@ -182,6 +183,23 @@ export function Settings({ snapshot, settings, t, send, onRefresh }: SettingsPro
   const [minutesPerDay, setMinutesPerDay] = useState<number>(profile?.minutesPerDay ?? 15);
   const [daysPerWeek, setDaysPerWeek] = useState<number>(profile?.daysPerWeek ?? 5);
   const [error, setError] = useState<string | null>(null);
+  const [dailyGoal, setDailyGoal] = useState<DailyGoalXp>(profile?.dailyGoalXp ?? DEFAULT_DAILY_GOAL);
+
+  /** The daily goal is saved as soon as it is picked (the rest of the profile keeps its saved values). */
+  async function handleGoalChange(goal: DailyGoalXp) {
+    if (!profile) return;
+    const previous = dailyGoal;
+    setDailyGoal(goal);
+    const { createdAt: _c, ...saved } = profile;
+    try {
+      await send({ type: 'setProfile', profile: { ...saved, dailyGoalXp: goal } });
+      setError(null);
+      await onRefresh();
+    } catch (err) {
+      setDailyGoal(previous);
+      setError(t('actionFailed', (err as Error).message));
+    }
+  }
 
   async function handleSaveProfile(e: Event) {
     e.preventDefault();
@@ -215,6 +233,10 @@ export function Settings({ snapshot, settings, t, send, onRefresh }: SettingsPro
           {error}
         </p>
       )}
+
+      <section class="card" data-testid="settings-goal">
+        <GoalPicker name="settings-goal-xp" value={dailyGoal} onChange={(g) => void handleGoalChange(g)} t={t} />
+      </section>
 
       <section class="card">
         <h2>{t('settingsProfileSection')}</h2>

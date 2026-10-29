@@ -1016,5 +1016,28 @@
   },
   "achLocked": {
     "message": "bloqueado"
+  },
+  "goalPickerLabel": {
+    "message": "Meta diaria"
+  },
+  "goalCasual": {
+    "message": "Relajada"
+  },
+  "goalRegular": {
+    "message": "Regular"
+  },
+  "goalSerious": {
+    "message": "Seria"
+  },
+  "goalIntense": {
+    "message": "Intensa"
+  },
+  "goalXpPerDay": {
+    "message": "$XP$ XP al día",
+    "placeholders": {
+      "xp": {
+        "content": "$1"
+      }
+    }
   }
 }

@@ -1016,5 +1016,28 @@
   },
   "achLocked": {
     "message": "verrouillé"
+  },
+  "goalPickerLabel": {
+    "message": "Objectif quotidien"
+  },
+  "goalCasual": {
+    "message": "Détente"
+  },
+  "goalRegular": {
+    "message": "Régulier"
+  },
+  "goalSerious": {
+    "message": "Sérieux"
+  },
+  "goalIntense": {
+    "message": "Intense"
+  },
+  "goalXpPerDay": {
+    "message": "$XP$ XP par jour",
+    "placeholders": {
+      "xp": {
+        "content": "$1"
+      }
+    }
   }
 }

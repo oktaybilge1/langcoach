@@ -154,6 +154,7 @@ describe('side panel UI', () => {
         goal: 'work',
         minutesPerDay: 20,
         daysPerWeek: 4,
+        dailyGoalXp: 20,
       },
       theme: suggestThemes('work', 'A2', 'en', 0)[0],
     });
