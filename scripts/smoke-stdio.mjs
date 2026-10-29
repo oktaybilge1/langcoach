@@ -4,7 +4,7 @@
 //   <install-dir> is a folder where `npm i <langcoach-*.tgz>` was run.
 //
 // Starts the installed bin over stdio with LANGCOACH_HOME set to an empty temp folder, sends
-// MCP initialize + tools/list, and checks: every stdout line is JSON-RPC, tools/list returns 10
+// MCP initialize + tools/list, and checks: every stdout line is JSON-RPC, tools/list returns 11
 // tools, stderr is empty, the process exits 0 once stdin closes, and no data.json was written.
 import { spawn } from 'node:child_process';
 import { existsSync, mkdtempSync, readdirSync, readFileSync, rmSync } from 'node:fs';
@@ -96,7 +96,7 @@ child.on('exit', (code, signal) => {
     const list = msgs.find((m) => m.id === 2);
     const tools = list?.result?.tools;
     if (!Array.isArray(tools)) fail(`no tools/list result: ${stdout}`);
-    if (tools.length !== 10) fail(`expected 10 tools, got ${tools.length}`);
+    if (tools.length !== 11) fail(`expected 11 tools, got ${tools.length}`);
     if (stderr !== '') fail(`stderr is not empty: ${stderr}`);
     if (code !== 0) fail(`exit code ${code} (signal ${signal})`);
     const left = readdirSync(home);
