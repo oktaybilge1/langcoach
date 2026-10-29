@@ -126,6 +126,100 @@ const PAGE_HTML = `<!doctype html>
   </body>
 </html>`;
 
+
+/**
+ * Tiny Lesson form as the live page renders it (verified 2026-10-22/23): a react-select language picker
+ * (lll-select__* classes, role=combobox input, role=option DIVs that appear on mousedown on the control),
+ * the purpose input (no form, no type, no maxLength) and Generate, enabled once both are set.
+ * Generate posts the terms request, so a one-tap scenario ends in a real capture.
+ */
+const SCENARIO_HTML = `<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Mock Tiny Lesson</title>
+  </head>
+  <body>
+    <main>
+      <div class="lll-select-container" id="picker">
+        <div class="lll-select__control" id="control">
+          <div class="lll-select__value-container" id="value-box">
+            <div class="lll-select__placeholder">Select...</div>
+            <div class="lll-select__input-container"><input role="combobox" aria-label="Select Language" aria-expanded="false" /></div>
+          </div>
+        </div>
+      </div>
+      <div><input id="purpose" placeholder="going on a first date" /></div>
+      <button id="generate" type="button" disabled>Generate</button>
+      <pre id="state"></pre>
+    </main>
+    <script>
+      const OPTIONS = ['Arabic', 'English (US)', 'French (France)', 'Japanese', 'Spanish (Spain)', 'Turkish'];
+      const LANG_API = { 'Spanish (Spain)': 'European Spanish', 'Arabic': 'Arabic' };
+      let language = '';
+      let purpose = '';
+      const control = document.getElementById('control');
+      const box = document.getElementById('value-box');
+      const inputBox = box.querySelector('.lll-select__input-container');
+      const gen = document.getElementById('generate');
+      const state = document.getElementById('state');
+      window.__generated = [];
+      function renderValue() {
+        const v = document.createElement('div');
+        v.className = language ? 'lll-select__single-value' : 'lll-select__placeholder';
+        v.textContent = language || 'Select...';
+        box.replaceChildren(v, inputBox);
+      }
+      function update() {
+        gen.disabled = !(language && purpose.trim());
+        state.textContent = JSON.stringify({ language, purpose });
+      }
+      let menu = null;
+      control.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        if (menu) { menu.remove(); menu = null; return; }
+        menu = document.createElement('div');
+        menu.className = 'lll-select__menu';
+        const list = document.createElement('div');
+        list.setAttribute('role', 'listbox');
+        for (const label of OPTIONS) {
+          const o = document.createElement('div');
+          o.setAttribute('role', 'option');
+          o.className = 'lll-select__option';
+          o.textContent = label;
+          o.addEventListener('click', () => {
+            language = label;
+            menu.remove();
+            menu = null;
+            renderValue();
+            update();
+          });
+          list.append(o);
+        }
+        menu.append(list);
+        setTimeout(() => menu && document.getElementById('picker').append(menu), 20);
+      });
+      // React-controlled input: React keeps its own value tracker and only reacts to real input events.
+      const purposeEl = document.getElementById('purpose');
+      purposeEl.addEventListener('input', () => {
+        purpose = purposeEl.value;
+        setTimeout(update, 30); // React re-renders a moment later
+      });
+      gen.addEventListener('click', async () => {
+        if (gen.disabled) return;
+        window.__generated.push(language + '|' + purpose);
+        await fetch('/lll/api/insights/terms', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ sourceLanguage: 'English', targetLanguage: LANG_API[language] || language, purpose }),
+        });
+      });
+      renderValue();
+      update();
+    </script>
+  </body>
+</html>`;
+
 function readBody(req: IncomingMessage): Promise<string> {
   return new Promise((resolve) => {
     let data = '';
@@ -171,7 +265,7 @@ export async function startMockLllServer(): Promise<{ url: string; close: () => 
     }
 
     res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' });
-    res.end(PAGE_HTML);
+    res.end(url.includes('scenario=1') ? SCENARIO_HTML : PAGE_HTML);
   });
 
   await new Promise<void>((resolve) => srv.listen(0, '127.0.0.1', () => resolve()));
