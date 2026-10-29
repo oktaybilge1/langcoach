@@ -114,7 +114,8 @@ describe('exportCards: quizlet', () => {
 });
 
 describe('exportCards: csv', () => {
-  const HEADER = 'term,translation,native_translation,example,pronunciation,note,lesson,language,favorite,mastered,due';
+  const BOM = String.fromCharCode(0xfeff);
+  const HEADER ='term,translation,native_translation,example,pronunciation,note,lesson,language,favorite,mastered,due';
   test('header, row, filename', () => {
     const r = exportCards(
       stateWith([card({ id: 'a', term: 'kawa', translation: 'coffee', nativeTranslation: 'kahve', example: 'Tak.', pronunciation: 'KA-va', favorite: true })], [withNotes({ kawa: 'n' })]),
@@ -124,7 +125,7 @@ describe('exportCards: csv', () => {
     expect(r.filename).toBe('langcoach-cards-2026-10-20.csv');
     expect(r.mime).toBe('text/csv;charset=utf-8');
     expect(r.text.split('\r\n')).toEqual([
-      HEADER,
+      BOM + HEADER,
       'kawa,coffee,kahve,Tak.,KA-va,n,Ordering coffee,Polish,true,false,2026-10-21T08:00:00.000Z',
       '',
     ]);
@@ -141,7 +142,26 @@ describe('exportCards: csv', () => {
     expect(exportCards(s, 'anki', { now: NOW }).text).toContain('\na\t=SUM(A1)\t');
   });
   test('empty -> header only', () => {
-    expect(exportCards(emptyState(), 'csv', { now: NOW }).text).toBe(HEADER + '\r\n');
+    expect(exportCards(emptyState(), 'csv', { now: NOW }).text).toBe(BOM + HEADER + '\r\n');
+  });
+  test('only CSV starts with a UTF-8 BOM', () => {
+    const s = stateWith([card({ id: 'a', term: 'ğş' })]);
+    expect(exportCards(s, 'csv', { now: NOW }).text.startsWith(BOM)).toBe(true);
+    expect(exportCards(s, 'anki', { now: NOW }).text.startsWith('#separator:tab')).toBe(true);
+    expect(exportCards(s, 'quizlet', { now: NOW }).text.startsWith(BOM)).toBe(false);
+    expect(exportCards(s, 'anki', { now: NOW }).text.includes(BOM)).toBe(false);
+  });
+  test('Anki GUID is sanitized: odd characters become _, no leading # or quote; UUIDs unchanged', () => {
+    const uuid = '3f2b8c1e-9a4d-4e7f-b1a2-0c5d6e7f8a9b';
+    const s = stateWith([
+      card({ id: uuid, term: 'a' }),
+      card({ id: '#x"y z\tw', term: 'b' }),
+      card({ id: '"q', term: 'c' }),
+      card({ id: 'çé', term: 'd' }),
+    ]);
+    const guids = exportCards(s, 'anki', { now: NOW }).text.split('\n').slice(6).filter(Boolean).map((l) => l.split('\t')[0]);
+    expect(guids).toEqual([uuid, '_x_y_z_w', '_q', '__']);
+    for (const g of guids) expect(g).toMatch(/^[A-Za-z0-9_-]+$/);
   });
 });
 
@@ -166,6 +186,9 @@ describe('exportCards: csv formula guard (hardened)', () => {
   test('a leading tab or CR is itself dangerous (translation is not trimmed)', () => {
     expect(firstCell('t', { translation: '\tabc' })).toContain(",'\tabc,");
     expect(firstCell('t', { translation: '\rabc' }).replace(/\r/g, '')).toContain(",\"'abc");
+  });
+  test('a leading LF is always prefixed too', () => {
+    expect(firstCell('t', { translation: '\nabc' })).toContain(",\"'\nabc\"");
   });
   test('documented trade-off: "-ing suffix" is guarded; em dash and ñandú are not', () => {
     expect(firstCell('-ing suffix').startsWith("'-ing suffix,")).toBe(true);

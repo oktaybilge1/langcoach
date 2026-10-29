@@ -28,9 +28,9 @@ Yeni bir çalışma seti aç, **İçe aktar**'ı seç ve `langcoach-quizlet-….
 
 ## CSV
 
-`.csv` dosyasının sütunları: `term, translation, native_translation, example, pronunciation, note, lesson, language, favorite, mastered, due`. UTF-8'dir ve BOM içermez. Excel'de **Veri > Metinden/CSV'den** yolunu izleyip UTF-8'i seç; böylece Arapça, Çince ve aksanlı metin doğru görünür. Google Sheets ve LibreOffice doğrudan açar.
+`.csv` dosyasının sütunları: `term, translation, native_translation, example, pronunciation, note, lesson, language, favorite, mastered, due`. UTF-8'dir ve BOM (bayt sırası işareti) içerir; böylece Windows'ta Excel dosyaya çift tıklayınca Türkçe, Arapça, Çince ve diğer aksanlı metni doğru gösterir. Google Sheets ve LibreOffice doğrudan açar. (Anki ve Quizlet dosyalarında BOM yoktur.)
 
-Tablo programlarının metni formül sanıp çalıştırmasını önlemek için, ilk anlamlı karakteri (baştaki boşluk, kontrol ve sıfır genişlikli karakterlerden sonra) `=`, `+`, `-` veya `@` olan her CSV hücresinin başına kesme işareti eklenir. Bu `-ing suffix` gibi zararsız girdileri de etkiler. Anki ve Quizlet dosyaları bu şekilde değiştirilmez.
+Tablo programlarının metni formül sanıp çalıştırmasını önlemek için, ilk anlamlı karakteri (baştaki boşluk, kontrol ve sıfır genişlikli karakterlerden sonra) `=`, `+`, `-` veya `@` olan ve sekme, CR ya da LF ile başlayan her CSV hücresinin başına kesme işareti eklenir. Bu `-ing suffix` gibi zararsız girdileri de etkiler. Anki ve Quizlet dosyaları bu şekilde değiştirilmez.
 
 ## Nelerin aktarıldığı ve aktarılmadığı
 

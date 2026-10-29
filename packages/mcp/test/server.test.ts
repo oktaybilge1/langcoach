@@ -79,7 +79,8 @@ describe('langcoach MCP server', () => {
     expect(quizlet.text).toBe('kawa\tcoffee\n');
     const csv = JSON.parse((await call('export_cards', { format: 'csv', includeMastered: false })).text);
     expect(csv.filename).toMatch(/^langcoach-cards-\d{4}-\d{2}-\d{2}\.csv$/);
-    expect(csv.text.split('\r\n')[0]).toMatch(/^term,translation/);
+    expect(csv.text.split('\r\n')[0]).toMatch(/^.term,translation/u);
+    expect(csv.text.charCodeAt(0)).toBe(0xfeff);
   });
 
   test('export_cards rejects unknown formats and describes how to save and import', async () => {
@@ -108,6 +109,20 @@ describe('langcoach MCP server', () => {
     expect(r.isError).toBe(true);
     expect(r.text).toMatch(/2 MB/);
     expect(r.text).toMatch(/includeMastered|smaller/);
+  });
+
+  test('export_cards cap is measured on the JSON reply, not the raw text', async () => {
+    const store = new MemoryStore();
+    const srs = { due: '2026-10-21T00:00:00.000Z', stability: 0, difficulty: 0, elapsed_days: 0, scheduled_days: 0, learning_steps: 0, reps: 0, lapses: 0, state: 0 };
+    // ~2.0 MB of CSV text that doubles when JSON-escaped.
+    const cards = [{ id: 'c', lessonId: 'L', term: 't', translation: '"'.repeat(500_000), example: '', srs }];
+    await store.replace({ ...emptyState(), cards } as never);
+    const { call } = await setup(store);
+    const r = await call('export_cards', { format: 'anki' });
+    expect(r.isError).toBe(true);
+    expect(r.text).toMatch(/2 MB/);
+    expect(r.text).toMatch(/Export button/);
+    expect(r.text).not.toMatch(/in parts/);
   });
 
   test('get_today before set_profile -> isError, mentions set_profile', async () => {

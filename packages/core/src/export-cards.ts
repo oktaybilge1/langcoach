@@ -97,7 +97,8 @@ function ankiRow({ card, term, lesson, language, note }: Row): string {
   if (card.example?.trim()) back.push(`<i>${htmlField(card.example)}</i>`);
   if (note.trim()) back.push(htmlField(note));
   const tags = ['langcoach', tagSlug(language), tagSlug(lesson?.situation ?? '')].filter(Boolean).join(' ');
-  return [flat(card.id).replace(/\s+/g, '_'), front, back.join('<br>'), tags].join('\t');
+  // GUID: ids may come from imported data, so keep only [A-Za-z0-9_-] (this also rules out a leading # or ").
+  return [card.id.replace(/[^A-Za-z0-9_-]/g, '_'), front, back.join('<br>'), tags].join('\t');
 }
 
 function quizletRow({ card, term }: Row): string {
@@ -106,17 +107,18 @@ function quizletRow({ card, term }: Row): string {
   return `${flat(term)}\t${def}`;
 }
 
-const ISO_DATETIME = /^\d{4}-\d{2}-\d{2}T[\d:.]+(?:Z|[+-]\d{2}:?\d{2})?$/;
+/** UTF-8 byte-order mark: CSV only, so Windows Excel opens non-ASCII text correctly (never in Anki/Quizlet). */
+const BOM = String.fromCharCode(0xfeff);
 const LEADING_BLANK = /^[\s\p{Cc}\p{Cf}]*/u; // whitespace, control and format (zero-width, BOM) characters
 
 /**
- * CSV-only formula guard, applied to every cell except a strict ISO date-time: a cell whose first
- * significant character (after whitespace, control and zero-width characters) is = + - @, or that starts
- * with a tab or CR, gets a leading apostrophe. Trade-off: terms like "-ing suffix" are prefixed too.
+ * CSV-only formula guard, applied uniformly to every text cell: a cell whose first significant
+ * character (after whitespace, control and zero-width characters) is = + - @, or that starts with a
+ * tab, CR or LF, gets a leading apostrophe. Trade-off: terms like "-ing suffix" are prefixed too.
  */
 function csvCell(s: string): string {
   let v = s;
-  if (!ISO_DATETIME.test(v) && (/^[\t\r]/.test(v) || /^[=+\-@]/.test(v.slice(LEADING_BLANK.exec(v)![0].length)))) {
+  if (/^[\t\r\n]/.test(v) || /^[=+\-@]/.test(v.slice(LEADING_BLANK.exec(v)![0].length))) {
     v = `'${v}`;
   }
   return /[",\r\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v;
@@ -172,7 +174,7 @@ export function exportCards(state: State, format: ExportFormat, opts: ExportCard
   return {
     filename: `langcoach-cards-${date}.csv`,
     mime: 'text/csv;charset=utf-8',
-    text: [CSV_HEADER.join(','), ...rows.map(csvRow)].join('\r\n') + '\r\n',
+    text: BOM + [CSV_HEADER.join(','), ...rows.map(csvRow)].join('\r\n') + '\r\n',
     count: rows.length,
   };
 }

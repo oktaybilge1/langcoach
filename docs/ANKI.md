@@ -28,9 +28,9 @@ Open a new study set, choose **Import**, and paste the contents of the `langcoac
 
 ## CSV
 
-The `.csv` file has the columns `term, translation, native_translation, example, pronunciation, note, lesson, language, favorite, mastered, due`. It is UTF-8 without a byte-order mark. In Excel use **Data > From Text/CSV** and pick UTF-8 so that Arabic, Chinese and accented text show correctly; Google Sheets and LibreOffice open it directly.
+The `.csv` file has the columns `term, translation, native_translation, example, pronunciation, note, lesson, language, favorite, mastered, due`. It is UTF-8 with a byte-order mark (BOM), so Excel on Windows shows Turkish, Arabic, Chinese and other accented text correctly when you double-click the file. Google Sheets and LibreOffice open it directly. (The Anki and Quizlet files have no BOM.)
 
-To stop spreadsheets from running text as formulas, every CSV cell whose first significant character (after any leading whitespace, control or zero-width characters) is `=`, `+`, `-` or `@` gets a leading apostrophe. This also affects harmless entries such as `-ing suffix`. Anki and Quizlet files are not changed this way.
+To stop spreadsheets from running text as formulas, every CSV cell whose first significant character (after any leading whitespace, control or zero-width characters) is `=`, `+`, `-` or `@`, and every cell that starts with a tab, CR or LF, gets a leading apostrophe. This also affects harmless entries such as `-ing suffix`. Anki and Quizlet files are not changed this way.
 
 ## What is and is not carried over
 

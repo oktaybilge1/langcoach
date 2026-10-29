@@ -168,9 +168,9 @@ export function createServer(coach: Coach): McpServer {
       run(async () => {
         const state = await coach.exportData();
         const { filename, count, text } = exportCards(state, format, { includeMastered: includeMastered ?? true });
-        if (Buffer.byteLength(text, 'utf8') > MAX_EXPORT_BYTES) {
+        if (Buffer.byteLength(JSON.stringify({ filename, count, text }), 'utf8') > MAX_EXPORT_BYTES) {
           throw new Error(
-            `The ${format} export is larger than 2 MB (${count} cards), too big to return in one reply. Try a smaller export: set includeMastered to false, or export in parts.`,
+            `The ${format} export is larger than 2 MB (${count} cards), too big to return in one reply. Use the browser extension's Export button (Settings > Export cards) instead, or reduce the cards, for example with includeMastered set to false.`,
           );
         }
         return { filename, count, text };

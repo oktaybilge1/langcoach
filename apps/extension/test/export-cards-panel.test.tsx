@@ -85,12 +85,17 @@ async function renderSettings(send: PanelSend) {
 
 function stubDownload() {
   const blobs: Blob[] = [];
-  const create = vi.fn((b: Blob) => {
-    blobs.push(b);
+  const create = vi.fn((b: Blob | MediaSource) => {
+    blobs.push(b as Blob);
     return 'blob:cards';
   });
   const revoke = vi.fn();
-  vi.stubGlobal('URL', Object.assign(URL, { createObjectURL: create, revokeObjectURL: revoke }));
+  // jsdom may not define these; assign placeholders so spyOn can wrap (and later restore) them.
+  const u = URL as unknown as Record<string, unknown>;
+  u.createObjectURL ??= () => '';
+  u.revokeObjectURL ??= () => {};
+  vi.spyOn(URL, 'createObjectURL').mockImplementation(create);
+  vi.spyOn(URL, 'revokeObjectURL').mockImplementation(revoke);
   const downloads: string[] = [];
   vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(function (this: HTMLAnchorElement) {
     downloads.push(this.download);
