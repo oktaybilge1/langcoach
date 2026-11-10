@@ -40,6 +40,19 @@ Say *show my dashboard* any time to open your progress page.
 3. Your agent turns them into review cards, fits them into this week's plan and quizzes you when they are due.
 4. It writes extra lessons for your real life ("my job interview in Madrid on Friday") and sends you back to LLL for more.
 
+## 📒 See your progress
+
+Your agent's dashboard (left) and the extension's side panel (right), with a made-up learner studying Spanish.
+
+<table>
+  <tr>
+    <td width="72%"><img src="https://raw.githubusercontent.com/oktaybilge1/langcoach/main/docs/media/dashboard.png" alt="LangCoach dashboard: 5-day streak, 90 words, today's tasks, weekly plan, reviews due and recent lessons on a notebook-style page"></td>
+    <td width="28%"><img src="https://raw.githubusercontent.com/oktaybilge1/langcoach/main/docs/media/sidepanel.png" alt="LangCoach side panel: today's tasks, daily goal ring, practice button and lesson ideas"></td>
+  </tr>
+</table>
+
+The dashboard is one offline page on your computer: no account, no network requests. It opens when you say *show my dashboard*.
+
 ## ✨ What you get
 
 | | |
@@ -49,6 +62,7 @@ Say *show my dashboard* any time to open your progress page.
 | 🔁 **Smart reviews** | Each word gets a review date from [FSRS](https://github.com/open-spaced-repetition/ts-fsrs), just before you would forget it. |
 | 🎯 **Lessons from your life** | Trips, meetings, dates, doctor visits: your agent prepares you for the real situation. |
 | 🔥 **Streak, XP and goals** | Computed from what you actually did, never invented. Streak freezes included. |
+| 📊 **Progress dashboard** | Streak, words, plan, reviews and badges on one page; say *show my dashboard*. |
 | 🧩 **Browser extension** | Auto-capture from LLL, a side panel with practice sessions, a words hub and on-device translation. |
 | 🗂️ **Anki · Quizlet · CSV** | Export your deck any time. |
 | 🌍 **Any language** | Any native language, any target language. Extension UI in English, Türkçe, Español, Français, Português. |

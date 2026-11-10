@@ -40,6 +40,19 @@ Sonra yeni bir oturum açıp `/mcp__langcoach__tutor` yaz ya da sadece *"Dil der
 3. Ajanın bunları tekrar kartlarına çevirir, haftalık plana yerleştirir ve zamanı gelince seni sınar.
 4. Gerçek hayatın için ek dersler yazar ("Cuma günkü Madrid iş görüşmem") ve daha fazlası için seni LLL'ye geri yollar.
 
+## 📒 İlerlemeni gör
+
+Solda ajanının paneli, sağda uzantının yan paneli; İspanyolca çalışan hayali bir öğrenciyle.
+
+<table>
+  <tr>
+    <td width="72%"><img src="https://raw.githubusercontent.com/oktaybilge1/langcoach/main/docs/media/dashboard.tr.png" alt="LangCoach paneli: 5 günlük seri, 90 kelime, bugünün görevleri, haftalık plan, bekleyen tekrarlar ve son dersler, defter görünümünde"></td>
+    <td width="28%"><img src="https://raw.githubusercontent.com/oktaybilge1/langcoach/main/docs/media/sidepanel.tr.png" alt="LangCoach yan paneli: bugünün görevleri, günlük hedef halkası, pratik düğmesi ve ders fikirleri"></td>
+  </tr>
+</table>
+
+Panel, bilgisayarındaki tek bir çevrimdışı sayfadır: hesap yok, ağ isteği yok. *Panelimi göster* dediğinde açılır.
+
 ## ✨ Neler var
 
 | | |
@@ -49,6 +62,7 @@ Sonra yeni bir oturum açıp `/mcp__langcoach__tutor` yaz ya da sadece *"Dil der
 | 🔁 **Akıllı tekrar** | Her kelime [FSRS](https://github.com/open-spaced-repetition/ts-fsrs) ile, tam unutmadan önce tekrar karşına çıkar. |
 | 🎯 **Hayatından dersler** | Seyahat, toplantı, randevu, doktor: ajanın seni gerçek duruma hazırlar. |
 | 🔥 **Seri, XP ve hedefler** | Gerçekten yaptıklarından hesaplanır, uydurulmaz. Seri dondurma dahil. |
+| 📊 **İlerleme paneli** | Seri, kelimeler, plan, tekrarlar ve rozetler tek sayfada; *panelimi göster* de. |
 | 🧩 **Tarayıcı uzantısı** | LLL'den otomatik kayıt, alıştırmalı yan panel, kelime merkezi ve cihaz içi çeviri. |
 | 🗂️ **Anki · Quizlet · CSV** | Desteni istediğin zaman dışa aktar. |
 | 🌍 **Her dil** | Her ana dil, her hedef dil. Uzantı arayüzü: English, Türkçe, Español, Français, Português. |

@@ -12,7 +12,8 @@
   "scripts": {
     "build": "npm run build --workspaces --if-present",
     "test": "vitest run",
-    "typecheck": "tsc -p packages/core && tsc -p packages/mcp && tsc -p apps/extension"
+    "typecheck": "tsc -p packages/core && tsc -p packages/mcp && tsc -p apps/extension",
+    "screenshots": "node scripts/screenshots.mjs"
   },
   "devDependencies": {
     "@types/node": "^26.6.5",
