@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 560" width="1200" height="560" role="img" aria-label="Neler var: hafıza, haftalık plan, FSRS tekrarları, hayatından dersler, seri ve XP, tarayıcı uzantısı, Anki, Quizlet ve CSV aktarımı, her dil.">
+  <defs>
+    <pattern id="grain" width="6" height="6" patternUnits="userSpaceOnUse"><circle cx="1.5" cy="1.5" r=".7" fill="#ffffff" opacity=".05"/></pattern>
+    <pattern id="tapeA" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="10" height="10" fill="#fb923c"/><rect width="4" height="10" fill="#fdba74"/></pattern>
+    <pattern id="tapeB" width="8" height="8" patternUnits="userSpaceOnUse"><rect width="8" height="8" fill="#86efac"/><circle cx="4" cy="4" r="1.6" fill="#dcfce7"/></pattern>
+    <linearGradient id="xp" x1="0" x2="1"><stop offset="0" stop-color="#fb923c"/><stop offset="1" stop-color="#facc15"/></linearGradient>
+    <linearGradient id="flame" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#f97316"/><stop offset="1" stop-color="#facc15"/></linearGradient>
+    <filter id="drop" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#000" flood-opacity=".28"/></filter>
+    <style>
+      text { font-family: ui-sans-serif, system-ui, -apple-system, &quot;Segoe UI&quot;, Roboto, sans-serif; fill: #292524; }
+      .emoji { font-family: &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Noto Color Emoji&quot;, sans-serif; }
+      .pop { transform-box: fill-box; transform-origin: center; animation: pop .55s cubic-bezier(.3,1.6,.5,1) both; }
+      @keyframes pop { from { opacity: 0; transform: scale(.4) rotate(-14deg) } to { opacity: 1; transform: none } }
+      @media (prefers-reduced-motion: reduce) { *, *::before { animation: none !important; } }
+    </style>
+  </defs>
+  
+  <rect width="1200" height="560" rx="28" fill="#2f4a3f"/>
+  <rect width="1200" height="560" rx="28" fill="url(#grain)"/>
+  <rect x="14" y="14" width="1172" height="532" rx="18" fill="none" stroke="#f5efe4" stroke-opacity=".35" stroke-width="1.5" stroke-dasharray="7 6"/>
+  <path d="M40 34 H1160 V494 L1110 526 H40 Z" fill="#f8f4ee"/>
+  <path d="M1160 494 L1110 526 L1118 488 Z" fill="#e3d8c6"/>
+  <path d="M40 34 H1160 V494 L1110 526 H40 Z" fill="none" stroke="#eadfcd"/>
+  
+  <g transform="translate(175,172) rotate(-3)"><g class="pop" style="animation-delay:0.25s">
+    <rect x="-128" y="-92" width="256" height="184" rx="30" fill="#fff" filter="url(#drop)"/>
+    <rect x="-120" y="-84" width="240" height="168" rx="24" fill="#fde68a"/>
+    <text x="-98" y="-24" font-size="40" class="emoji">🧠</text>
+    <text x="-98" y="18" font-size="22" font-weight="800">Seni hatırlar</text>
+    <text x="-98" y="45" font-size="16" fill="#6b5d4f">Her ders, kelime ve sonuç</text>
+    <text x="-98" y="66" font-size="16" fill="#6b5d4f">yarın için kaydedilir.</text>
+  </g></g>
+  <g transform="translate(458,172) rotate(2.5)"><g class="pop" style="animation-delay:0.47s">
+    <rect x="-128" y="-92" width="256" height="184" rx="30" fill="#fff" filter="url(#drop)"/>
+    <rect x="-120" y="-84" width="240" height="168" rx="24" fill="#dcfce7"/>
+    <text x="-98" y="-24" font-size="40" class="emoji">📅</text>
+    <text x="-98" y="18" font-size="22" font-weight="800">Haftalık plan</text>
+    <text x="-98" y="45" font-size="16" fill="#6b5d4f">Günlük dakikana göre</text>
+    <text x="-98" y="66" font-size="16" fill="#6b5d4f">çalışma günleri ve görevler.</text>
+  </g></g>
+  <g transform="translate(741,172) rotate(-1.5)"><g class="pop" style="animation-delay:0.69s">
+    <rect x="-128" y="-92" width="256" height="184" rx="30" fill="#fff" filter="url(#drop)"/>
+    <rect x="-120" y="-84" width="240" height="168" rx="24" fill="#ffe4e6"/>
+    <text x="-98" y="-24" font-size="40" class="emoji">🔁</text>
+    <text x="-98" y="18" font-size="22" font-weight="800">FSRS tekrarları</text>
+    <text x="-98" y="45" font-size="16" fill="#6b5d4f">Her kelime tam unutmadan</text>
+    <text x="-98" y="66" font-size="16" fill="#6b5d4f">önce geri gelir.</text>
+  </g></g>
+  <g transform="translate(1024,172) rotate(3)"><g class="pop" style="animation-delay:0.91s">
+    <rect x="-128" y="-92" width="256" height="184" rx="30" fill="#fff" filter="url(#drop)"/>
+    <rect x="-120" y="-84" width="240" height="168" rx="24" fill="#fed7aa"/>
+    <text x="-98" y="-24" font-size="40" class="emoji">🎯</text>
+    <text x="-98" y="18" font-size="22" font-weight="800">Hayatından dersler</text>
+    <text x="-98" y="45" font-size="16" fill="#6b5d4f">Seyahat, toplantı, randevu:</text>
+    <text x="-98" y="66" font-size="16" fill="#6b5d4f">gerçek duruma hazırlan.</text>
+  </g></g>
+  <g transform="translate(175,394) rotate(2)"><g class="pop" style="animation-delay:1.13s">
+    <rect x="-128" y="-92" width="256" height="184" rx="30" fill="#fff" filter="url(#drop)"/>
+    <rect x="-120" y="-84" width="240" height="168" rx="24" fill="#e0f2fe"/>
+    <text x="-98" y="-24" font-size="40" class="emoji">🔥</text>
+    <text x="-98" y="18" font-size="22" font-weight="800">Seri ve XP</text>
+    <text x="-98" y="45" font-size="16" fill="#6b5d4f">Yaptıklarından hesaplanır,</text>
+    <text x="-98" y="66" font-size="16" fill="#6b5d4f">asla uydurulmaz.</text>
+  </g></g>
+  <g transform="translate(458,394) rotate(-3)"><g class="pop" style="animation-delay:1.35s">
+    <rect x="-128" y="-92" width="256" height="184" rx="30" fill="#fff" filter="url(#drop)"/>
+    <rect x="-120" y="-84" width="240" height="168" rx="24" fill="#ede9fe"/>
+    <text x="-98" y="-24" font-size="40" class="emoji">🧩</text>
+    <text x="-98" y="18" font-size="22" font-weight="800">Tarayıcı uzantısı</text>
+    <text x="-98" y="45" font-size="16" fill="#6b5d4f">LLL derslerini kaydeder,</text>
+    <text x="-98" y="66" font-size="16" fill="#6b5d4f">pratik yan paneli ekler.</text>
+  </g></g>
+  <g transform="translate(741,394) rotate(3.5)"><g class="pop" style="animation-delay:1.57s">
+    <rect x="-128" y="-92" width="256" height="184" rx="30" fill="#fff" filter="url(#drop)"/>
+    <rect x="-120" y="-84" width="240" height="168" rx="24" fill="#fde68a"/>
+    <text x="-98" y="-24" font-size="40" class="emoji">🗂️</text>
+    <text x="-98" y="18" font-size="22" font-weight="800">Anki · Quizlet · CSV</text>
+    <text x="-98" y="45" font-size="16" fill="#6b5d4f">Desteni istediğin zaman</text>
+    <text x="-98" y="66" font-size="16" fill="#6b5d4f">dışa aktar.</text>
+  </g></g>
+  <g transform="translate(1024,394) rotate(-2)"><g class="pop" style="animation-delay:1.79s">
+    <rect x="-128" y="-92" width="256" height="184" rx="30" fill="#fff" filter="url(#drop)"/>
+    <rect x="-120" y="-84" width="240" height="168" rx="24" fill="#dcfce7"/>
+    <text x="-98" y="-24" font-size="40" class="emoji">🌍</text>
+    <text x="-98" y="18" font-size="22" font-weight="800">Her dil</text>
+    <text x="-98" y="45" font-size="16" fill="#6b5d4f">Her ana dil,</text>
+    <text x="-98" y="66" font-size="16" fill="#6b5d4f">her hedef dil.</text>
+  </g></g>
+</svg>

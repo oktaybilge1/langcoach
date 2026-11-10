@@ -1,15 +1,15 @@
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/oktaybilge1/langcoach/main/docs/media/hero.svg" alt="LangCoach: AI ajanın Little Language Lessons'taki her dersini hatırlar" width="100%">
+<img src="https://raw.githubusercontent.com/oktaybilge1/langcoach/main/docs/media/hero.tr.svg" alt="LangCoach: Little Language Lessons artık hafızalı. 5 günlük seri, 90 kayıtlı kelime ve XP çubuğu olan bir defter." width="100%">
 
 ### Google'ın [Little Language Lessons](https://labs.google/lll/en) aracını AI ajanınla güçlendir.
 
 Her dil için hafıza, haftalık plan, aralıklı tekrar ve seri takibi, kendi bilgisayarında.
 
-[![npm](https://img.shields.io/npm/v/langcoach?color=8b5cf6)](https://www.npmjs.com/package/langcoach)
-[![CI](https://github.com/oktaybilge1/langcoach/actions/workflows/ci.yml/badge.svg)](https://github.com/oktaybilge1/langcoach/actions/workflows/ci.yml)
-[![Lisans: MIT](https://img.shields.io/badge/lisans-MIT-3b82f6.svg)](https://github.com/oktaybilge1/langcoach/blob/main/LICENSE)
-![API anahtarı gerekmez](https://img.shields.io/badge/API%20anahtar%C4%B1-gerekmez-22c55e)
+[![npm](https://img.shields.io/npm/v/langcoach?label=npm&color=fb923c&labelColor=2f4a3f&style=flat-square)](https://www.npmjs.com/package/langcoach)
+[![CI](https://img.shields.io/github/actions/workflow/status/oktaybilge1/langcoach/ci.yml?branch=main&label=CI&labelColor=2f4a3f&style=flat-square)](https://github.com/oktaybilge1/langcoach/actions/workflows/ci.yml)
+[![Lisans: MIT](https://img.shields.io/badge/lisans-MIT-facc15?labelColor=2f4a3f&style=flat-square)](https://github.com/oktaybilge1/langcoach/blob/main/LICENSE)
+![API anahtarı gerekmez](https://img.shields.io/badge/API%20anahtar%C4%B1-gerekmez-86efac?labelColor=2f4a3f&style=flat-square)
 
 [English](https://github.com/oktaybilge1/langcoach/blob/main/README.md) · **Türkçe**
 
@@ -17,7 +17,7 @@ Her dil için hafıza, haftalık plan, aralıklı tekrar ve seri takibi, kendi b
 
 ---
 
-## ⚡ Tek cümleyle kurulum
+## <picture><img src="https://raw.githubusercontent.com/oktaybilge1/langcoach/main/docs/media/h-install.svg" height="34" alt=""></picture> Tek cümleyle kurulum
 
 **Claude Code**'u aç ve şunu yapıştır:
 
@@ -31,7 +31,7 @@ Sonra yeni bir oturum açıp `/mcp__langcoach__tutor` yaz ya da sadece *"Dil der
 
 İlerleme sayfanı açmak için istediğin zaman *panelimi göster* de.
 
-## 🔁 Nasıl çalışır
+## <picture><img src="https://raw.githubusercontent.com/oktaybilge1/langcoach/main/docs/media/h-how.svg" height="34" alt=""></picture> Nasıl çalışır
 
 <img src="https://raw.githubusercontent.com/oktaybilge1/langcoach/main/docs/media/flow.svg" alt="LLL'de çalış, uzantı yerelde kaydeder, ajanın planlar ve tekrar ettirir, Anki veya Quizlet'e aktar" width="100%">
 
@@ -40,7 +40,7 @@ Sonra yeni bir oturum açıp `/mcp__langcoach__tutor` yaz ya da sadece *"Dil der
 3. Ajanın bunları tekrar kartlarına çevirir, haftalık plana yerleştirir ve zamanı gelince seni sınar.
 4. Gerçek hayatın için ek dersler yazar ("Cuma günkü Madrid iş görüşmem") ve daha fazlası için seni LLL'ye geri yollar.
 
-## 📒 İlerlemeni gör
+## <picture><img src="https://raw.githubusercontent.com/oktaybilge1/langcoach/main/docs/media/h-progress.svg" height="34" alt=""></picture> İlerlemeni gör
 
 Solda ajanının paneli, sağda uzantının yan paneli; İspanyolca çalışan hayali bir öğrenciyle.
 
@@ -53,7 +53,12 @@ Solda ajanının paneli, sağda uzantının yan paneli; İspanyolca çalışan h
 
 Panel, bilgisayarındaki tek bir çevrimdışı sayfadır: hesap yok, ağ isteği yok. *Panelimi göster* dediğinde açılır.
 
-## ✨ Neler var
+## <picture><img src="https://raw.githubusercontent.com/oktaybilge1/langcoach/main/docs/media/h-features.svg" height="34" alt=""></picture> Neler var
+
+<img src="https://raw.githubusercontent.com/oktaybilge1/langcoach/main/docs/media/features.tr.svg" alt="Neler var: hafıza, haftalık plan, FSRS tekrarları, hayatından dersler, seri ve XP, tarayıcı uzantısı, Anki, Quizlet ve CSV aktarımı, her dil." width="100%">
+
+<details>
+<summary>Tüm özellikler düz metin olarak</summary>
 
 | | |
 | --- | --- |
@@ -67,7 +72,9 @@ Panel, bilgisayarındaki tek bir çevrimdışı sayfadır: hesap yok, ağ isteğ
 | 🗂️ **Anki · Quizlet · CSV** | Desteni istediğin zaman dışa aktar. |
 | 🌍 **Her dil** | Her ana dil, her hedef dil. Uzantı arayüzü: English, Türkçe, Español, Français, Português. |
 
-## 🆚 Neden sadece bir sohbet botu değil?
+</details>
+
+## <picture><img src="https://raw.githubusercontent.com/oktaybilge1/langcoach/main/docs/media/h-compare.svg" height="34" alt=""></picture> Neden sadece bir sohbet botu değil?
 
 | | Sadece LLL | LangCoach + LLL | Genel sohbet botu |
 | --- | :---: | :---: | :---: |
@@ -80,7 +87,7 @@ Panel, bilgisayarındaki tek bir çevrimdışı sayfadır: hesap yok, ağ isteğ
 
 LangCoach LLL'nin, bir öğretmenin ya da kursun yerini tutmaz ve konuşmanı puanlamaz.
 
-## 🔒 Gizlilik baştan tasarımda
+## <picture><img src="https://raw.githubusercontent.com/oktaybilge1/langcoach/main/docs/media/h-privacy.svg" height="34" alt=""></picture> Gizlilik baştan tasarımda
 
 - Her şey bilgisayarında kalır: `~/.langcoach/data.json` ve tarayıcının depolaması. LangCoach bulutu ve analitik yok.
 - Uzantı yalnızca `127.0.0.1` (kendi bilgisayarın) ile ve sadece eşleştirdikten sonra konuşur. Her kurulumun kendi rastgele anahtarı olur.
@@ -89,7 +96,7 @@ LangCoach LLL'nin, bir öğretmenin ya da kursun yerini tutmaz ve konuşmanı pu
 
 Ayrıntılar: [Gizlilik Politikası](https://github.com/oktaybilge1/langcoach/blob/main/docs/PRIVACY.md).
 
-## 🛠️ Elle kurulum
+## Elle kurulum
 
 <details>
 <summary>Sunucuyu kendin kur</summary>
@@ -138,7 +145,7 @@ Araçlar: `set_profile`, `get_weekly_plan`, `get_today`, `save_lesson`, `complet
 
 </details>
 
-## 🤝 Katkı
+## Katkı
 
 Katkılar ve yeni arayüz çevirileri memnuniyetle karşılanır. Bkz. [CONTRIBUTING.md](https://github.com/oktaybilge1/langcoach/blob/main/CONTRIBUTING.md).
 

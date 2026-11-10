@@ -1,15 +1,15 @@
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/oktaybilge1/langcoach/main/docs/media/hero.svg" alt="LangCoach: your AI agent remembers every Little Language Lessons lesson" width="100%">
+<img src="https://raw.githubusercontent.com/oktaybilge1/langcoach/main/docs/media/hero.svg" alt="LangCoach: Little Language Lessons, now with a memory. A notebook with a 5-day streak, 90 saved words and an XP bar." width="100%">
 
 ### Supercharge Google's [Little Language Lessons](https://labs.google/lll/en) with your AI agent.
 
 Memory, a weekly plan, spaced-repetition reviews and streaks for any language, on your own computer.
 
-[![npm](https://img.shields.io/npm/v/langcoach?color=8b5cf6)](https://www.npmjs.com/package/langcoach)
-[![CI](https://github.com/oktaybilge1/langcoach/actions/workflows/ci.yml/badge.svg)](https://github.com/oktaybilge1/langcoach/actions/workflows/ci.yml)
-[![License: MIT](https://img.shields.io/badge/license-MIT-3b82f6.svg)](https://github.com/oktaybilge1/langcoach/blob/main/LICENSE)
-![No API key](https://img.shields.io/badge/API%20key-not%20needed-22c55e)
+[![npm](https://img.shields.io/npm/v/langcoach?label=npm&color=fb923c&labelColor=2f4a3f&style=flat-square)](https://www.npmjs.com/package/langcoach)
+[![CI](https://img.shields.io/github/actions/workflow/status/oktaybilge1/langcoach/ci.yml?branch=main&label=CI&labelColor=2f4a3f&style=flat-square)](https://github.com/oktaybilge1/langcoach/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-facc15?labelColor=2f4a3f&style=flat-square)](https://github.com/oktaybilge1/langcoach/blob/main/LICENSE)
+![No API key](https://img.shields.io/badge/API%20key-not%20needed-86efac?labelColor=2f4a3f&style=flat-square)
 
 **English** · [Türkçe](https://github.com/oktaybilge1/langcoach/blob/main/README.tr.md)
 
@@ -17,7 +17,7 @@ Memory, a weekly plan, spaced-repetition reviews and streaks for any language, o
 
 ---
 
-## ⚡ Install in one sentence
+## <picture><img src="https://raw.githubusercontent.com/oktaybilge1/langcoach/main/docs/media/h-install.svg" height="34" alt=""></picture> Install in one sentence
 
 Open **Claude Code** and paste:
 
@@ -31,7 +31,7 @@ Then start a new session and type `/mcp__langcoach__tutor`, or just say *"Let's 
 
 Say *show my dashboard* any time to open your progress page.
 
-## 🔁 How it works
+## <picture><img src="https://raw.githubusercontent.com/oktaybilge1/langcoach/main/docs/media/h-how.svg" height="34" alt=""></picture> How it works
 
 <img src="https://raw.githubusercontent.com/oktaybilge1/langcoach/main/docs/media/flow.svg" alt="Study in LLL, the extension saves it locally, your AI agent plans and reviews, export to Anki or Quizlet" width="100%">
 
@@ -40,7 +40,7 @@ Say *show my dashboard* any time to open your progress page.
 3. Your agent turns them into review cards, fits them into this week's plan and quizzes you when they are due.
 4. It writes extra lessons for your real life ("my job interview in Madrid on Friday") and sends you back to LLL for more.
 
-## 📒 See your progress
+## <picture><img src="https://raw.githubusercontent.com/oktaybilge1/langcoach/main/docs/media/h-progress.svg" height="34" alt=""></picture> See your progress
 
 Your agent's dashboard (left) and the extension's side panel (right), with a made-up learner studying Spanish.
 
@@ -53,7 +53,12 @@ Your agent's dashboard (left) and the extension's side panel (right), with a mad
 
 The dashboard is one offline page on your computer: no account, no network requests. It opens when you say *show my dashboard*.
 
-## ✨ What you get
+## <picture><img src="https://raw.githubusercontent.com/oktaybilge1/langcoach/main/docs/media/h-features.svg" height="34" alt=""></picture> What you get
+
+<img src="https://raw.githubusercontent.com/oktaybilge1/langcoach/main/docs/media/features.svg" alt="What you get: memory, weekly plan, FSRS reviews, real-life lessons, streak and XP, browser extension, Anki, Quizlet and CSV export, any language." width="100%">
+
+<details>
+<summary>Every feature in plain text</summary>
 
 | | |
 | --- | --- |
@@ -67,7 +72,9 @@ The dashboard is one offline page on your computer: no account, no network reque
 | 🗂️ **Anki · Quizlet · CSV** | Export your deck any time. |
 | 🌍 **Any language** | Any native language, any target language. Extension UI in English, Türkçe, Español, Français, Português. |
 
-## 🆚 Why not just ask a chatbot?
+</details>
+
+## <picture><img src="https://raw.githubusercontent.com/oktaybilge1/langcoach/main/docs/media/h-compare.svg" height="34" alt=""></picture> Why not just ask a chatbot?
 
 | | LLL alone | LangCoach + LLL | A general chatbot |
 | --- | :---: | :---: | :---: |
@@ -80,7 +87,7 @@ The dashboard is one offline page on your computer: no account, no network reque
 
 LangCoach does not replace LLL, a teacher or a course, and it does not grade your speaking.
 
-## 🔒 Private by design
+## <picture><img src="https://raw.githubusercontent.com/oktaybilge1/langcoach/main/docs/media/h-privacy.svg" height="34" alt=""></picture> Private by design
 
 - Everything stays on your computer: `~/.langcoach/data.json` and your browser's storage. There is no LangCoach cloud and no analytics.
 - The extension talks only to `127.0.0.1` (your own machine), and only after you pair it. Each install gets its own random token.
@@ -89,7 +96,7 @@ LangCoach does not replace LLL, a teacher or a course, and it does not grade you
 
 More: [Privacy Policy](https://github.com/oktaybilge1/langcoach/blob/main/docs/PRIVACY.md).
 
-## 🛠️ Manual install
+## Manual install
 
 <details>
 <summary>Install the server yourself</summary>
@@ -138,7 +145,7 @@ Tools: `set_profile`, `get_weekly_plan`, `get_today`, `save_lesson`, `complete_t
 
 </details>
 
-## 🤝 Contributing
+## Contributing
 
 Contributions and new UI translations are welcome. See [CONTRIBUTING.md](https://github.com/oktaybilge1/langcoach/blob/main/CONTRIBUTING.md).
 

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" aria-hidden="true">
+  <style>.pop { transform-origin: 32px 32px; animation: pop .6s .2s cubic-bezier(.3,1.6,.5,1) both; } @keyframes pop { from { opacity: 0; transform: scale(.3) rotate(-25deg) } to { opacity: 1; transform: none } } @media (prefers-reduced-motion: reduce) { *, *::before { animation: none !important; } }</style>
+  <g class="pop"><g transform="rotate(-6 32 32)">
+    <circle cx="32" cy="33.5" r="29" fill="#000" opacity=".18"/>
+    <circle cx="32" cy="32" r="29" fill="#fff"/>
+    <circle cx="32" cy="32" r="24" fill="#e0f2fe"/>
+    <path d="M24 29 v-6 a8 8 0 0 1 16 0 v6" fill="none" stroke="#292524" stroke-width="3.5"/><rect x="18" y="29" width="28" height="21" rx="4" fill="#fde68a" stroke="#292524" stroke-width="3"/><circle cx="32" cy="38" r="2.8" fill="#292524"/><path d="M32 40 v5" stroke="#292524" stroke-width="3" stroke-linecap="round"/>
+  </g></g>
+</svg>
