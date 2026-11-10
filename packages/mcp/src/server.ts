@@ -1,5 +1,6 @@
 import { existsSync } from 'node:fs';
-import { chmod, cp, readFile, rename, rm, writeFile } from 'node:fs/promises';
+import { chmod, cp, mkdir, readFile, rename, rm, writeFile } from 'node:fs/promises';
+import { randomBytes } from 'node:crypto';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
@@ -348,13 +349,20 @@ export function createServer(coach: Coach, opts: ServerOptions = {}): McpServer 
         const now = new Date();
         const state = await coach.exportData();
         const file = join(opts.dataDir ?? dirname(defaultDataPath()), 'dashboard.html');
-        const tmp = `${file}.${process.pid}.tmp`;
-        await writeFile(tmp, renderDashboard(state, now), 'utf8');
-        await rename(tmp, file);
+        const tmp = `${file}.${process.pid}.${randomBytes(4).toString('hex')}.tmp`;
+        await mkdir(dirname(file), { recursive: true });
+        try {
+          await writeFile(tmp, renderDashboard(state, now), 'utf8');
+          await rename(tmp, file);
+        } catch (e) {
+          await rm(tmp, { force: true });
+          throw e;
+        }
         const opened = await (opts.openFile ?? openInBrowser)(file);
         const p = progressOf(state, now);
         return {
           opened,
+          note: opened ? 'Opening the page in the default browser was requested.' : 'The page could not be opened automatically; open the file at path.',
           file: 'dashboard.html in your LangCoach data folder',
           // The path is only revealed when the page could not be opened.
           ...(opened ? {} : { path: file }),

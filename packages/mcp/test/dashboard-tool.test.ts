@@ -61,6 +61,22 @@ describe('open_dashboard', () => {
   });
 });
 
+describe('open_dashboard without a data folder', () => {
+  test('creates the folder', async () => {
+    const t = await setup(async () => true);
+    const nested = join(t.dir, 'a', 'b');
+    const coach = new Coach(new MemoryStore());
+    const server = createServer(coach, { dataDir: nested, openFile: async () => true });
+    const client = new Client({ name: 't', version: '0' });
+    const [x, y] = InMemoryTransport.createLinkedPair();
+    await Promise.all([server.connect(x), client.connect(y)]);
+    const res = await call(client);
+    expect(res.isError).toBeFalsy();
+    expect(existsSync(join(nested, 'dashboard.html'))).toBe(true);
+    t.done();
+  });
+});
+
 describe('openInBrowser', () => {
   const fake = (fail: boolean) => {
     const calls: unknown[][] = [];
