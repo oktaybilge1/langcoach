@@ -1,10 +1,12 @@
 import { existsSync } from 'node:fs';
-import { chmod, cp, readFile, rm, writeFile } from 'node:fs/promises';
+import { chmod, cp, readFile, rename, rm, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
-import { defaultDataPath, exportCards, type Coach, type Lesson } from '@langcoach/core';
+import { defaultDataPath, exportCards, progressOf, type Coach, type Lesson } from '@langcoach/core';
+import { renderDashboard } from './dashboard/render.js';
+import { openInBrowser } from './dashboard/open.js';
 import { DEFAULT_BRIDGE_PORT, loadOrCreateToken, type BridgeController } from './bridge.js';
 import pkg from '../package.json' with { type: 'json' };
 import { TUTOR_PROMPT } from './prompt.js';
@@ -42,6 +44,8 @@ export interface ServerOptions {
   extensionSource?: string;
   /** LangCoach data folder (default: LANGCOACH_HOME or ~/.langcoach). */
   dataDir?: string;
+  /** Opens the dashboard file; tests inject a fake so no browser starts. */
+  openFile?: (file: string) => Promise<boolean>;
 }
 
 export const UNTRUSTED_NOTICE =
@@ -333,6 +337,31 @@ export function createServer(coach: Coach, opts: ServerOptions = {}): McpServer 
       }),
   );
 
+  server.registerTool(
+    'open_dashboard',
+    {
+      description:
+        "Opens the learner's progress dashboard (a local page, no internet). Offer it at the end of a session or when the learner asks to see their progress.",
+    },
+    () =>
+      run(async () => {
+        const now = new Date();
+        const state = await coach.exportData();
+        const file = join(opts.dataDir ?? dirname(defaultDataPath()), 'dashboard.html');
+        const tmp = `${file}.${process.pid}.tmp`;
+        await writeFile(tmp, renderDashboard(state, now), 'utf8');
+        await rename(tmp, file);
+        const opened = await (opts.openFile ?? openInBrowser)(file);
+        const p = progressOf(state, now);
+        return {
+          opened,
+          file: 'dashboard.html in your LangCoach data folder',
+          // The path is only revealed when the page could not be opened.
+          ...(opened ? {} : { path: file }),
+          summary: { streak: p.streak, xpToday: p.todayXp, dueCards: p.dueCount, words: state.cards.length },
+        };
+      }),
+  );
 
   server.registerPrompt(
     'tutor',

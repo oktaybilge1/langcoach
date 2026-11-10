@@ -5,7 +5,7 @@
 //
 // Starts the installed bin over stdio with LANGCOACH_HOME set to an empty temp folder, sends
 // MCP initialize + tools/list + bridge_prepare_extension, and checks: every stdout line is JSON-RPC,
-// tools/list returns 14 tools, the package ships extension/manifest.json but no pairing.json,
+// tools/list returns 15 tools, the package ships extension/manifest.json but no pairing.json,
 // bridge_prepare_extension copies it into LANGCOACH_HOME with a pairing.json, the token is never
 // printed, stderr is empty, the process exits 0 once stdin closes, and no data.json was written.
 import { spawn } from 'node:child_process';
@@ -107,7 +107,7 @@ child.on('exit', (code, signal) => {
     const list = msgs.find((m) => m.id === 2);
     const tools = list?.result?.tools;
     if (!Array.isArray(tools)) fail(`no tools/list result: ${stdout}`);
-    if (tools.length !== 14) fail(`expected 14 tools, got ${tools.length}`);
+    if (tools.length !== 15) fail(`expected 15 tools, got ${tools.length}`);
     if (!tools.some((t) => t.name === 'bridge_prepare_extension')) fail('bridge_prepare_extension is not listed');
     const call = msgs.find((m) => m.id === 3)?.result;
     if (!call || call.isError) fail(`bridge_prepare_extension failed: ${JSON.stringify(call)}`);

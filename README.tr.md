@@ -29,6 +29,8 @@ Ajanın sunucuyu kurar, sonra tarayıcı uzantısını eklemene yardım eder (ü
 
 Sonra yeni bir oturum açıp `/mcp__langcoach__tutor` yaz ya da sadece *"Dil dersime başlayalım"* de.
 
+İlerleme sayfanı açmak için istediğin zaman *panelimi göster* de.
+
 ## 🔁 Nasıl çalışır
 
 <img src="https://raw.githubusercontent.com/oktaybilge1/langcoach/main/docs/media/flow.svg" alt="LLL'de çalış, uzantı yerelde kaydeder, ajanın planlar ve tekrar ettirir, Anki veya Quizlet'e aktar" width="100%">
@@ -114,7 +116,7 @@ Yalnızca Claude Code test edildi; MCP destekleyen diğer ajanlar çalışmalı 
 <details>
 <summary>Araçlar ve veri ayrıntıları</summary>
 
-Araçlar: `set_profile`, `get_weekly_plan`, `get_today`, `save_lesson`, `complete_task`, `get_due_reviews`, `submit_review`, `get_progress`, `export_cards`, `export_data`, `import_data`, `get_recent_lessons`, `bridge_status`, `bridge_prepare_extension`.
+Araçlar: `set_profile`, `get_weekly_plan`, `get_today`, `save_lesson`, `complete_task`, `get_due_reviews`, `submit_review`, `get_progress`, `export_cards`, `export_data`, `import_data`, `get_recent_lessons`, `bridge_status`, `bridge_prepare_extension`, `open_dashboard`.
 
 - Veri `~/.langcoach/data.json` dosyasında durur (klasörü değiştirmek için `LANGCOACH_HOME`).
 - Yazmalar atomiktir, birden çok oturum kilit dosyasıyla sırayla yazar, bozuk dosya `data.corrupt-<zaman>.json` olarak saklanır ve her içe aktarmadan önce `data.backup-<zaman>.json` alınır.

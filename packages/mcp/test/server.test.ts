@@ -40,7 +40,7 @@ async function setup(store: Store = new MemoryStore(), opts: ServerOptions = {})
 }
 
 describe('langcoach MCP server', () => {
-  test('lists exactly the 14 tools and the "tutor" prompt', async () => {
+  test('lists exactly the 15 tools and the "tutor" prompt', async () => {
     const { client } = await setup();
     const tools = (await client.listTools()).tools.map((t) => t.name).sort();
     expect(tools).toEqual(
@@ -56,6 +56,7 @@ describe('langcoach MCP server', () => {
         'get_today',
         'get_weekly_plan',
         'import_data',
+        'open_dashboard',
         'save_lesson',
         'set_profile',
         'submit_review',
@@ -484,7 +485,7 @@ describe('untrusted text is labelled everywhere it reaches the agent', () => {
     const bridge = createBridgeController(new Coach(store), { dataDir: t.dir, port: 0, version: 't', log: () => {} });
     try {
       const bundle = fakeBundle(t.dir);
-      const { client, call } = await setup(store, { bridge, dataDir: t.dir, extensionSource: bundle });
+      const { client, call } = await setup(store, { bridge, dataDir: t.dir, extensionSource: bundle, openFile: async () => true });
       const outputs: string[] = [];
       outputs.push((await call('bridge_prepare_extension')).text);
       const token = readFileSync(join(t.dir, 'bridge-token'), 'utf8').trim();
@@ -505,7 +506,7 @@ describe('untrusted text is labelled everywhere it reaches the agent', () => {
         if (['bridge_prepare_extension', 'set_profile', 'get_weekly_plan', 'save_lesson'].includes(tool.name)) continue;
         outputs.push((await call(tool.name, args[tool.name] ?? {})).text);
       }
-      expect(outputs.length).toBe(14);
+      expect(outputs.length).toBe(15);
       for (const o of outputs) expect(o).not.toContain(token);
     } finally {
       await bridge.close();

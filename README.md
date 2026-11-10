@@ -29,6 +29,8 @@ Your agent sets up the server, then helps you add the browser extension (you mak
 
 Then start a new session and type `/mcp__langcoach__tutor`, or just say *"Let's start my language lesson."*
 
+Say *show my dashboard* any time to open your progress page.
+
 ## 🔁 How it works
 
 <img src="https://raw.githubusercontent.com/oktaybilge1/langcoach/main/docs/media/flow.svg" alt="Study in LLL, the extension saves it locally, your AI agent plans and reviews, export to Anki or Quizlet" width="100%">
@@ -114,7 +116,7 @@ Only Claude Code is tested; other MCP-capable agents should work but are unteste
 <details>
 <summary>Tools and data details</summary>
 
-Tools: `set_profile`, `get_weekly_plan`, `get_today`, `save_lesson`, `complete_task`, `get_due_reviews`, `submit_review`, `get_progress`, `export_cards`, `export_data`, `import_data`, `get_recent_lessons`, `bridge_status`, `bridge_prepare_extension`.
+Tools: `set_profile`, `get_weekly_plan`, `get_today`, `save_lesson`, `complete_task`, `get_due_reviews`, `submit_review`, `get_progress`, `export_cards`, `export_data`, `import_data`, `get_recent_lessons`, `bridge_status`, `bridge_prepare_extension`, `open_dashboard`.
 
 - Data lives in `~/.langcoach/data.json` (set `LANGCOACH_HOME` to change the folder).
 - Writes are atomic, several sessions take turns through a lock file, a corrupt file is kept as `data.corrupt-<timestamp>.json`, and every import first saves `data.backup-<timestamp>.json`.
