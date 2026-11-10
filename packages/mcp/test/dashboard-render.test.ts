@@ -76,7 +76,7 @@ describe('renderDashboard', () => {
     const html = renderDashboard(st, NOW);
     const s = strings('en');
     expect(html).not.toMatch(BAD);
-    expect(html).toMatch(/class="big"[^>]*>[^<]*5</);
+    expect(html).toMatch(/class="big">(?:<span[^>]*>[^<]*<\/span>)? 5</);
     expect(html).toContain(s.task_review);
     expect(html).toContain(s.task_tiny_lesson);
     expect(html).toContain('la cuenta');
@@ -85,6 +85,18 @@ describe('renderDashboard', () => {
     expect(html).toContain('Ordering at a café');
     expect(html).not.toContain('Not from LLL');
     expect(html).not.toContain(strings('en').emptyTitle);
+  });
+
+  it('exposes state to screen readers and hides decorative glyphs', () => {
+    const html = renderDashboard(typical(), NOW);
+    const s = strings('en');
+    expect(html).toContain(`<span class="st" aria-hidden="true">`);
+    expect(html).toContain(`<span class="sr">${s.taskNotDone}: </span>`);
+    expect(html).toMatch(/<b aria-hidden="true">[●○·]+<\/b><span class="sr">\d+\/\d+<\/span>/);
+    expect(html).toMatch(/<span aria-hidden="true">🔥<\/span>/);
+    expect(html).not.toMatch(/<(span|b)[^>]*class="st"[^>]*aria-label/);
+    expect(html).toMatch(/class="spark" role="img" aria-label="[^"]+"/);
+    expect(html).toContain(s.daysDone.replace('{done}', '0').replace('{total}', '2'));
   });
 
   it('hides streak freezes when the field is absent', () => {

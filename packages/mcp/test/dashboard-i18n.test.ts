@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
+import { achievements, emptyState, LEVELS } from '@langcoach/core';
 import { resolveLocale, strings, type UiLang } from '../src/dashboard/i18n.js';
 
 describe('resolveLocale', () => {
@@ -32,5 +33,13 @@ describe('strings', () => {
     for (const a of ['first_lesson', 'streak_3', 'streak_7', 'streak_30', 'cards_50', 'cards_100', 'cards_500', 'reviews_100', 'perfect_session', 'xp_100_day', 'sessions_10', 'first_match']) pairs.push([`ach_${a}`, `ach_${a}`]);
     for (const [k, mk] of pairs) expect(s[k]).toBe(m[mk].message);
     for (let i = 1; i <= 10; i++) expect(s[`level${i}`]).toBe(m[`level${i}`].message);
+  });
+});
+
+describe('string coverage', () => {
+  const keys = [...achievements(emptyState(), '2026-11-10').map((a) => `ach_${a.id}`), ...LEVELS.map((l) => l.key)];
+  it.each(['en', 'tr', 'es', 'fr', 'pt-BR'] as UiLang[])('%s has every achievement and level string', (ui) => {
+    const s = strings(ui) as Record<string, string>;
+    for (const k of keys) expect(s[k], k).toBeTruthy();
   });
 });

@@ -6,7 +6,7 @@ export function openInBrowser(file: string, spawnFn: typeof spawn = spawn): Prom
     try {
       const win = process.platform === 'win32';
       const [cmd, args]: [string, string[]] = win
-        ? ['cmd', ['/d', '/s', '/c', `start "" "${file}"`]]
+        ? [process.env.ComSpec ?? 'cmd.exe', ['/d', '/s', '/c', `start "" "${file}"`]]
         : [process.platform === 'darwin' ? 'open' : 'xdg-open', [file]];
       const child = spawnFn(cmd, args, { stdio: 'ignore', detached: true, windowsHide: true, windowsVerbatimArguments: win });
       child.on('error', () => resolve(false));

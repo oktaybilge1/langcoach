@@ -133,8 +133,8 @@ export function renderDashboard(state: State, now: Date): string {
   // Tiles
   const freezes = state.streakFreezes === undefined ? '' : `<div class="lbl">🧊 ${esc(s.streakFreezes.replace('{n}', num.format(state.streakFreezes)))}</div>`;
   const tiles = `<div class="tiles">
-<section class="tile s" aria-label="${esc(s.streak)}"><div class="big">🔥 ${n(p.streak)}</div><div class="lbl">${esc(s.streak)}</div>${freezes}</section>
-<section class="tile w" aria-label="${esc(s.words)}"><div class="big">🌱 ${n(state.cards.length)}</div><div class="lbl">${esc(s.words)}</div></section>
+<section class="tile s" aria-label="${esc(s.streak)}"><div class="big"><span aria-hidden="true">🔥</span> ${n(p.streak)}</div><div class="lbl">${esc(s.streak)}</div>${freezes}</section>
+<section class="tile w" aria-label="${esc(s.words)}"><div class="big"><span aria-hidden="true">🌱</span> ${n(state.cards.length)}</div><div class="lbl">${esc(s.words)}</div></section>
 </div>`;
 
   // Today
@@ -146,7 +146,7 @@ export function renderDashboard(state: State, now: Date): string {
         .map((t) => {
           const done = t.status === 'done';
           const xp = done ? taskXp(t.id) || xpFor(t.type) : xpFor(t.type);
-          return `<li class="task${done ? ' done' : ''}"><span class="st" aria-label="${esc(done ? s.tasksDone : '')}">${done ? '✓' : '○'}</span><span>${TASK_EMOJI[t.type] ?? ''}</span><span class="nm">${esc(s[`task_${t.type}` as keyof DashboardStrings] ?? t.type)}</span><span class="xp">+${n(xp)} ${esc(s.xp)}</span></li>`;
+          return `<li class="task${done ? ' done' : ''}"><span class="st" aria-hidden="true">${done ? '✓' : '○'}</span><span class="sr">${esc(done ? s.tasksDone : s.taskNotDone)}: </span><span aria-hidden="true">${TASK_EMOJI[t.type] ?? ''}</span><span class="nm">${esc(s[`task_${t.type}` as keyof DashboardStrings] ?? t.type)}</span><span class="xp">+${n(xp)} ${esc(s.xp)}</span></li>`;
         })
         .join('')}</ul>`
     : isEmpty
@@ -183,14 +183,14 @@ ${state.cards.length
   // Weekly plan
   const dates = weekDates(isoWeek(now));
   const planCard = `<section class="card" aria-labelledby="h-plan">
-<h2 id="h-plan">${esc(s.weeklyPlan)}${plan ? `<span class="n">${n(p.weekly.done)}/${n(p.weekly.planned)}</span>` : ''}</h2>
+<h2 id="h-plan">${esc(s.weeklyPlan)}${plan ? `<span class="n">${esc(s.daysDone.replace('{done}', num.format(p.weekly.done)).replace('{total}', num.format(p.weekly.planned)))}</span>` : ''}</h2>
 ${plan
   ? `<ol class="week">${dates
       .map((d) => {
         const ts = plan.tasks.filter((t) => t.date === d);
         const full = ts.length > 0 && ts.every((t) => t.status === 'done');
         const marks = ts.length ? ts.map((t) => (t.status === 'done' ? '●' : '○')).join('') : '·';
-        return `<li class="day${d === today ? ' today' : ''}${full ? ' full' : ''}">${day(d, { weekday: 'short' })}<b aria-label="${n(ts.filter((t) => t.status === 'done').length)}/${n(ts.length)}">${marks}</b></li>`;
+        return `<li class="day${d === today ? ' today' : ''}${full ? ' full' : ''}"><span${dateLang}>${day(d, { weekday: 'short' })}</span><b aria-hidden="true">${marks}</b><span class="sr">${n(ts.filter((t) => t.status === 'done').length)}/${n(ts.length)}</span></li>`;
       })
       .join('')}</ol>${plan.theme ? `<p class="muted" style="margin-top:8px">${esc(plan.theme)}</p>` : ''}`
   : `<p class="muted">${esc(s.noPlan)}</p>`}
@@ -202,11 +202,12 @@ ${plan
     return { d, c: state.cards.filter((c) => !isDue(c.srs, now) && toLocalDate(new Date(c.srs.due)) === d).length };
   });
   const maxNext = Math.max(1, ...next.map((x) => x.c));
+  const sparkLabel = next.map((x) => `${day(x.d, { weekday: 'short' })} ${num.format(x.c)}`).join(', ');
   const reviewCard = `<section class="card" aria-labelledby="h-due">
 <h2 id="h-due">${esc(s.dueReviews)}</h2>
-<div class="due"><div class="big">🔁 ${n(p.dueCount)}</div>${p.dueCount === 0 ? `<p class="muted">${esc(s.nothingDue)}</p>` : ''}</div>
+<div class="due"><div class="big"><span aria-hidden="true">🔁</span> ${n(p.dueCount)}</div>${p.dueCount === 0 ? `<p class="muted">${esc(s.nothingDue)}</p>` : ''}</div>
 <div class="lbl" style="margin-top:10px">${esc(s.next7)}</div>
-<div class="spark">${next.map((x) => `<div><i style="height:${Math.round((x.c / maxNext) * 30) + 2}px"></i>${n(x.c)}<br>${day(x.d, { weekday: 'narrow' })}</div>`).join('')}</div>
+<div class="spark" role="img" aria-label="${esc(sparkLabel)}">${next.map((x) => `<div aria-hidden="true"><i style="height:${Math.round((x.c / maxNext) * 30) + 2}px"></i>${n(x.c)}<br><span${dateLang}>${day(x.d, { weekday: 'short' })}</span></div>`).join('')}</div>
 </section>`;
 
   // Recent LLL lessons
@@ -218,7 +219,7 @@ ${plan
 ${lll.length
   ? `<ul class="lessons">${lll
       .slice(0, MAX_LESSONS)
-      .map((l) => `<li><span>${TASK_EMOJI[l.kind] ?? '📘'}</span><span class="sit">${esc(l.situation)}</span><time>${date(new Date(l.createdAt), { day: 'numeric', month: 'short' })}</time></li>`)
+      .map((l) => `<li><span aria-hidden="true">${TASK_EMOJI[l.kind] ?? '📘'}</span><span class="sit">${esc(l.situation)}</span><time>${date(new Date(l.createdAt), { day: 'numeric', month: 'short' })}</time></li>`)
       .join('')}${lll.length > MAX_LESSONS ? `<li class="muted">${more(lll.length - MAX_LESSONS)}</li>` : ''}</ul>`
   : `<p class="muted">${esc(s.noLessonsYet)}</p>`}
 </section>`;
@@ -231,7 +232,7 @@ ${lll.length
     .map((x, i) => {
       const bx = i * (bw + gap);
       const h = Math.max(2, base - y(x.xp));
-      return `<rect x="${bx.toFixed(1)}" y="${(base - h).toFixed(1)}" width="${bw}" height="${h.toFixed(1)}" rx="5" fill="${x.date === today ? 'url(#g)' : '#fed7aa'}"/><text x="${(bx + bw / 2).toFixed(1)}" y="${(base - h - 4).toFixed(1)}" text-anchor="middle">${n(x.xp)}</text><text x="${(bx + bw / 2).toFixed(1)}" y="${H - 4}" text-anchor="middle">${day(x.date, { weekday: 'short' })}</text>`;
+      return `<rect x="${bx.toFixed(1)}" y="${(base - h).toFixed(1)}" width="${bw}" height="${h.toFixed(1)}" rx="5" fill="${x.date === today ? 'url(#g)' : '#fed7aa'}"/><text x="${(bx + bw / 2).toFixed(1)}" y="${(base - h - 4).toFixed(1)}" text-anchor="middle">${n(x.xp)}</text><text x="${(bx + bw / 2).toFixed(1)}" y="${H - 4}" text-anchor="middle"><tspan${dateLang}>${day(x.date, { weekday: 'short' })}</tspan></text>`;
     })
     .join('');
   const chartLabel = p.weekXp.map((x) => `${day(x.date, { weekday: 'short' })} ${num.format(x.xp)}`).join(', ');
