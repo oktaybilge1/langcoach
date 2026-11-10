@@ -638,8 +638,6 @@ button:focus-visible, select:focus-visible, input:focus-visible {
   padding: 12px 16px;
   border: none;
   border-radius: 16px;
-  background: linear-gradient(135deg, #1a56db, #7c3aed);
-  color: #fff;
   text-align: start;
   box-shadow: 0 4px 0 rgba(0, 0, 0, 0.18);
   transition: transform 150ms var(--px-ease), box-shadow 150ms var(--px-ease);
@@ -1262,7 +1260,6 @@ button:focus-visible, select:focus-visible, input:focus-visible {
   --accent-violet-soft: #ede9fe;
   --star: #b45309;
   --focus: var(--primary);
-  --brand-gradient: linear-gradient(135deg, #1a56db 0%, #7c3aed 100%);
 }
 @media (prefers-color-scheme: dark) {
   :root {
@@ -1273,7 +1270,6 @@ button:focus-visible, select:focus-visible, input:focus-visible {
     --accent-violet: #a78bfa;
     --accent-violet-soft: #2a2148;
     --star: #fbbf24;
-    --brand-gradient: linear-gradient(135deg, #6b93f0 0%, #a78bfa 100%);
   }
 }
 
@@ -1292,13 +1288,6 @@ button:focus-visible, select:focus-visible, input:focus-visible {
 /* Cohesive surfaces and targets */
 .card {
   border-radius: var(--radius-lg);
-}
-.brand {
-  background: var(--brand-gradient);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  font-weight: 800;
 }
 button,
 .tab-btn,
@@ -1592,8 +1581,6 @@ button:disabled {
   border-radius: 20px;
   display: grid;
   place-items: center;
-  background: var(--brand-gradient);
-  color: #fff;
   font-size: 28px;
   font-weight: 800;
   box-shadow: var(--shadow);
@@ -1761,12 +1748,10 @@ ul.ach-grid {
 :root {
   --radius-lg: var(--lc-radius);
   --focus: #c2410c;
-  --brand-gradient: linear-gradient(135deg, var(--lc-xp-from), var(--lc-xp-to));
 }
 @media (prefers-color-scheme: dark) {
   :root {
     --focus: #fdba74;
-    --brand-gradient: linear-gradient(135deg, var(--lc-xp-from), var(--lc-xp-to));
   }
 }
 
@@ -1792,6 +1777,20 @@ body {
 .pill {
   background: var(--surface);
   border: 1px solid var(--lc-border);
+}
+/* One-line tabs: they share the width and scroll sideways only when a locale's labels are too long. */
+.tab-bar {
+  display: flex;
+  gap: 2px;
+  padding: 6px 8px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+.tab-btn {
+  flex: 1 0 auto;
+  padding: 8px 6px;
+  white-space: nowrap;
+  overflow-wrap: normal;
 }
 .tab-btn[aria-current="page"] {
   background: var(--lc-sticker);
@@ -1835,7 +1834,8 @@ h1,
 }
 
 button.primary,
-.chip.active {
+.chip.active,
+.play-big {
   color: var(--on-primary);
 }
 .chip.active .chip-count {
@@ -1850,6 +1850,10 @@ a:focus-visible,
 .goal-option:focus-within {
   outline: 3px solid var(--focus);
   outline-offset: 2px;
+}
+/* Inset so the scrolling tab bar does not clip the ring. */
+.tab-btn:focus-visible {
+  outline-offset: -3px;
 }
 
 /* XP bars: orange to sun-yellow. */
