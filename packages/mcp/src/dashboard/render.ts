@@ -5,6 +5,7 @@ import {
   isoWeek,
   isWeak,
   levelFor,
+  NOTEBOOK_TOKENS,
   progressOf,
   strengthOf,
   toLocalDate,
@@ -16,26 +17,7 @@ import {
 import { escapeHtml as esc } from './escape.js';
 import { resolveLocale, strings, type DashboardStrings } from './i18n.js';
 
-// Notebook design tokens (shared look with the extension side panel; keep values in this one block).
-const TOKENS = {
-  paper: '#faf7f2',
-  rule: '#efe7da',
-  border: '#eadfcd',
-  shadow: '0 3px 0 #eadfcd',
-  streakTile: '#fff1e0',
-  wordsTile: '#eef6e8',
-  sticker: '#fde68a',
-  stickerRotate: '-6deg',
-  xpFrom: '#fb923c',
-  xpTo: '#facc15',
-  learnedBg: '#dcfce7',
-  learnedFg: '#166534',
-  weakBg: '#ffe4e6',
-  weakFg: '#9f1239',
-  radius: '14px',
-  serif: 'Georgia, "Times New Roman", serif',
-  sans: 'ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif',
-} as const;
+const TOKENS = NOTEBOOK_TOKENS; // shared look with the extension side panel
 
 const MAX_WORDS = 30;
 const MAX_LESSONS = 5;

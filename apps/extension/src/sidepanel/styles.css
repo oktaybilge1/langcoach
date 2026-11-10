@@ -1,39 +1,68 @@
 :root {
-  --bg: #f7f9fc;
+  /* Notebook tokens: exact copy of NOTEBOOK_TOKENS (@langcoach/core theme.ts); test/theme-tokens.test.ts keeps them in sync. */
+  --lc-paper: #faf7f2;
+  --lc-rule: #efe7da;
+  --lc-border: #eadfcd;
+  --lc-shadow: 0 3px 0 #eadfcd;
+  --lc-streak-tile: #fff1e0;
+  --lc-words-tile: #eef6e8;
+  --lc-sticker: #fde68a;
+  --lc-sticker-rotate: -6deg;
+  --lc-xp-from: #fb923c;
+  --lc-xp-to: #facc15;
+  --lc-learned-bg: #dcfce7;
+  --lc-learned-fg: #166534;
+  --lc-weak-bg: #ffe4e6;
+  --lc-weak-fg: #9f1239;
+  --lc-radius: 14px;
+  --lc-serif: Georgia, "Times New Roman", serif;
+  --lc-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  --bg: var(--lc-paper);
   --surface: #ffffff;
-  --surface-muted: #eef2f8;
-  --border: #d8e0ed;
-  --text: #161d2b;
-  --text-muted: #556178;
-  --primary: #1a56db;
-  --primary-hover: #1545b5;
-  --primary-soft: #e7effd;
-  --success: #0f7b4c;
-  --success-soft: #e3f6ed;
+  --surface-muted: #f6f0e6;
+  --border: var(--lc-border);
+  --text: #292524;
+  --text-muted: #6b5d4f;
+  --primary: #c2410c;
+  --primary-hover: #9a3412;
+  --primary-soft: var(--lc-streak-tile);
+  --on-primary: #ffffff;
+  --success: var(--lc-learned-fg);
+  --success-soft: var(--lc-learned-bg);
   --warning: #b45309;
-  --danger: #c81e1e;
-  --danger-soft: #fde8e8;
-  --radius: 12px;
-  --shadow: 0 2px 10px rgba(15, 23, 42, 0.06);
+  --danger: var(--lc-weak-fg);
+  --danger-soft: var(--lc-weak-bg);
+  --radius: var(--lc-radius);
+  --shadow: var(--lc-shadow);
+  --sticker-edge: #e5c76b;
+  --sticker-ink: #292524;
 }
 
+/* Warm dark variant of the same notebook: ink-stained paper, same roles. */
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #11151f;
-    --surface: #1b2232;
-    --surface-muted: #242d42;
-    --border: #323e59;
-    --text: #eef2f9;
-    --text-muted: #9da9c2;
-    --primary: #5b8def;
-    --primary-hover: #7aa4f5;
-    --primary-soft: #223254;
-    --success: #34d399;
-    --success-soft: #14382c;
+    --lc-paper: #1c1814;
+    --lc-rule: #29221b;
+    --lc-border: #3d3329;
+    --lc-shadow: 0 3px 0 #0f0c09;
+    --lc-streak-tile: #33241a;
+    --lc-words-tile: #1f2a1d;
+    --lc-sticker: #fcd34d;
+    --lc-learned-bg: #173322;
+    --lc-learned-fg: #86efac;
+    --lc-weak-bg: #3b1a22;
+    --lc-weak-fg: #fda4af;
+
+    --surface: #26201a;
+    --surface-muted: #2f281f;
+    --text: #f3ece2;
+    --text-muted: #bcae9b;
+    --primary: #fb923c;
+    --primary-hover: #fdba74;
+    --on-primary: #1c1814;
     --warning: #fbbf24;
-    --danger: #f87171;
-    --danger-soft: #3b1c22;
-    --shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+    --sticker-edge: #b45309;
   }
 }
 
@@ -1726,4 +1755,230 @@ ul.ach-grid {
   .rollover-banner {
     animation: none;
   }
+}
+
+/* ───────────── Notebook look (sticker notebook, shared with the agent dashboard) ───────────── */
+:root {
+  --radius-lg: var(--lc-radius);
+  --focus: #c2410c;
+  --brand-gradient: linear-gradient(135deg, var(--lc-xp-from), var(--lc-xp-to));
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --focus: #fdba74;
+    --brand-gradient: linear-gradient(135deg, var(--lc-xp-from), var(--lc-xp-to));
+  }
+}
+
+body {
+  font-family: var(--lc-sans);
+  background-color: var(--lc-paper);
+  background-image: repeating-linear-gradient(transparent 0 27px, var(--lc-rule) 27px 28px);
+  background-attachment: local;
+}
+
+/* Header and tabs sit on the paper like a notebook's top strip. */
+.panel-header,
+.tab-bar {
+  background: var(--lc-paper);
+  border-bottom-color: var(--lc-border);
+}
+.brand {
+  background: none;
+  color: var(--text);
+  font: italic 400 19px/1.2 var(--lc-serif);
+  letter-spacing: 0;
+}
+.pill {
+  background: var(--surface);
+  border: 1px solid var(--lc-border);
+}
+.tab-btn[aria-current="page"] {
+  background: var(--lc-sticker);
+  color: var(--sticker-ink);
+  box-shadow: 0 2px 0 var(--sticker-edge);
+}
+
+/* Cards: white page cut-outs with a flat paper shadow. */
+.card,
+.stat-box,
+.task-item,
+.vocab-item,
+.scenario-card,
+.ach-item,
+.goal-option,
+.px-stat,
+.px-end-stat {
+  border-color: var(--lc-border);
+  box-shadow: var(--lc-shadow);
+}
+.card {
+  border-radius: var(--lc-radius);
+}
+.task-item,
+.vocab-item,
+.stat-box,
+.ach-item {
+  border-radius: 10px;
+}
+.vocab-item {
+  background: var(--surface);
+}
+
+h1,
+.level-name {
+  font: italic 400 24px/1.2 var(--lc-serif);
+  letter-spacing: 0.01em;
+}
+.level-name {
+  font-size: 22px;
+}
+
+button.primary,
+.chip.active {
+  color: var(--on-primary);
+}
+.chip.active .chip-count {
+  background: color-mix(in srgb, var(--on-primary) 22%, transparent);
+  color: var(--on-primary);
+}
+button:focus-visible,
+select:focus-visible,
+input:focus-visible,
+a:focus-visible,
+.tab-btn:focus-visible,
+.goal-option:focus-within {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* XP bars: orange to sun-yellow. */
+.progress-fill {
+  background: linear-gradient(90deg, var(--lc-xp-from), var(--lc-xp-to));
+  border-radius: 999px;
+}
+.progress-bar {
+  background: color-mix(in srgb, var(--lc-border) 70%, var(--surface));
+}
+
+/* Today: hero page with the streak as an orange tile. */
+.today-hero {
+  background: var(--surface);
+  align-items: stretch;
+}
+.streak-box {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: var(--lc-radius);
+  background: var(--lc-streak-tile);
+  border: 1px solid var(--lc-border);
+  box-shadow: var(--lc-shadow);
+}
+.streak-count {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--text);
+}
+.freeze-pill {
+  background: var(--surface);
+  border: 1px solid var(--lc-border);
+}
+.today-goal {
+  align-content: center;
+}
+.task-item.done {
+  background: var(--lc-learned-bg);
+  border-color: color-mix(in srgb, var(--lc-learned-fg) 30%, var(--lc-learned-bg));
+  color: var(--lc-learned-fg);
+}
+.task-item.done .muted {
+  color: var(--lc-learned-fg);
+}
+.practice-cta {
+  background: linear-gradient(135deg, var(--lc-xp-from), var(--lc-xp-to));
+  color: #292524;
+  border-radius: var(--lc-radius);
+  box-shadow: 0 3px 0 #d97706;
+}
+.practice-cta:active {
+  box-shadow: 0 1px 0 #d97706;
+}
+.practice-cta.fresh {
+  background: var(--lc-words-tile);
+  color: var(--text);
+  border: 1px solid var(--lc-border);
+  box-shadow: var(--lc-shadow);
+}
+.scenario-card {
+  border-inline-start-color: var(--lc-xp-from);
+}
+.scenario-card.tone-1 { border-inline-start-color: var(--lc-learned-fg); }
+.scenario-card.tone-2 { border-inline-start-color: var(--lc-xp-to); }
+.rollover-banner {
+  background: var(--lc-streak-tile);
+  border-color: var(--lc-border);
+  box-shadow: var(--lc-shadow);
+}
+
+/* Words: learned / weak chips. */
+.status-tag.learned,
+.chip-mastered:not(.active),
+.btn-know.done,
+.btn-know:disabled {
+  background: var(--lc-learned-bg);
+  color: var(--lc-learned-fg);
+  border-color: color-mix(in srgb, var(--lc-learned-fg) 25%, var(--lc-learned-bg));
+}
+.chip-weak:not(.active) {
+  background: var(--lc-weak-bg);
+  color: var(--lc-weak-fg);
+  border-color: color-mix(in srgb, var(--lc-weak-fg) 25%, var(--lc-weak-bg));
+}
+.btn-know {
+  background: var(--surface);
+  color: var(--lc-learned-fg);
+  border: 1px solid var(--lc-border);
+}
+.status-tag.new {
+  background: var(--lc-streak-tile);
+  color: var(--primary);
+  border-color: var(--lc-border);
+}
+.show-more {
+  background: var(--surface);
+  border: 1px dashed var(--lc-border);
+}
+.words-search {
+  border-color: var(--lc-border);
+}
+.strength.s3 .strength-bar.on { background: var(--lc-xp-from); }
+
+/* Progress: the level is a tilted sticker. */
+.level-badge {
+  background: var(--lc-sticker);
+  color: var(--sticker-ink);
+  border-radius: 10px;
+  transform: rotate(var(--lc-sticker-rotate));
+  box-shadow: 0 3px 0 var(--sticker-edge);
+}
+.stat-box:nth-child(1) { background: var(--lc-streak-tile); }
+.stat-box:nth-child(4) { background: var(--lc-words-tile); }
+.week-bar {
+  background: var(--lc-streak-tile);
+  border-color: var(--lc-xp-from);
+}
+.week-col.met .week-bar {
+  background: linear-gradient(0deg, var(--lc-xp-from), var(--lc-xp-to));
+  border-color: var(--lc-xp-from);
+}
+.week-goal-line {
+  border-top-color: var(--text-muted);
+}
+.ach-item.unlocked {
+  background: var(--lc-words-tile);
+  border-color: var(--lc-border);
+}
+.goal-option.active {
+  border-color: var(--primary);
+  background: var(--lc-streak-tile);
 }

@@ -333,7 +333,7 @@ export function Words({ snapshot, uiLocale, t, send, onRefresh, native, initialM
                 <button
                   key={f}
                   type="button"
-                  class={`chip ${filter === f ? 'active' : ''}`}
+                  class={`chip chip-${f} ${filter === f ? 'active' : ''}`}
                   data-testid={`words-filter-${f}`}
                   aria-pressed={filter === f}
                   onClick={() => setFilter(f)}

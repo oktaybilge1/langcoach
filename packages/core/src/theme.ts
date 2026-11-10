@@ -1,0 +1,20 @@
+/** Notebook design tokens shared by the extension side panel (as --lc-<kebab-name>) and the agent dashboard. */
+export const NOTEBOOK_TOKENS = Object.freeze({
+  paper: '#faf7f2',
+  rule: '#efe7da',
+  border: '#eadfcd',
+  shadow: '0 3px 0 #eadfcd',
+  streakTile: '#fff1e0',
+  wordsTile: '#eef6e8',
+  sticker: '#fde68a',
+  stickerRotate: '-6deg',
+  xpFrom: '#fb923c',
+  xpTo: '#facc15',
+  learnedBg: '#dcfce7',
+  learnedFg: '#166534',
+  weakBg: '#ffe4e6',
+  weakFg: '#9f1239',
+  radius: '14px',
+  serif: 'Georgia, "Times New Roman", serif',
+  sans: 'ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif',
+} as const) satisfies Readonly<Record<string, string>>;

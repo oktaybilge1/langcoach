@@ -13,3 +13,4 @@ export * from './export-cards.js';
 export * from './levels.js';
 export * from './achievements.js';
 export * from './strength.js';
+export * from './theme.js';
