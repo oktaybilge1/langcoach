@@ -1,0 +1,34 @@
+node_modules
+dist
+dist-e2e
+coverage
+*.tgz
+*.zip
+test-results
+playwright-report
+packages/mcp/README.md
+packages/mcp/LICENSE
+# production extension bundled by packages/mcp prepack
+packages/mcp/extension/
+scratch/
+
+# private/secret material must never be committed
+HANDOFF.md
+.env
+.env.*
+.npmrc
+.netrc
+*.pem
+*.key
+*.p12
+.claude/
+
+# local bridge pairing secret (written by the agent, never committed or packaged)
+pairing.json
+
+# Internal working notes (kept local, not published)
+docs/superpowers/
+docs/research/
+docs/growth-and-monetization.md
+docs/media/README.md
+docs/extension/STORE_LISTING.md

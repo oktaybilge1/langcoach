@@ -1,0 +1,36 @@
+{
+  "vocabulary": [
+    {
+      "term": "القهوة",
+      "transliteration": "al-qahwa",
+      "translation": "coffee"
+    },
+    {
+      "term": "الحليب",
+      "transliteration": "al-halīb",
+      "translation": "milk"
+    },
+    {
+      "term": "السكر",
+      "transliteration": "as-sukkar",
+      "translation": "sugar"
+    },
+    {
+      "term": "النادل\nالنادلة",
+      "transliteration": "an-nādil\nan-nādila",
+      "translation": "waiter/waitress"
+    }
+  ],
+  "phrases": [
+    {
+      "phrase": "أريد فنجان قهوة من فضلك.",
+      "transliteration": "urīdu finjān qahwa min faḍlik.",
+      "translation": "I would like a cup of coffee, please."
+    },
+    {
+      "phrase": "الحساب من فضلك.",
+      "transliteration": "al-ḥisāb min faḍlik.",
+      "translation": "The bill, please."
+    }
+  ]
+}

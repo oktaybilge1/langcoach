@@ -1,0 +1,48 @@
+{
+  "context": "Two friends complain about their favorite food delivery app crashing right when they try to order dinner on a Friday night.",
+  "dialogue": [
+    {
+      "speaker": "Wang Lei",
+      "gender": "male",
+      "message": "哎呀，这个外卖软件又崩了！",
+      "transliteration": "Āiyā, zhège wàimài ruǎnjiàn yòu bēng le!",
+      "notes": {
+        "崩了": "Literally \"collapsed\"; slang for an app or server crashing."
+      }
+    },
+    {
+      "speaker": "Li Na",
+      "gender": "female",
+      "message": "我这边一直转圈圈，什么都点不了。",
+      "transliteration": "Wǒ zhèbiān yīzhí zhuànquānquān, shénme dōu diǎn bùliǎo.",
+      "notes": {
+        "转圈圈": "Literally \"spinning in circles\"; describes a loading spinner that never finishes."
+      }
+    },
+    {
+      "speaker": "Wang Lei",
+      "gender": "male",
+      "message": "周五晚上大家都在点餐，服务器都被打爆了。",
+      "transliteration": "Zhōuwǔ wǎnshang dàjiā dōu zài diǎncān, fúwùqì dōu bèi dǎbào le.",
+      "notes": {
+        "打爆": "Literally \"hit until burst\"; to overwhelm a server with traffic."
+      }
+    },
+    {
+      "speaker": "Li Na",
+      "gender": "female",
+      "message": "要不再试一次？死马当活马医吧。",
+      "transliteration": "Yàobù zài shì yí cì? Sǐmǎ dàng huómǎ yī ba.",
+      "notes": {
+        "死马当活马医": "Idiom: treat a dead horse as alive; try a long-shot fix because nothing else works."
+      }
+    },
+    {
+      "speaker": "Wang Lei",
+      "gender": "male",
+      "message": "好吧，不行就去楼下吃面。",
+      "transliteration": "Hǎo ba, bù xíng jiù qù lóuxià chī miàn.",
+      "notes": {}
+    }
+  ]
+}

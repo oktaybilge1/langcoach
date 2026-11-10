@@ -1,0 +1,1117 @@
+{
+  "extName": {
+    "message": "LangCoach",
+    "description": "Extension name"
+  },
+  "extDescription": {
+    "message": "Little Language Lessons (Google Labs) için seriler, günlük plan ve aralıklı tekrar. Google ile bağlantılı değildir.",
+    "description": "Extension description (max 132 chars)"
+  },
+  "toastSaved": {
+    "message": "✓ $COUNT$ kelime LangCoach'a kaydedildi",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "toastAlready": {
+    "message": "Zaten destende"
+  },
+  "toastUndo": {
+    "message": "Geri al"
+  },
+  "toastOpen": {
+    "message": "Aç"
+  },
+  "toastRemoved": {
+    "message": "Silindi"
+  },
+  "toastSaveN": {
+    "message": "$COUNT$ kelimeyi kaydet",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "toastSavedManual": {
+    "message": "✓ LangCoach'a kaydedildi"
+  },
+  "toastXp": {
+    "message": "+$XP$ XP",
+    "placeholders": {
+      "xp": {
+        "content": "$1"
+      }
+    }
+  },
+  "menuSave": {
+    "message": "LangCoach'a kaydet"
+  },
+  "tabToday": {
+    "message": "Bugün"
+  },
+  "tabReview": {
+    "message": "Tekrar"
+  },
+  "tabPlan": {
+    "message": "Plan"
+  },
+  "tabProgress": {
+    "message": "İlerleme"
+  },
+  "tabSettings": {
+    "message": "Ayarlar"
+  },
+  "loading": {
+    "message": "Yükleniyor..."
+  },
+  "onboardTitle": {
+    "message": "Dil koçunu hazırla"
+  },
+  "onboardSubtitle": {
+    "message": "Haftalık planını ve kelime tekrar desteni kişiselleştir."
+  },
+  "fieldTargetLang": {
+    "message": "Öğrendiğim dil"
+  },
+  "fieldNativeLang": {
+    "message": "Ana dilim"
+  },
+  "fieldLevel": {
+    "message": "Mevcut seviye"
+  },
+  "levelUnsure": {
+    "message": "Emin değilim (A2 ile başla)"
+  },
+  "fieldGoal": {
+    "message": "Ana hedef"
+  },
+  "goalTravel": {
+    "message": "Seyahat"
+  },
+  "goalWork": {
+    "message": "İş"
+  },
+  "goalStudy": {
+    "message": "Eğitim"
+  },
+  "goalMoving": {
+    "message": "Yurt dışına taşınma"
+  },
+  "goalFamily": {
+    "message": "Aile ve arkadaşlar"
+  },
+  "goalFun": {
+    "message": "Eğlence ve kültür"
+  },
+  "fieldMinutes": {
+    "message": "Günlük dakika"
+  },
+  "fieldDays": {
+    "message": "Haftalık gün"
+  },
+  "fieldCamera": {
+    "message": "Kameram var (Word Cam ekle)"
+  },
+  "btnStartPlan": {
+    "message": "Planımı oluştur"
+  },
+  "todayHeading": {
+    "message": "Bugünün Görevleri"
+  },
+  "todayRingLabel": {
+    "message": "Günlük hedef"
+  },
+  "todayStreak": {
+    "message": "Günlük seri"
+  },
+  "todayThemeLabel": {
+    "message": "Önerilen Tiny Lesson konusu"
+  },
+  "btnCopy": {
+    "message": "Kopyala"
+  },
+  "btnCopied": {
+    "message": "Kopyalandı"
+  },
+  "btnNextTheme": {
+    "message": "Başka fikir"
+  },
+  "btnOpenLll": {
+    "message": "Aç"
+  },
+  "taskTinyLesson": {
+    "message": "Tiny Lesson"
+  },
+  "taskSlangHang": {
+    "message": "Slang Hang"
+  },
+  "taskWordCam": {
+    "message": "Word Cam"
+  },
+  "taskReview": {
+    "message": "Kelime Tekrarı"
+  },
+  "taskQuiz": {
+    "message": "Haftalık Mini Sınav"
+  },
+  "taskStatusDone": {
+    "message": "Tamam"
+  },
+  "taskStatusTodo": {
+    "message": "Bekliyor"
+  },
+  "minutesShort": {
+    "message": "$MIN$ dk",
+    "placeholders": {
+      "min": {
+        "content": "$1"
+      }
+    }
+  },
+  "todayNoTasks": {
+    "message": "Bugün için planlanmış görev yok. Serini korumak için bir ders veya tekrar yap!"
+  },
+  "lastCaptureHeading": {
+    "message": "Son kaydedilen ders"
+  },
+  "grammarHeading": {
+    "message": "Son dilbilgisi notları"
+  },
+  "reviewHeading": {
+    "message": "Aralıklı Kelime Tekrarı"
+  },
+  "reviewDueBadge": {
+    "message": "$COUNT$ bekliyor",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "reviewEmptyTitle": {
+    "message": "Şimdilik tüm tekrarlar bitti!"
+  },
+  "reviewEmptyBody": {
+    "message": "Destene yeni kelimeler eklemek için Little Language Lessons'ta bir ders yap."
+  },
+  "btnShowAnswer": {
+    "message": "Cevabı göster"
+  },
+  "btnListen": {
+    "message": "Dinle"
+  },
+  "rateAgain": {
+    "message": "Tekrar"
+  },
+  "rateHard": {
+    "message": "Zor"
+  },
+  "rateGood": {
+    "message": "İyi"
+  },
+  "rateEasy": {
+    "message": "Kolay"
+  },
+  "btnEditCard": {
+    "message": "Çeviriyi düzenle"
+  },
+  "btnSaveCard": {
+    "message": "Kaydet"
+  },
+  "placeholderTranslation": {
+    "message": "Çeviri ekle..."
+  },
+  "btnFinishReview": {
+    "message": "Oturumu bitir"
+  },
+  "planHeading": {
+    "message": "Haftalık Plan"
+  },
+  "planTheme": {
+    "message": "Konu"
+  },
+  "planEmpty": {
+    "message": "Bu hafta için henüz plan yok."
+  },
+  "progressHeading": {
+    "message": "İlerlemen"
+  },
+  "statStreak": {
+    "message": "Günlük Seri"
+  },
+  "statTotalXp": {
+    "message": "Toplam XP"
+  },
+  "statLevel": {
+    "message": "Seviye"
+  },
+  "statWordsLearned": {
+    "message": "Öğrenilen Kelime"
+  },
+  "statDueCount": {
+    "message": "Bekleyen Kart"
+  },
+  "statWeeklyGoal": {
+    "message": "Haftalık Çalışma Günü"
+  },
+  "achievementsHeading": {
+    "message": "Başarımlar"
+  },
+  "ach_first_lesson": {
+    "message": "İlk Adım (1 ders)"
+  },
+  "ach_streak_3": {
+    "message": "3 Günlük Seri"
+  },
+  "ach_streak_7": {
+    "message": "7 Günlük Seri"
+  },
+  "ach_streak_30": {
+    "message": "30 Günlük Seri"
+  },
+  "ach_cards_50": {
+    "message": "50 Kelimeye Ulaşıldı"
+  },
+  "ach_cards_100": {
+    "message": "100 Kelimeye Ulaşıldı"
+  },
+  "ach_cards_500": {
+    "message": "500 Kelimeye Ulaşıldı"
+  },
+  "ach_reviews_100": {
+    "message": "100 Kart Tekrarı"
+  },
+  "settingsHeading": {
+    "message": "Ayarlar"
+  },
+  "settingsProfileSection": {
+    "message": "Öğrenme Profili"
+  },
+  "btnSaveProfile": {
+    "message": "Profili kaydet"
+  },
+  "settingsPrefsSection": {
+    "message": "Tercihler"
+  },
+  "fieldAutoSave": {
+    "message": "Little Language Lessons derslerini otomatik kaydet"
+  },
+  "fieldReminder": {
+    "message": "Günlük çalışma hatırlatma saati"
+  },
+  "reminderOff": {
+    "message": "Kapalı"
+  },
+  "fieldUiLang": {
+    "message": "Arayüz dili"
+  },
+  "uiLangAuto": {
+    "message": "Otomatik (tarayıcı)"
+  },
+  "settingsDataSection": {
+    "message": "Verilerin"
+  },
+  "btnExport": {
+    "message": "JSON yedeği dışa aktar"
+  },
+  "btnImport": {
+    "message": "JSON yedeği içe aktar"
+  },
+  "btnReset": {
+    "message": "Tüm verileri sıfırla"
+  },
+  "btnResetConfirm1": {
+    "message": "Sıfırlamayı onaylamak için tekrar tıkla"
+  },
+  "btnResetConfirm2": {
+    "message": "Kalıcı sıfırlamayı onayla"
+  },
+  "settingsAboutSection": {
+    "message": "LangCoach Hakkında"
+  },
+  "aboutDisclaimer": {
+    "message": "LangCoach bağımsız bir açık kaynak projesidir; Google ile bağlantılı değildir, Google tarafından desteklenmez veya finanse edilmez."
+  },
+  "aboutGithub": {
+    "message": "GitHub Deposu"
+  },
+  "aboutSupport": {
+    "message": "Projeyi destekle"
+  },
+  "reminderTitle": {
+    "message": "Dil pratiği zamanı!"
+  },
+  "reminderBody": {
+    "message": "Serini korumak için 5 dakikalık LangCoach dersin seni bekliyor."
+  },
+  "btnFillTheme": {
+    "message": "Kutuya yaz"
+  },
+  "btnFilled": {
+    "message": "Yazıldı!"
+  },
+  "tabModeList": {
+    "message": "Kelime Listesi"
+  },
+  "tabModeCards": {
+    "message": "Kart Modu"
+  },
+  "searchPlaceholder": {
+    "message": "Kelime veya çeviri ara..."
+  },
+  "statusLearned": {
+    "message": "Öğrenildi"
+  },
+  "statusNew": {
+    "message": "Yeni"
+  },
+  "btnCancel": {
+    "message": "İptal"
+  },
+  "noTranslation": {
+    "message": "Henüz çeviri yok (düzenleye tıkla)"
+  },
+  "themeCopiedPaste": {
+    "message": "Kopyalandı — kutuya yapıştırın"
+  },
+  "loadErrorBody": {
+    "message": "LangCoach verilerinizi yükleyemedi: $MSG$",
+    "placeholders": {
+      "msg": {
+        "content": "$1"
+      }
+    }
+  },
+  "btnRetry": {
+    "message": "Tekrar dene"
+  },
+  "corruptTitle": {
+    "message": "Kayıtlı verileriniz bozuk"
+  },
+  "corruptBody": {
+    "message": "LangCoach kayıtlı verilerinizi okuyamadı. Hiçbir şey silinmedi: bir yedek dosyasını içe aktarabilir veya sıfırlayıp baştan başlayabilirsiniz."
+  },
+  "corruptPreserved": {
+    "message": "Bozuk verilerin bir kopyası tarayıcı depolamasında şu anahtarla saklandı: $KEY$",
+    "placeholders": {
+      "key": {
+        "content": "$1"
+      }
+    }
+  },
+  "importReplaceWarning": {
+    "message": "İçe aktarma mevcut destenizin tamamını değiştirir. Mevcut verilerin bir yedeği saklanır."
+  },
+  "importCounts": {
+    "message": "Mevcut deste: $CURRENT$ kart · Dosya: $FILE$ kart",
+    "placeholders": {
+      "current": {
+        "content": "$1"
+      },
+      "file": {
+        "content": "$2"
+      }
+    }
+  },
+  "btnImportReplace": {
+    "message": "Değiştir"
+  },
+  "exportCardsSection": {
+    "message": "Kartları dışa aktar"
+  },
+  "exportCardsHint": {
+    "message": "Kartlarını başka uygulamalara taşı. Tekrar zamanlaması aktarılmaz; kartlar orada sıfırdan başlar."
+  },
+  "btnExportAnki": {
+    "message": "Anki"
+  },
+  "btnExportQuizlet": {
+    "message": "Quizlet"
+  },
+  "btnExportCsv": {
+    "message": "CSV"
+  },
+  "exportCardsDone": {
+    "message": "$COUNT$ kart $FILE$ dosyasına aktarıldı.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      },
+      "file": {
+        "content": "$2"
+      }
+    }
+  },
+  "exportCardsNone": {
+    "message": "Henüz aktarılacak kart yok."
+  },
+  "importDone": {
+    "message": "$LESSONS$ dersten $CARDS$ kart içe aktarıldı.",
+    "placeholders": {
+      "cards": {
+        "content": "$1"
+      },
+      "lessons": {
+        "content": "$2"
+      }
+    }
+  },
+  "importFailed": {
+    "message": "İçe aktarma başarısız: $MSG$",
+    "placeholders": {
+      "msg": {
+        "content": "$1"
+      }
+    }
+  },
+  "actionFailed": {
+    "message": "Bir sorun oluştu: $MSG$",
+    "placeholders": {
+      "msg": {
+        "content": "$1"
+      }
+    }
+  },
+  "nativeBannerTitle": {
+    "message": "Kendi dilinde anlamlar"
+  },
+  "nativeDownloadBtn": {
+    "message": "Çevirileri indir (tek seferlik, cihazında)"
+  },
+  "nativeDownloadBody": {
+    "message": "$COUNT$ kelime $LANG$ olarak da gösterilebilir. Chrome bunları bu cihazda çevirir; hiçbir yere bir şey gönderilmez.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      },
+      "lang": {
+        "content": "$2"
+      }
+    }
+  },
+  "nativeDownloading": {
+    "message": "Çeviriler indiriliyor… %$PERCENT$",
+    "placeholders": {
+      "percent": {
+        "content": "$1"
+      }
+    }
+  },
+  "nativeDownloadingWait": {
+    "message": "Chrome çevirileri indiriyor. Hazır olunca burada görünecek."
+  },
+  "nativeTranslating": {
+    "message": "$COUNT$ kelime $LANG$ diline çevriliyor…",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      },
+      "lang": {
+        "content": "$2"
+      }
+    }
+  },
+  "nativeUnavailable": {
+    "message": "Tarayıcın henüz $SOURCE$→$TARGET$ çevirisini cihazda yapamıyor; İngilizce gösteriliyor.",
+    "placeholders": {
+      "source": {
+        "content": "$1"
+      },
+      "target": {
+        "content": "$2"
+      }
+    }
+  },
+  "fieldShowNativeOnPage": {
+    "message": "Sayfada kendi dilimi göster"
+  },
+  "nativeDownloadFailed": {
+    "message": "İndirme tamamlanmadı — tekrar dene"
+  },
+  "nativeDismiss": {
+    "message": "Gizle"
+  },
+  "tabPractice": {
+    "message": "Pratik"
+  },
+  "pxCtaTitle": {
+    "message": "Şimdi pratik yap"
+  },
+  "pxCtaDue": {
+    "message": "$COUNT$ kelime seni bekliyor · yaklaşık 3 dakika",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "pxCtaBody": {
+    "message": "Kendi kelimelerinle hızlı ve eğlenceli bir tur"
+  },
+  "pxStartTitle": {
+    "message": "Pratiğe hazır mısın?"
+  },
+  "pxStatDue": {
+    "message": "tekrar zamanı"
+  },
+  "pxStatWords": {
+    "message": "destendeki kelime"
+  },
+  "pxStartBody": {
+    "message": "Topladığın kelimelerle $COUNT$ kısa alıştırma. Yanlışlar sonda bir kez daha gelir, böylece onları da kaparsın.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "pxKindsLabel": {
+    "message": "Alıştırma türleri"
+  },
+  "pxKindMeaning": {
+    "message": "Anlamlar"
+  },
+  "pxKindListen": {
+    "message": "Dinleme"
+  },
+  "pxKindMatch": {
+    "message": "Eşleştirme"
+  },
+  "pxKindType": {
+    "message": "Yazma"
+  },
+  "pxKindBlank": {
+    "message": "Boşluk doldurma"
+  },
+  "pxStart": {
+    "message": "Pratiğe başla"
+  },
+  "pxEmptyTitle": {
+    "message": "Önce birkaç kelime toplayalım"
+  },
+  "pxEmptyBody": {
+    "message": "En az $COUNT$ kelime toplamak için bir Tiny Lesson yap — sonra buraya dönüp pratik et.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "pxEmptyCta": {
+    "message": "Tiny Lesson'ı aç"
+  },
+  "pxAskMeaning": {
+    "message": "Bu ne anlama geliyor?"
+  },
+  "pxAskReverse": {
+    "message": "Doğru kelimeyi seç"
+  },
+  "pxAskListen": {
+    "message": "Ne duyuyorsun?"
+  },
+  "pxAskBlank": {
+    "message": "Boşluğu doldur"
+  },
+  "pxBlankGap": {
+    "message": "boşluk"
+  },
+  "pxAskMatch": {
+    "message": "Eşleri bul"
+  },
+  "pxMatchWords": {
+    "message": "Kelimeler"
+  },
+  "pxMatchMeanings": {
+    "message": "Anlamlar"
+  },
+  "pxAskType": {
+    "message": "Hedef dilinde yaz"
+  },
+  "pxTypePlaceholder": {
+    "message": "Cevabını yaz"
+  },
+  "pxCheck": {
+    "message": "Kontrol et"
+  },
+  "pxContinue": {
+    "message": "Devam"
+  },
+  "pxPraise1": {
+    "message": "Harika!"
+  },
+  "pxPraise2": {
+    "message": "Çok iyi!"
+  },
+  "pxPraise3": {
+    "message": "Bildin!"
+  },
+  "pxWrongTitle": {
+    "message": "Tam değil"
+  },
+  "pxCorrectAnswer": {
+    "message": "Doğru cevap:"
+  },
+  "pxAlmostTitle": {
+    "message": "Az kaldı!"
+  },
+  "pxAlmostBody": {
+    "message": "Yazımına dikkat:"
+  },
+  "pxMatchAlmost": {
+    "message": "Hepsi eşleşti — birkaç küçük hata"
+  },
+  "pxRetry": {
+    "message": "Bir deneme daha"
+  },
+  "pxCombo": {
+    "message": "Üst üste $COUNT$",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "pxQuit": {
+    "message": "Çık (hiçbir şey kaydedilmez)"
+  },
+  "pxProgress": {
+    "message": "Oturum ilerlemesi"
+  },
+  "pxEndTitle": {
+    "message": "Oturum tamam!"
+  },
+  "pxEndPerfect": {
+    "message": "Kusursuz oturum!"
+  },
+  "pxEndXp": {
+    "message": "Kazanılan XP"
+  },
+  "pxEndAccuracy": {
+    "message": "Doğruluk"
+  },
+  "pxEndWords": {
+    "message": "Güçlenen kelime"
+  },
+  "pxGoalLine": {
+    "message": "Bugün $XP$ / $GOAL$ XP",
+    "placeholders": {
+      "xp": {
+        "content": "$1"
+      },
+      "goal": {
+        "content": "$2"
+      }
+    }
+  },
+  "pxSaveFailed": {
+    "message": "Bu oturum kaydedilemedi: $ERROR$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "pxAgain": {
+    "message": "Tekrar pratik yap"
+  },
+  "pxDone": {
+    "message": "Bitti"
+  },
+  "pxLeaveUnsaved": {
+    "message": "Sonuçların henüz kaydedilmedi. Kaydetmeden çıkmak için tekrar bas ya da Tekrar dene'ye dokun."
+  },
+  "fieldSoundEffects": {
+    "message": "Pratikte ses efektleri"
+  },
+  "pxPerfectBonus": {
+    "message": "+$XP$ XP kusursuzluk bonusu",
+    "placeholders": {
+      "xp": {
+        "content": "$1"
+      }
+    }
+  },
+  "level1": {
+    "message": "Yeni Başlayan"
+  },
+  "level2": {
+    "message": "Kâşif"
+  },
+  "level3": {
+    "message": "Öğrenci"
+  },
+  "level4": {
+    "message": "Konuşmacı"
+  },
+  "level5": {
+    "message": "Sohbet Ustası"
+  },
+  "level6": {
+    "message": "Hikâye Anlatıcısı"
+  },
+  "level7": {
+    "message": "Akıcı Dost"
+  },
+  "level8": {
+    "message": "Çok Dilli"
+  },
+  "level9": {
+    "message": "Usta"
+  },
+  "level10": {
+    "message": "Efsane"
+  },
+  "ach_perfect_session": {
+    "message": "Kusursuz seans"
+  },
+  "ach_xp_100_day": {
+    "message": "Bir günde 100 XP"
+  },
+  "ach_sessions_10": {
+    "message": "10 alıştırma seansı"
+  },
+  "ach_first_match": {
+    "message": "İlk eşleştirme oyunu"
+  },
+  "tabWords": {
+    "message": "Kelimeler"
+  },
+  "wordsHeading": {
+    "message": "Kelimelerin"
+  },
+  "wordsModeLabel": {
+    "message": "Kelimeler nasıl gösterilsin"
+  },
+  "wordsFilterLabel": {
+    "message": "Kelimeleri filtrele"
+  },
+  "wordsFilterAll": {
+    "message": "Tümü"
+  },
+  "wordsFilterDue": {
+    "message": "Tekrar zamanı"
+  },
+  "wordsFilterNew": {
+    "message": "Yeni"
+  },
+  "wordsFilterWeak": {
+    "message": "Zayıf"
+  },
+  "wordsFilterFavorites": {
+    "message": "Favoriler"
+  },
+  "wordsFilterMastered": {
+    "message": "Öğrenildi"
+  },
+  "wordsOtherGroup": {
+    "message": "Diğer kelimeler"
+  },
+  "wordsNoMatch": {
+    "message": "Eşleşen kelime yok. Başka bir arama ya da filtre dene."
+  },
+  "wordsEmptyTitle": {
+    "message": "Henüz kelime yok"
+  },
+  "wordsShowMore": {
+    "message": "Daha fazla göster ($COUNT$ kaldı)",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsFavorite": {
+    "message": "Favori: $TERM$",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsFavoriteAdded": {
+    "message": "$TERM$ favorilere eklendi",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsFavoriteRemoved": {
+    "message": "$TERM$ favorilerden çıkarıldı",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsListenTo": {
+    "message": "Dinle: $TERM$",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsKnowThis": {
+    "message": "Bunu biliyorum"
+  },
+  "wordsKnowThisLabel": {
+    "message": "Bunu biliyorum: $TERM$",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsKnown": {
+    "message": "Biliniyor"
+  },
+  "wordsKnownXp": {
+    "message": "Biliniyor · +$XP$ XP",
+    "placeholders": {
+      "xp": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsKnownStatus": {
+    "message": "$TERM$ biliniyor olarak işaretlendi, +$XP$ XP",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      },
+      "xp": {
+        "content": "$2"
+      }
+    }
+  },
+  "wordsEditNative": {
+    "message": "Benim dilimde"
+  },
+  "wordsEditEnglish": {
+    "message": "Anlam (ders)"
+  },
+  "wordsEditLabel": {
+    "message": "$TERM$ anlamlarını düzenle",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      }
+    }
+  },
+  "placeholderNative": {
+    "message": "Kendi dilindeki anlamı"
+  },
+  "strengthLabel": {
+    "message": "Güç: $VALUE$ / $MAX$",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      },
+      "max": {
+        "content": "$2"
+      }
+    }
+  },
+  "todayGoalMet": {
+    "message": "Günlük hedefe ulaştın!"
+  },
+  "streakFreezesLabel": {
+    "message": "Seri dondurma: $COUNT$ (kaçırılan bir günü korur)",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "bannerFreezeUsed": {
+    "message": "$DATE$ tarihinde bir seri dondurma serini korudu.",
+    "placeholders": {
+      "date": {
+        "content": "$1"
+      }
+    }
+  },
+  "bannerFreezeEarned": {
+    "message": "7 gün üst üste! Bir seri dondurma kazandın."
+  },
+  "bannerDismiss": {
+    "message": "Kapat"
+  },
+  "practiceTheseWords": {
+    "message": "Bu $COUNT$ yeni kelimeyi çalış",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "practiceTheseBody": {
+    "message": "Son dersinden taze: şimdi pekiştir."
+  },
+  "scenariosHeading": {
+    "message": "Bir ders başlat"
+  },
+  "scenariosBody": {
+    "message": "Bir durum seç: LangCoach Tiny Lesson'ı açar, doldurur ve senin için Oluştur'a basar."
+  },
+  "scenariosMore": {
+    "message": "Başka fikirler"
+  },
+  "scenarioStart": {
+    "message": "Başla"
+  },
+  "scenarioStarting": {
+    "message": "Başlatılıyor…"
+  },
+  "scenarioStartLabel": {
+    "message": "Tiny Lesson başlat: $THEME$",
+    "placeholders": {
+      "theme": {
+        "content": "$1"
+      }
+    }
+  },
+  "scenarioCopyLabel": {
+    "message": "Kopyala: $THEME$",
+    "placeholders": {
+      "theme": {
+        "content": "$1"
+      }
+    }
+  },
+  "scenarioOpenTiny": {
+    "message": "Tiny Lesson'ı aç"
+  },
+  "scenarioStarted": {
+    "message": "Dersin Tiny Lesson sekmesinde oluşturuluyor."
+  },
+  "scenarioHintSplash": {
+    "message": "Tiny Lesson önce karşılama ekranını gösteriyor. Orada Başla'ya tıkla (ve bildirimi onayla), sonra tekrar dene."
+  },
+  "scenarioHintLanguage": {
+    "message": "Sayfada dilin seçilemedi. Orada seç ve tekrar Başla'ya bas ya da konuyu kopyala."
+  },
+  "scenarioHintGenerate": {
+    "message": "Konu dolduruldu ama Oluştur düğmesi hazır değildi. Sayfada Oluştur'a bas."
+  },
+  "scenarioHintGeneric": {
+    "message": "Otomatik başlatılamadı. Konuyu kopyalayıp Tiny Lesson'a yapıştır."
+  },
+  "todayTasksHeading": {
+    "message": "Bugünün planı"
+  },
+  "levelToNext": {
+    "message": "$NEXT$ seviyesine $XP$ XP kaldı",
+    "placeholders": {
+      "xp": {
+        "content": "$1"
+      },
+      "next": {
+        "content": "$2"
+      }
+    }
+  },
+  "levelMax": {
+    "message": "En üst seviyedesin. Efsanesin!"
+  },
+  "levelProgressLabel": {
+    "message": "Sonraki seviyeye ilerleme: %$PCT$",
+    "placeholders": {
+      "pct": {
+        "content": "$1"
+      }
+    }
+  },
+  "weekChartHeading": {
+    "message": "Bu hafta"
+  },
+  "weekChartLabel": {
+    "message": "Son 7 günde XP: toplam $TOTAL$, günlük hedef $GOAL$",
+    "placeholders": {
+      "total": {
+        "content": "$1"
+      },
+      "goal": {
+        "content": "$2"
+      }
+    }
+  },
+  "statFreezes": {
+    "message": "Seri dondurma"
+  },
+  "achUnlocked": {
+    "message": "açıldı"
+  },
+  "achLocked": {
+    "message": "kilitli"
+  },
+  "goalPickerLabel": {
+    "message": "Günlük hedef"
+  },
+  "goalCasual": {
+    "message": "Rahat"
+  },
+  "goalRegular": {
+    "message": "Düzenli"
+  },
+  "goalSerious": {
+    "message": "Ciddi"
+  },
+  "goalIntense": {
+    "message": "Yoğun"
+  },
+  "goalXpPerDay": {
+    "message": "Günde $XP$ XP",
+    "placeholders": {
+      "xp": {
+        "content": "$1"
+      }
+    }
+  },
+  "toastForwarded": {
+    "message": "yapay zekâ asistanına gönderildi"
+  },
+  "bridgeSection": {
+    "message": "Yapay zekâ asistanın"
+  },
+  "bridgeHint": {
+    "message": "LangCoach burada yaptığın her dersi bu bilgisayardaki yapay zekâ asistanına (langcoach MCP sunucusu) da gönderir; böylece asistan dersi hatırlar, plan yapar ve seni sınar. Yalnızca kendi bilgisayarınla konuşur; hiçbir veri dışarı çıkmaz."
+  },
+  "bridgeConnected": {
+    "message": "Asistanına bağlı"
+  },
+  "bridgeWaiting": {
+    "message": "Asistanın bekleniyor (derslerini alması için onu başlat)"
+  },
+  "bridgeOff": {
+    "message": "Kapalı"
+  },
+  "fieldBridge": {
+    "message": "Derslerimi yapay zekâ asistanıma gönder"
+  },
+  "bridgeLearnMore": {
+    "message": "Nasıl bağlanır?"
+  },
+  "bridgePending": {
+    "message": "$COUNT$ ders gönderilmeyi bekliyor",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "3"
+      }
+    }
+  },
+  "bridgeNotPaired": {
+    "message": "Eşleştirilmedi: bağlamak için eklentiyi asistanın üzerinden kur"
+  },
+  "bridgeUnverified": {
+    "message": "Sunucu doğrulanamadı: bu bilgisayarda bir program, LangCoach asistanın olduğunu kanıtlamadan yanıt verdi; bu yüzden hiçbir şey gönderilmedi"
+  },
+  "bridgeHowToPair": {
+    "message": "Nasıl eşleştirilir?"
+  }
+}

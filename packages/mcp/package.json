@@ -1,0 +1,53 @@
+{
+  "name": "langcoach",
+  "version": "0.3.0",
+  "description": "Language-learning coach MCP server for Claude Code: Claude writes the lessons, LangCoach keeps your weekly plan, streak, XP and spaced-repetition (FSRS) reviews on your machine.",
+  "keywords": [
+    "language-learning",
+    "spaced-repetition",
+    "fsrs",
+    "mcp",
+    "mcp-server",
+    "claude",
+    "claude-code",
+    "tutor",
+    "flashcards",
+    "vocabulary"
+  ],
+  "homepage": "https://github.com/oktaybilge1/langcoach#readme",
+  "bugs": {
+    "url": "https://github.com/oktaybilge1/langcoach/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oktaybilge1/langcoach.git",
+    "directory": "packages/mcp"
+  },
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "langcoach": "dist/index.js"
+  },
+  "files": [
+    "dist",
+    "extension",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsup",
+    "prepack": "npm run build && node scripts/copy-docs.mjs && node scripts/copy-extension.mjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.1",
+    "ts-fsrs": "^5.4.2",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@langcoach/core": "*",
+    "tsup": "^9.0.0"
+  }
+}

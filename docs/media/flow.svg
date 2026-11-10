@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 220" width="960" height="220" role="img" aria-label="How it works: you study in Little Language Lessons, the extension forwards the lesson to your own computer, your AI agent plans and reviews, you export to Anki, Quizlet or CSV">
+  <defs>
+    <linearGradient id="bg2" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#0f172a"/>
+      <stop offset="1" stop-color="#1e1b4b"/>
+    </linearGradient>
+    <style>
+      text { font-family: ui-sans-serif, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+      .box { fill: #1e293b; stroke: #334155; }
+      .t { fill: #fff; font-size: 16px; font-weight: 700; }
+      .s { fill: #94a3b8; font-size: 12px; }
+      .line { stroke: #475569; stroke-width: 2; stroke-dasharray: 6 6; animation: dash 1s linear infinite; }
+      @keyframes dash { to { stroke-dashoffset: -12 } }
+      .dot { animation: move 4s linear infinite; }
+      @keyframes move { 0% { transform: translateX(0); opacity: 0 } 5% { opacity: 1 } 95% { opacity: 1 } 100% { transform: translateX(690px); opacity: 0 } }
+      .pulse { transform-box: fill-box; transform-origin: center; animation: pulse 2s ease-in-out infinite; }
+      @keyframes pulse { 0%,100% { transform: scale(1) } 50% { transform: scale(1.12) } }
+      @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+    </style>
+  </defs>
+  <rect width="960" height="220" rx="24" fill="url(#bg2)"/>
+  <line class="line" x1="200" y1="96" x2="760" y2="96"/>
+  <circle class="dot" cx="140" cy="96" r="7" fill="#a78bfa"/>
+
+  <g transform="translate(40,40)">
+    <rect class="box" width="180" height="112" rx="14"/>
+    <text x="90" y="44" font-size="28" text-anchor="middle" class="pulse">📚</text>
+    <text x="90" y="76" class="t" text-anchor="middle">Study in LLL</text>
+    <text x="90" y="96" class="s" text-anchor="middle">audio · camera · Tiny Lesson</text>
+  </g>
+  <g transform="translate(280,40)">
+    <rect class="box" width="180" height="112" rx="14"/>
+    <text x="90" y="44" font-size="28" text-anchor="middle">🧩</text>
+    <text x="90" y="76" class="t" text-anchor="middle">Extension</text>
+    <text x="90" y="96" class="s" text-anchor="middle">saves it, only to 127.0.0.1</text>
+  </g>
+  <g transform="translate(520,40)">
+    <rect class="box" width="180" height="112" rx="14"/>
+    <text x="90" y="44" font-size="28" text-anchor="middle">🤖</text>
+    <text x="90" y="76" class="t" text-anchor="middle">Your AI agent</text>
+    <text x="90" y="96" class="s" text-anchor="middle">plan · reviews · new lessons</text>
+  </g>
+  <g transform="translate(760,40)">
+    <rect class="box" width="160" height="112" rx="14"/>
+    <text x="80" y="44" font-size="28" text-anchor="middle">🗂️</text>
+    <text x="80" y="76" class="t" text-anchor="middle">Anki · Quizlet</text>
+    <text x="80" y="96" class="s" text-anchor="middle">CSV export anytime</text>
+  </g>
+  <text x="480" y="192" font-size="13" fill="#64748b" text-anchor="middle">Nothing leaves your computer. No account, no API key, no LangCoach cloud.</text>
+</svg>

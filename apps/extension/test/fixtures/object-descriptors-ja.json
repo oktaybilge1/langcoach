@@ -1,0 +1,20 @@
+{
+  "descriptors": [
+    {
+      "descriptor": "コーヒーカップ",
+      "pronunciation": "kōhī kappu",
+      "translation": "coffee cup",
+      "exampleSentence": "コーヒーカップをください。",
+      "exampleSentencePronunciation": "Kōhī kappu o kudasai.",
+      "exampleSentenceTranslation": "Please give me a coffee cup."
+    },
+    {
+      "descriptor": "お皿",
+      "pronunciation": "o-sara",
+      "translation": "plate",
+      "exampleSentence": "お皿が熱いので気をつけてください。",
+      "exampleSentencePronunciation": "O-sara ga atsui node ki o tsukete kudasai.",
+      "exampleSentenceTranslation": "The plate is hot, so please be careful."
+    }
+  ]
+}

@@ -1,0 +1,1117 @@
+{
+  "extName": {
+    "message": "LangCoach",
+    "description": "Extension name"
+  },
+  "extDescription": {
+    "message": "Streaks, daily plan and spaced-repetition review for Little Language Lessons (Google Labs). Not affiliated with Google.",
+    "description": "Extension description (max 132 chars)"
+  },
+  "toastSaved": {
+    "message": "✓ $COUNT$ words saved to LangCoach",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "toastAlready": {
+    "message": "Already in your deck"
+  },
+  "toastUndo": {
+    "message": "Undo"
+  },
+  "toastOpen": {
+    "message": "Open"
+  },
+  "toastRemoved": {
+    "message": "Removed"
+  },
+  "toastSaveN": {
+    "message": "Save $COUNT$ words",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "toastSavedManual": {
+    "message": "✓ Saved to LangCoach"
+  },
+  "toastXp": {
+    "message": "+$XP$ XP",
+    "placeholders": {
+      "xp": {
+        "content": "$1"
+      }
+    }
+  },
+  "menuSave": {
+    "message": "Save to LangCoach"
+  },
+  "tabToday": {
+    "message": "Today"
+  },
+  "tabReview": {
+    "message": "Review"
+  },
+  "tabPlan": {
+    "message": "Plan"
+  },
+  "tabProgress": {
+    "message": "Progress"
+  },
+  "tabSettings": {
+    "message": "Settings"
+  },
+  "loading": {
+    "message": "Loading..."
+  },
+  "onboardTitle": {
+    "message": "Set up your language coach"
+  },
+  "onboardSubtitle": {
+    "message": "Personalize your weekly plan and spaced-repetition deck."
+  },
+  "fieldTargetLang": {
+    "message": "Language I'm learning"
+  },
+  "fieldNativeLang": {
+    "message": "My native language"
+  },
+  "fieldLevel": {
+    "message": "Current level"
+  },
+  "levelUnsure": {
+    "message": "Not sure (start at A2)"
+  },
+  "fieldGoal": {
+    "message": "Main goal"
+  },
+  "goalTravel": {
+    "message": "Travel"
+  },
+  "goalWork": {
+    "message": "Work"
+  },
+  "goalStudy": {
+    "message": "Study"
+  },
+  "goalMoving": {
+    "message": "Moving abroad"
+  },
+  "goalFamily": {
+    "message": "Family & friends"
+  },
+  "goalFun": {
+    "message": "Fun & culture"
+  },
+  "fieldMinutes": {
+    "message": "Minutes per day"
+  },
+  "fieldDays": {
+    "message": "Days per week"
+  },
+  "fieldCamera": {
+    "message": "I have a camera (include Word Cam)"
+  },
+  "btnStartPlan": {
+    "message": "Create my plan"
+  },
+  "todayHeading": {
+    "message": "Today's Tasks"
+  },
+  "todayRingLabel": {
+    "message": "Daily goal"
+  },
+  "todayStreak": {
+    "message": "Day streak"
+  },
+  "todayThemeLabel": {
+    "message": "Suggested Tiny Lesson theme"
+  },
+  "btnCopy": {
+    "message": "Copy"
+  },
+  "btnCopied": {
+    "message": "Copied"
+  },
+  "btnNextTheme": {
+    "message": "Another idea"
+  },
+  "btnOpenLll": {
+    "message": "Open"
+  },
+  "taskTinyLesson": {
+    "message": "Tiny Lesson"
+  },
+  "taskSlangHang": {
+    "message": "Slang Hang"
+  },
+  "taskWordCam": {
+    "message": "Word Cam"
+  },
+  "taskReview": {
+    "message": "Flashcard Review"
+  },
+  "taskQuiz": {
+    "message": "Weekly Quiz Review"
+  },
+  "taskStatusDone": {
+    "message": "Done"
+  },
+  "taskStatusTodo": {
+    "message": "To do"
+  },
+  "minutesShort": {
+    "message": "$MIN$ min",
+    "placeholders": {
+      "min": {
+        "content": "$1"
+      }
+    }
+  },
+  "todayNoTasks": {
+    "message": "No tasks scheduled for today. Do any lesson or review to build your streak!"
+  },
+  "lastCaptureHeading": {
+    "message": "Last captured lesson"
+  },
+  "grammarHeading": {
+    "message": "Recent grammar notes"
+  },
+  "reviewHeading": {
+    "message": "Spaced-Repetition Review"
+  },
+  "reviewDueBadge": {
+    "message": "$COUNT$ due",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "reviewEmptyTitle": {
+    "message": "All caught up for now!"
+  },
+  "reviewEmptyBody": {
+    "message": "Do a lesson on Little Language Lessons to add new words to your deck."
+  },
+  "btnShowAnswer": {
+    "message": "Show answer"
+  },
+  "btnListen": {
+    "message": "Listen"
+  },
+  "rateAgain": {
+    "message": "Again"
+  },
+  "rateHard": {
+    "message": "Hard"
+  },
+  "rateGood": {
+    "message": "Good"
+  },
+  "rateEasy": {
+    "message": "Easy"
+  },
+  "btnEditCard": {
+    "message": "Edit translation"
+  },
+  "btnSaveCard": {
+    "message": "Save"
+  },
+  "placeholderTranslation": {
+    "message": "Add translation..."
+  },
+  "btnFinishReview": {
+    "message": "Finish session"
+  },
+  "planHeading": {
+    "message": "Weekly Plan"
+  },
+  "planTheme": {
+    "message": "Theme"
+  },
+  "planEmpty": {
+    "message": "No plan for this week yet."
+  },
+  "progressHeading": {
+    "message": "Your Progress"
+  },
+  "statStreak": {
+    "message": "Day Streak"
+  },
+  "statTotalXp": {
+    "message": "Total XP"
+  },
+  "statLevel": {
+    "message": "Level"
+  },
+  "statWordsLearned": {
+    "message": "Words Learned"
+  },
+  "statDueCount": {
+    "message": "Cards Due"
+  },
+  "statWeeklyGoal": {
+    "message": "Weekly Study Days"
+  },
+  "achievementsHeading": {
+    "message": "Achievements"
+  },
+  "ach_first_lesson": {
+    "message": "First Step (1 lesson)"
+  },
+  "ach_streak_3": {
+    "message": "3-Day Streak"
+  },
+  "ach_streak_7": {
+    "message": "7-Day Streak"
+  },
+  "ach_streak_30": {
+    "message": "30-Day Streak"
+  },
+  "ach_cards_50": {
+    "message": "50 Words Collected"
+  },
+  "ach_cards_100": {
+    "message": "100 Words Collected"
+  },
+  "ach_cards_500": {
+    "message": "500 Words Collected"
+  },
+  "ach_reviews_100": {
+    "message": "100 Card Reviews"
+  },
+  "settingsHeading": {
+    "message": "Settings"
+  },
+  "settingsProfileSection": {
+    "message": "Learning Profile"
+  },
+  "btnSaveProfile": {
+    "message": "Save profile"
+  },
+  "settingsPrefsSection": {
+    "message": "Preferences"
+  },
+  "fieldAutoSave": {
+    "message": "Auto-save lessons on Little Language Lessons"
+  },
+  "fieldReminder": {
+    "message": "Daily study reminder time"
+  },
+  "reminderOff": {
+    "message": "Off"
+  },
+  "fieldUiLang": {
+    "message": "Interface language"
+  },
+  "uiLangAuto": {
+    "message": "Auto (browser)"
+  },
+  "settingsDataSection": {
+    "message": "Your Data"
+  },
+  "btnExport": {
+    "message": "Export JSON backup"
+  },
+  "btnImport": {
+    "message": "Import JSON backup"
+  },
+  "btnReset": {
+    "message": "Reset all data"
+  },
+  "btnResetConfirm1": {
+    "message": "Click again to confirm reset"
+  },
+  "btnResetConfirm2": {
+    "message": "Confirm permanent reset"
+  },
+  "settingsAboutSection": {
+    "message": "About LangCoach"
+  },
+  "aboutDisclaimer": {
+    "message": "LangCoach is an independent open-source project and is not affiliated with, endorsed by, or sponsored by Google."
+  },
+  "aboutGithub": {
+    "message": "GitHub Repository"
+  },
+  "aboutSupport": {
+    "message": "Support the project"
+  },
+  "reminderTitle": {
+    "message": "Time for your language practice!"
+  },
+  "reminderBody": {
+    "message": "Your 5-minute lesson on LangCoach is waiting to keep your streak alive."
+  },
+  "btnFillTheme": {
+    "message": "Fill page"
+  },
+  "btnFilled": {
+    "message": "Filled!"
+  },
+  "tabModeList": {
+    "message": "Word List"
+  },
+  "tabModeCards": {
+    "message": "Cards"
+  },
+  "searchPlaceholder": {
+    "message": "Search words or translation..."
+  },
+  "statusLearned": {
+    "message": "Learned"
+  },
+  "statusNew": {
+    "message": "New"
+  },
+  "btnCancel": {
+    "message": "Cancel"
+  },
+  "noTranslation": {
+    "message": "No translation yet (click edit)"
+  },
+  "themeCopiedPaste": {
+    "message": "Copied — paste it into the box"
+  },
+  "loadErrorBody": {
+    "message": "LangCoach could not load your data: $MSG$",
+    "placeholders": {
+      "msg": {
+        "content": "$1"
+      }
+    }
+  },
+  "btnRetry": {
+    "message": "Retry"
+  },
+  "corruptTitle": {
+    "message": "Your saved data is damaged"
+  },
+  "corruptBody": {
+    "message": "LangCoach could not read your saved data. Nothing was deleted: you can import a backup file, or reset to start fresh."
+  },
+  "corruptPreserved": {
+    "message": "A copy of the damaged data was kept in browser storage under the key: $KEY$",
+    "placeholders": {
+      "key": {
+        "content": "$1"
+      }
+    }
+  },
+  "importReplaceWarning": {
+    "message": "Importing replaces your whole current deck. A backup of the current data is kept."
+  },
+  "importCounts": {
+    "message": "Current deck: $CURRENT$ cards · File: $FILE$ cards",
+    "placeholders": {
+      "current": {
+        "content": "$1"
+      },
+      "file": {
+        "content": "$2"
+      }
+    }
+  },
+  "btnImportReplace": {
+    "message": "Replace"
+  },
+  "exportCardsSection": {
+    "message": "Export cards"
+  },
+  "exportCardsHint": {
+    "message": "Take your cards to other apps. Scheduling is not exported; cards start fresh there."
+  },
+  "btnExportAnki": {
+    "message": "Anki"
+  },
+  "btnExportQuizlet": {
+    "message": "Quizlet"
+  },
+  "btnExportCsv": {
+    "message": "CSV"
+  },
+  "exportCardsDone": {
+    "message": "Exported $COUNT$ cards to $FILE$.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      },
+      "file": {
+        "content": "$2"
+      }
+    }
+  },
+  "exportCardsNone": {
+    "message": "No cards to export yet."
+  },
+  "importDone": {
+    "message": "Imported $CARDS$ cards from $LESSONS$ lessons.",
+    "placeholders": {
+      "cards": {
+        "content": "$1"
+      },
+      "lessons": {
+        "content": "$2"
+      }
+    }
+  },
+  "importFailed": {
+    "message": "Import failed: $MSG$",
+    "placeholders": {
+      "msg": {
+        "content": "$1"
+      }
+    }
+  },
+  "actionFailed": {
+    "message": "Something went wrong: $MSG$",
+    "placeholders": {
+      "msg": {
+        "content": "$1"
+      }
+    }
+  },
+  "nativeBannerTitle": {
+    "message": "Meanings in your language"
+  },
+  "nativeDownloadBtn": {
+    "message": "Download translations (one-time, on-device)"
+  },
+  "nativeDownloadBody": {
+    "message": "$COUNT$ words can also be shown in $LANG$. Chrome translates them on this device; nothing is sent anywhere.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      },
+      "lang": {
+        "content": "$2"
+      }
+    }
+  },
+  "nativeDownloading": {
+    "message": "Downloading translations… $PERCENT$%",
+    "placeholders": {
+      "percent": {
+        "content": "$1"
+      }
+    }
+  },
+  "nativeDownloadingWait": {
+    "message": "Chrome is downloading translations. They will appear here when ready."
+  },
+  "nativeTranslating": {
+    "message": "Translating $COUNT$ words into $LANG$…",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      },
+      "lang": {
+        "content": "$2"
+      }
+    }
+  },
+  "nativeUnavailable": {
+    "message": "Your browser can't translate $SOURCE$→$TARGET$ on-device yet; showing English.",
+    "placeholders": {
+      "source": {
+        "content": "$1"
+      },
+      "target": {
+        "content": "$2"
+      }
+    }
+  },
+  "fieldShowNativeOnPage": {
+    "message": "Show my language on the page"
+  },
+  "nativeDownloadFailed": {
+    "message": "Download didn't finish — try again"
+  },
+  "nativeDismiss": {
+    "message": "Hide"
+  },
+  "tabPractice": {
+    "message": "Practice"
+  },
+  "pxCtaTitle": {
+    "message": "Practice now"
+  },
+  "pxCtaDue": {
+    "message": "$COUNT$ words are waiting · about 3 minutes",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "pxCtaBody": {
+    "message": "A quick, fun round with your own words"
+  },
+  "pxStartTitle": {
+    "message": "Ready to practice?"
+  },
+  "pxStatDue": {
+    "message": "due now"
+  },
+  "pxStatWords": {
+    "message": "words in your deck"
+  },
+  "pxStartBody": {
+    "message": "$COUNT$ short exercises with the words you collected. Mistakes come back once at the end, so you can nail them.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "pxKindsLabel": {
+    "message": "Exercise types"
+  },
+  "pxKindMeaning": {
+    "message": "Meanings"
+  },
+  "pxKindListen": {
+    "message": "Listening"
+  },
+  "pxKindMatch": {
+    "message": "Matching"
+  },
+  "pxKindType": {
+    "message": "Typing"
+  },
+  "pxKindBlank": {
+    "message": "Fill in the blank"
+  },
+  "pxStart": {
+    "message": "Start practice"
+  },
+  "pxEmptyTitle": {
+    "message": "Let's collect some words first"
+  },
+  "pxEmptyBody": {
+    "message": "Do a Tiny Lesson to collect at least $COUNT$ words — then come back and practice them here.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "pxEmptyCta": {
+    "message": "Open Tiny Lesson"
+  },
+  "pxAskMeaning": {
+    "message": "What does this mean?"
+  },
+  "pxAskReverse": {
+    "message": "Pick the right word"
+  },
+  "pxAskListen": {
+    "message": "What do you hear?"
+  },
+  "pxAskBlank": {
+    "message": "Fill in the blank"
+  },
+  "pxBlankGap": {
+    "message": "blank"
+  },
+  "pxAskMatch": {
+    "message": "Match the pairs"
+  },
+  "pxMatchWords": {
+    "message": "Words"
+  },
+  "pxMatchMeanings": {
+    "message": "Meanings"
+  },
+  "pxAskType": {
+    "message": "Type it in your target language"
+  },
+  "pxTypePlaceholder": {
+    "message": "Type your answer"
+  },
+  "pxCheck": {
+    "message": "Check"
+  },
+  "pxContinue": {
+    "message": "Continue"
+  },
+  "pxPraise1": {
+    "message": "Nice!"
+  },
+  "pxPraise2": {
+    "message": "Great job!"
+  },
+  "pxPraise3": {
+    "message": "You got it!"
+  },
+  "pxWrongTitle": {
+    "message": "Not quite"
+  },
+  "pxCorrectAnswer": {
+    "message": "Correct answer:"
+  },
+  "pxAlmostTitle": {
+    "message": "Almost!"
+  },
+  "pxAlmostBody": {
+    "message": "Watch the spelling:"
+  },
+  "pxMatchAlmost": {
+    "message": "All matched — a few slips"
+  },
+  "pxRetry": {
+    "message": "One more try"
+  },
+  "pxCombo": {
+    "message": "$COUNT$ in a row",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "pxQuit": {
+    "message": "Quit (nothing is saved)"
+  },
+  "pxProgress": {
+    "message": "Session progress"
+  },
+  "pxEndTitle": {
+    "message": "Session complete!"
+  },
+  "pxEndPerfect": {
+    "message": "Perfect session!"
+  },
+  "pxEndXp": {
+    "message": "XP earned"
+  },
+  "pxEndAccuracy": {
+    "message": "Accuracy"
+  },
+  "pxEndWords": {
+    "message": "Words strengthened"
+  },
+  "pxGoalLine": {
+    "message": "$XP$ / $GOAL$ XP today",
+    "placeholders": {
+      "xp": {
+        "content": "$1"
+      },
+      "goal": {
+        "content": "$2"
+      }
+    }
+  },
+  "pxSaveFailed": {
+    "message": "Couldn't save this session: $ERROR$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "pxAgain": {
+    "message": "Practice again"
+  },
+  "pxDone": {
+    "message": "Done"
+  },
+  "pxLeaveUnsaved": {
+    "message": "Your results aren't saved yet. Press again to leave without saving, or tap Retry."
+  },
+  "fieldSoundEffects": {
+    "message": "Sound effects in practice"
+  },
+  "pxPerfectBonus": {
+    "message": "+$XP$ XP perfect bonus",
+    "placeholders": {
+      "xp": {
+        "content": "$1"
+      }
+    }
+  },
+  "level1": {
+    "message": "Newcomer"
+  },
+  "level2": {
+    "message": "Explorer"
+  },
+  "level3": {
+    "message": "Learner"
+  },
+  "level4": {
+    "message": "Speaker"
+  },
+  "level5": {
+    "message": "Conversationalist"
+  },
+  "level6": {
+    "message": "Storyteller"
+  },
+  "level7": {
+    "message": "Fluent Friend"
+  },
+  "level8": {
+    "message": "Polyglot"
+  },
+  "level9": {
+    "message": "Master"
+  },
+  "level10": {
+    "message": "Legend"
+  },
+  "ach_perfect_session": {
+    "message": "Perfect session"
+  },
+  "ach_xp_100_day": {
+    "message": "100 XP in one day"
+  },
+  "ach_sessions_10": {
+    "message": "10 practice sessions"
+  },
+  "ach_first_match": {
+    "message": "First match game"
+  },
+  "tabWords": {
+    "message": "Words"
+  },
+  "wordsHeading": {
+    "message": "Your words"
+  },
+  "wordsModeLabel": {
+    "message": "How to show your words"
+  },
+  "wordsFilterLabel": {
+    "message": "Filter words"
+  },
+  "wordsFilterAll": {
+    "message": "All"
+  },
+  "wordsFilterDue": {
+    "message": "Due"
+  },
+  "wordsFilterNew": {
+    "message": "New"
+  },
+  "wordsFilterWeak": {
+    "message": "Weak"
+  },
+  "wordsFilterFavorites": {
+    "message": "Favorites"
+  },
+  "wordsFilterMastered": {
+    "message": "Mastered"
+  },
+  "wordsOtherGroup": {
+    "message": "Other words"
+  },
+  "wordsNoMatch": {
+    "message": "No words match. Try another search or filter."
+  },
+  "wordsEmptyTitle": {
+    "message": "No words yet"
+  },
+  "wordsShowMore": {
+    "message": "Show more ($COUNT$ left)",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsFavorite": {
+    "message": "Favorite: $TERM$",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsFavoriteAdded": {
+    "message": "$TERM$ added to favorites",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsFavoriteRemoved": {
+    "message": "$TERM$ removed from favorites",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsListenTo": {
+    "message": "Listen: $TERM$",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsKnowThis": {
+    "message": "I know this"
+  },
+  "wordsKnowThisLabel": {
+    "message": "I know this: $TERM$",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsKnown": {
+    "message": "Known"
+  },
+  "wordsKnownXp": {
+    "message": "Known · +$XP$ XP",
+    "placeholders": {
+      "xp": {
+        "content": "$1"
+      }
+    }
+  },
+  "wordsKnownStatus": {
+    "message": "$TERM$ marked as known, +$XP$ XP",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      },
+      "xp": {
+        "content": "$2"
+      }
+    }
+  },
+  "wordsEditNative": {
+    "message": "In my language"
+  },
+  "wordsEditEnglish": {
+    "message": "Meaning (lesson)"
+  },
+  "wordsEditLabel": {
+    "message": "Edit meanings of $TERM$",
+    "placeholders": {
+      "term": {
+        "content": "$1"
+      }
+    }
+  },
+  "placeholderNative": {
+    "message": "Meaning in your language"
+  },
+  "strengthLabel": {
+    "message": "Strength $VALUE$ of $MAX$",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      },
+      "max": {
+        "content": "$2"
+      }
+    }
+  },
+  "todayGoalMet": {
+    "message": "Daily goal reached!"
+  },
+  "streakFreezesLabel": {
+    "message": "Streak freezes: $COUNT$ (protect a missed day)",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "bannerFreezeUsed": {
+    "message": "A streak freeze kept your streak alive on $DATE$.",
+    "placeholders": {
+      "date": {
+        "content": "$1"
+      }
+    }
+  },
+  "bannerFreezeEarned": {
+    "message": "7 days in a row! You earned a streak freeze."
+  },
+  "bannerDismiss": {
+    "message": "Dismiss"
+  },
+  "practiceTheseWords": {
+    "message": "Practice these $COUNT$ new words",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "practiceTheseBody": {
+    "message": "Fresh from your last lesson: lock them in now."
+  },
+  "scenariosHeading": {
+    "message": "Start a lesson"
+  },
+  "scenariosBody": {
+    "message": "Pick a situation: LangCoach opens Tiny Lesson, fills it in and presses Generate for you."
+  },
+  "scenariosMore": {
+    "message": "More ideas"
+  },
+  "scenarioStart": {
+    "message": "Start"
+  },
+  "scenarioStarting": {
+    "message": "Starting…"
+  },
+  "scenarioStartLabel": {
+    "message": "Start a Tiny Lesson: $THEME$",
+    "placeholders": {
+      "theme": {
+        "content": "$1"
+      }
+    }
+  },
+  "scenarioCopyLabel": {
+    "message": "Copy: $THEME$",
+    "placeholders": {
+      "theme": {
+        "content": "$1"
+      }
+    }
+  },
+  "scenarioOpenTiny": {
+    "message": "Open Tiny Lesson"
+  },
+  "scenarioStarted": {
+    "message": "Your lesson is being generated in the Tiny Lesson tab."
+  },
+  "scenarioHintSplash": {
+    "message": "Tiny Lesson shows its welcome screen first. Click Start there (and accept the notice), then try again."
+  },
+  "scenarioHintLanguage": {
+    "message": "Couldn't pick your language on the page. Choose it there, then press Start again, or copy the theme."
+  },
+  "scenarioHintGenerate": {
+    "message": "The theme is filled in, but Generate wasn't ready. Press Generate on the page."
+  },
+  "scenarioHintGeneric": {
+    "message": "Couldn't start it automatically. Copy the theme and paste it into Tiny Lesson."
+  },
+  "todayTasksHeading": {
+    "message": "Today's plan"
+  },
+  "levelToNext": {
+    "message": "$XP$ XP to $NEXT$",
+    "placeholders": {
+      "xp": {
+        "content": "$1"
+      },
+      "next": {
+        "content": "$2"
+      }
+    }
+  },
+  "levelMax": {
+    "message": "Top level reached. Legendary!"
+  },
+  "levelProgressLabel": {
+    "message": "Progress to the next level: $PCT$%",
+    "placeholders": {
+      "pct": {
+        "content": "$1"
+      }
+    }
+  },
+  "weekChartHeading": {
+    "message": "This week"
+  },
+  "weekChartLabel": {
+    "message": "XP over the last 7 days: $TOTAL$ in total, daily goal $GOAL$",
+    "placeholders": {
+      "total": {
+        "content": "$1"
+      },
+      "goal": {
+        "content": "$2"
+      }
+    }
+  },
+  "statFreezes": {
+    "message": "Streak freezes"
+  },
+  "achUnlocked": {
+    "message": "unlocked"
+  },
+  "achLocked": {
+    "message": "locked"
+  },
+  "goalPickerLabel": {
+    "message": "Daily goal"
+  },
+  "goalCasual": {
+    "message": "Casual"
+  },
+  "goalRegular": {
+    "message": "Regular"
+  },
+  "goalSerious": {
+    "message": "Serious"
+  },
+  "goalIntense": {
+    "message": "Intense"
+  },
+  "goalXpPerDay": {
+    "message": "$XP$ XP a day",
+    "placeholders": {
+      "xp": {
+        "content": "$1"
+      }
+    }
+  },
+  "toastForwarded": {
+    "message": "sent to your agent"
+  },
+  "bridgeSection": {
+    "message": "Your AI agent"
+  },
+  "bridgeHint": {
+    "message": "LangCoach also sends each lesson you do here to the AI agent on this computer (the langcoach MCP server), so it can remember it, plan and quiz you. It only talks to your own computer; nothing leaves it."
+  },
+  "bridgeConnected": {
+    "message": "Connected to your agent"
+  },
+  "bridgeWaiting": {
+    "message": "Waiting for your agent (start it to receive your lessons)"
+  },
+  "bridgeOff": {
+    "message": "Off"
+  },
+  "fieldBridge": {
+    "message": "Send my lessons to my AI agent"
+  },
+  "bridgeLearnMore": {
+    "message": "Learn how to connect"
+  },
+  "bridgePending": {
+    "message": "$COUNT$ lessons waiting to be sent",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "3"
+      }
+    }
+  },
+  "bridgeNotPaired": {
+    "message": "Not paired: install the extension from your agent to connect"
+  },
+  "bridgeUnverified": {
+    "message": "Server not verified: something on this computer answered without proving it is your LangCoach agent, so nothing was sent"
+  },
+  "bridgeHowToPair": {
+    "message": "How to pair"
+  }
+}
