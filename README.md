@@ -40,9 +40,6 @@ Say *show my dashboard* any time to open your progress page.
 3. Your agent turns them into review cards, fits them into this week's plan and quizzes you when they are due.
 4. It writes extra lessons for your real life ("my job interview in Madrid on Friday") and sends you back to LLL for more.
 
-<p align="center"><img src="https://raw.githubusercontent.com/oktaybilge1/langcoach/main/docs/media/lll-demo.gif" alt="Making a Tiny Lesson in Little Language Lessons; a note in the corner says the words were saved to LangCoach and sent to your AI assistant" width="760"></p>
-<p align="center"><sub>A real Tiny Lesson on Little Language Lessons. The note in the corner is LangCoach (it follows your browser's language; shown here in Turkish): 18 words saved and sent to the agent.</sub></p>
-
 ## <picture><img src="https://raw.githubusercontent.com/oktaybilge1/langcoach/main/docs/media/h-progress.svg" height="34" alt=""></picture> See your progress
 
 Your agent's dashboard (left) and the extension's side panel (right), with a made-up learner studying Spanish.
