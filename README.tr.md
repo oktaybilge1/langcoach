@@ -40,6 +40,9 @@ Sonra yeni bir oturum açıp `/mcp__langcoach__tutor` yaz ya da sadece *"Dil der
 3. Ajanın bunları tekrar kartlarına çevirir, haftalık plana yerleştirir ve zamanı gelince seni sınar.
 4. Gerçek hayatın için ek dersler yazar ("Cuma günkü Madrid iş görüşmem") ve daha fazlası için seni LLL'ye geri yollar.
 
+<p align="center"><img src="https://raw.githubusercontent.com/oktaybilge1/langcoach/main/docs/media/lll-demo.gif" alt="Little Language Lessons'ta bir Tiny Lesson yapılıyor; köşedeki bildirim kelimelerin LangCoach'a kaydedildiğini ve yapay zekâ asistanına gönderildiğini söylüyor" width="760"></p>
+<p align="center"><sub>Little Language Lessons'ta gerçek bir Tiny Lesson. Köşedeki bildirim LangCoach'tan: 18 kelime kaydedildi ve ajana gönderildi.</sub></p>
+
 ## <picture><img src="https://raw.githubusercontent.com/oktaybilge1/langcoach/main/docs/media/h-progress.svg" height="34" alt=""></picture> İlerlemeni gör
 
 Solda ajanının paneli, sağda uzantının yan paneli; İspanyolca çalışan hayali bir öğrenciyle.
