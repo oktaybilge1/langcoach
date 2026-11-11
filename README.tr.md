@@ -40,6 +40,19 @@ Sonra yeni bir oturum açıp `/mcp__langcoach__tutor` yaz ya da sadece *"Dil der
 3. Ajanın bunları tekrar kartlarına çevirir, haftalık plana yerleştirir ve zamanı gelince seni sınar.
 4. Gerçek hayatın için ek dersler yazar ("Cuma günkü Madrid iş görüşmem") ve daha fazlası için seni LLL'ye geri yollar.
 
+## İlk dersin, adım adım
+
+<img src="https://raw.githubusercontent.com/oktaybilge1/langcoach/main/docs/media/tutorial.svg" alt="Dört adımın animasyonlu anlatımı: kur, tarayıcıyı bağla, çalış, kaydedildiğini gör" width="100%">
+
+<sub>Çizim bir anlatımdır, ekran kaydı değildir (yazılar İngilizce).</sub>
+
+1. **Sunucuyu kur.** Yukarıdaki cümleyi Claude Code'a yapıştır.
+2. **Tarayıcıyı bağla.** Yeni bir oturumda *"LangCoach'u Little Language Lessons'a bağla"* de. Ajanın uzantı klasörünü hazırlar ve yolunu verir. Sonra `chrome://extensions` sayfasını aç (Edge: `edge://extensions`, Brave: `brave://extensions`), **Geliştirici modu**'nu aç, **Paketlenmemiş öğe yükle**'ye tıkla ve yolu yapıştır.
+3. **Her zamanki gibi çalış.** [Little Language Lessons](https://labs.google/lll/en) sayfasını aç (zaten açıksa bir kez yenile), bir Tiny Lesson, Slang Hang ya da Word Cam seç ve Başlat'a bas. Sayfa ilk ziyaret tanıtımı gösteriyorsa onu bir kez bitir.
+4. **Kaydedildiğini gör.** Ders kaydedilip ajanına gönderilince sayfada küçük bir bildirim çıkar. *"Az önce ne çalıştım?"* diye sor ya da *panelimi göster* de.
+
+Takıldın mı? [Sorun giderme](https://github.com/oktaybilge1/langcoach/blob/main/docs/extension/INSTALL.tr.md#sorun-giderme) bölümüne bak.
+
 ## <picture><img src="https://raw.githubusercontent.com/oktaybilge1/langcoach/main/docs/media/h-progress.svg" height="34" alt=""></picture> İlerlemeni gör
 
 Solda ajanının paneli, sağda uzantının yan paneli; İspanyolca çalışan hayali bir öğrenciyle.

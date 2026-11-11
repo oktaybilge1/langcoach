@@ -40,6 +40,19 @@ Say *show my dashboard* any time to open your progress page.
 3. Your agent turns them into review cards, fits them into this week's plan and quizzes you when they are due.
 4. It writes extra lessons for your real life ("my job interview in Madrid on Friday") and sends you back to LLL for more.
 
+## Your first lesson, step by step
+
+<img src="https://raw.githubusercontent.com/oktaybilge1/langcoach/main/docs/media/tutorial.svg" alt="Animated walkthrough of the four steps: install, connect the browser, study, see it saved" width="100%">
+
+<sub>A drawn walkthrough, not a screen recording.</sub>
+
+1. **Install the server.** Paste the sentence from the top into Claude Code.
+2. **Connect the browser.** In a new session say *"Connect LangCoach to Little Language Lessons"*. Your agent prepares the extension folder and gives you its path. Then open `chrome://extensions` (Edge: `edge://extensions`, Brave: `brave://extensions`), turn on **Developer mode**, click **Load unpacked** and paste the path.
+3. **Study as usual.** Open [Little Language Lessons](https://labs.google/lll/en) (reload the tab once if it was already open), pick a Tiny Lesson, Slang Hang or Word Cam, and press Start. If the page shows a first-visit intro, finish it once.
+4. **See it saved.** A small notice appears on the page when the lesson is saved and sent to your agent. Ask *"What did I just study?"* or say *show my dashboard*.
+
+Stuck? See [Troubleshooting](https://github.com/oktaybilge1/langcoach/blob/main/docs/extension/INSTALL.md#troubleshooting).
+
 ## <picture><img src="https://raw.githubusercontent.com/oktaybilge1/langcoach/main/docs/media/h-progress.svg" height="34" alt=""></picture> See your progress
 
 Your agent's dashboard (left) and the extension's side panel (right), with a made-up learner studying Spanish.
