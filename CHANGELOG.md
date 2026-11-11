@@ -4,6 +4,11 @@ All notable changes to LangCoach are documented here. The format follows [Keep a
 
 LangCoach ships two things from this repo: the `langcoach` MCP server on npm (`packages/mcp`) and the browser extension (`apps/extension`). Both use the same version number from 0.2.0 on.
 
+## 0.4.1 - 2026-11-11
+
+### Security
+- Updated the transitive dependency `body-parser` (via the MCP SDK's `express`) to 2.4.0, which fixes a denial-of-service issue with trailing bytes after a compressed request body (GHSA-27r3-jxmh-p828). LangCoach's bridge only listens on `127.0.0.1`, so the practical risk was low.
+
 ## 0.4.0 - 2026-11-11
 
 ### Added

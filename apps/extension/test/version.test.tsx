@@ -14,8 +14,8 @@ const manifest = json('../public/manifest.json');
 const pkg = json('../package.json');
 
 describe('release version', () => {
-  it('is 0.4.0 in the manifest and the extension package, and they agree', () => {
-    expect(manifest.version).toBe('0.4.0');
+  it('is 0.4.1 in the manifest and the extension package, and they agree', () => {
+    expect(manifest.version).toBe('0.4.1');
     expect(pkg.version).toBe(manifest.version);
   });
 
