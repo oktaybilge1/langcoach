@@ -6,7 +6,7 @@ AI coding agents: see [AGENTS.md](https://github.com/oktaybilge1/langcoach/blob/
 
 ## Setup
 
-Requires Node 20 or newer (see `.nvmrc`).
+Development requires Node 22.12 or newer (see `.nvmrc`); the published `langcoach` package still runs on Node 20+.
 
 ```bash
 git clone https://github.com/oktaybilge1/langcoach.git
@@ -27,7 +27,7 @@ npm test            # vitest
 npm run build       # build all packages
 ```
 
-All three must pass before you open a PR; CI runs them on Linux, Windows and macOS with Node 20 and 22.
+All three must pass before you open a PR; CI runs them on Linux, Windows and macOS with Node 22 and 24, and smoke-tests the published package on Node 20.
 
 To try your build in Claude Code:
 
