@@ -4,6 +4,17 @@ All notable changes to LangCoach are documented here. The format follows [Keep a
 
 LangCoach ships two things from this repo: the `langcoach` MCP server on npm (`packages/mcp`) and the browser extension (`apps/extension`). Both use the same version number from 0.2.0 on.
 
+## 0.4.0 - 2026-11-11
+
+### Added
+- **Progress dashboard.** Say *show my dashboard* and your agent opens a local "sticker notebook" page (new `open_dashboard` tool, 15 tools in total): streak, today's tasks with a daily XP bar, your words (learned / needs review), weekly plan, reviews due, recent Little Language Lessons lessons, badges and a 7-day XP chart. It is written in your native language (English, Türkçe, Español, Français, Português; other languages get English text with local dates), makes no network requests and stays in your data folder.
+
+### Changed
+- **Notebook look for the extension side panel**, in light and warm dark mode, sharing one set of design tokens with the dashboard.
+- Levels, achievements and word strength now live in the shared core, so the dashboard and the extension always agree.
+- README redesigned with screenshots made from demo data.
+- Development and CI now use Node 22 and 24; the published package still runs on Node 20+.
+
 ## 0.3.0 - 2026-11-10
 
 ### Added
